@@ -1,0 +1,66 @@
+.edq-error {
+	font-weight: bold;
+	background-color:#f57900;
+	padding: 4px;    
+	border: 1px outset #000000;
+    margin-top: 8px;
+}
+/* tabs dont chaque onglet est un noeud */
+.edq-nodes > .ui-widget-header {
+    background: url("images/ui-bg_gloss-wave_35_f6a828_500x100.png") repeat-x scroll 50% 50% #5AB8C8;
+    border: 1px solid #2AB8C8;
+    color: #FFFFFF;
+    font-weight: bold;
+	font-family: Verdana;
+	font-size: smaller;
+}
+/* panneaux des tabs dont chaque onglet est un noeud */
+.edq-nodes > .ui-widget-content {
+	padding: 0.4em;
+}
+/* tabs dont chaque onglet est un viewer */
+.edq-viewers > .ui-widget-header {
+}
+/* titre au-dessus du tabs dont chaque onglet est un noeud */
+.edq-viewers.header-footer.ui-state-default {
+	padding: 4px 5px 0 8px;
+	text-align: left;
+	margin-bottom: 0;
+	font-weight: normal;
+	font-size: 11px;
+	font-family: Verdana;
+}
+.edq-viewers.header-footer .toolbar {
+	float: right;
+}
+.edq-viewers.ui-tabs > .ui-tabs-panel {
+	padding-left : 1.0em;
+}
+
+table.edq {
+	padding	: 0px;
+	border	: 1px outset;
+}
+table.edq > thead {
+	background-color	:#c1c1ae;
+	font-weight	:bold;
+}
+table.edq > tbody > tr > td.TitleCol, table.edq > tr > td.TitleCol {
+	background-color	:#c1c1ae;
+	font-weight	:bold;
+}
+table.edq > tbody {
+	background-color : #eaf9d5;
+	border-spacing	: 2px;
+}
+table.edq > thead > tr > th, table.edq > tbody > tr > td , table.edq > tr > td {
+	border-spacing	: 2px;
+	vertical-align: top;
+}
+table > thead > tr > th.pk {
+	text-decoration:underline;
+}
+
+.ui-tabs-nav .jstree-default .jstree-icon:empty {
+    height: 16px;
+}

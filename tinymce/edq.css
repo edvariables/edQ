@@ -1,0 +1,19 @@
+/* tinymce */
+.php_tag{
+	border:1px dotted #C63;
+	padding:2px 2px 2px 15px;
+	/*min-width:100px;*/
+	height:16px;
+	color:#fff;
+	font-size:6px;
+}
+.php_tag.open{
+	background:url(images/php_tag_open.png) no-repeat center left;
+}
+.php_tag.close{
+	background:url(images/php_tag_close.png) no-repeat center left;
+}
+.php_code{
+	font-family: "Courier New", Courier, monospace;
+	background-color:#FFFFCC;
+}
