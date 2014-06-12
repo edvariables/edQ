@@ -21,8 +21,8 @@ if(isset($_POST['operation'])
 	die("1");
 }
 require_once('file.php');
-class nodeViewer_fileContent extends nodeViewer_file {
-	public $name = 'fileContent';
+class nodeViewer_file_content extends nodeViewer_file {
+	public $name = 'file.content';
 	public $text = 'Fichier';
 	
 	public function html($node){
@@ -62,19 +62,19 @@ class nodeViewer_fileContent extends nodeViewer_file {
 			
 		$head = '
 	<!-- markItUp! skin -->
-	<link rel="stylesheet" type="text/css" href="markitup/skins/simple/style.css">
+	<link rel="stylesheet" type="text/css" href="jquery/markitup/skins/simple/style.css">
 	<!--  markItUp! toolbar skin -->
-	<link rel="stylesheet" type="text/css" href="markitup/sets/'. $type .'/style.css">
+	<link rel="stylesheet" type="text/css" href="jquery/markitup/sets/'. $type .'/style.css">
 	<script> if(!$.fn.markItUp){
-			$.getScript("markitup/jquery.markitup.js");
+			$.getScript("jquery/markitup/jquery.markitup.js");
 	}</script>'
 	/*
 	<!-- markItUp! -->
-	<script type="text/javascript" src="markitup/jquery.markitup.js"></script>
+	<script type="text/javascript" src="jquery/markitup/jquery.markitup.js"></script>
 	*/
 	. '<!-- markItUp! toolbar settings -->
 	'. ($type != "dataSource"
-		? '<script type="text/javascript" src="markitup/sets/'. $type .'/set.js"></script>'
+		? '<script type="text/javascript" src="jquery/markitup/sets/'. $type .'/set.js"></script>'
 		: '<script>mySettings = mySettings_' . $type . '; </script>') . '
 ';
 		$script = '<script type="text/javascript">

@@ -15,7 +15,7 @@
 		ORDER BY
 			p.`domain`, p.`sortIndex`, p.`text`, p.`param`
 		LIMIT ?, ?"
-		, array(0, 30)
+		, array(0, 99)
 	);
 	$uid = uniqid('form-');
 ?><table id="<?=$uid?>" class="edq" style="overflow: scroll;">
@@ -36,7 +36,7 @@
 	foreach($rows as $row){
 		?><tr>
 	 	<th><?=$row["sortIndex"]?>
-	 	 <a href="tree/db.php?operation=get_view&id=<?=1161?>&vw=fileCall&get=content&f-domain=<?=$row["domain"]?>&f-param=<?=$row["param"]?>"
+	 	 <a href="tree/db.php?operation=get_view&id=<?=1161?>&vw=file.call&get=content&f-domain=<?=$row["domain"]?>&f-param=<?=$row["param"]?>"
 	 	 	 onclick="$.get(this.getAttribute('href'), function(html){
 	 	 	 	 $('<div></div>').appendTo('body').html(html).dialog({
 	 	 	 	 	 title: '<?=str_replace('\'', '\\\'', $row["domain"] . '.' . $row["param"])?>',
@@ -80,7 +80,7 @@
 #<?=$uid?> tbody > tr:hover {
 	 background-color: #EEEEBB;
 }
-#<?=$uid?> tbody > tr > td {
+#<?=$uid?> tbody > tr > *{
 	padding: 1px 4px 1px 6px;
 	 border: 1px solid #333333;
 }

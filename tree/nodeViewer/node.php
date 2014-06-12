@@ -7,12 +7,14 @@ if(isset($_POST['operation'])
 	require_once(dirname(__FILE__) . '/../db.php');	 //TODO load tree only
 	global $tree;
 	
-	$node = isset($_REQUEST['id']) && $_REQUEST['id'] !== '#' ? (int)$_REQUEST['id'] : 0;
+	$id = isset($_REQUEST['id']) && $_REQUEST['id'] !== '#' ? (int)$_REQUEST['id'] : 0;
 	$params = array();
 	if(isset($_REQUEST['name']))
 		$params["nm"] = $_REQUEST['name'];
 	if(isset($_REQUEST['icon']))
 		$params["icon"] = $_REQUEST['icon'];
+	if(isset($_REQUEST['color']))
+		$params["color"] = $_REQUEST['color'];
 	if(isset($_REQUEST['type']))
 		$params["typ"] = $_REQUEST['type'];
 	if(isset($_REQUEST['ulvl']))
@@ -25,7 +27,7 @@ if(isset($_POST['operation'])
 		$params["ulvl"] = $_REQUEST['ulvl'];
 	if(isset($_REQUEST['user']))
 		$params["user"] = $_REQUEST['user'];
-	$rslt = $fs->rn($node, $params, true);
+	$rslt = $tree->rn($id, $params, true);
 	die("1");
 }
 
@@ -44,39 +46,19 @@ class nodeViewer_node extends nodeViewer {
 		// instance de node
 		$node = node::fromClass($this->domain, $node);
 		
+		$uid = uniqid('form-');
+		
 		// Type
-		$types = array("folder"
-			, "html"
-			, "css"
-			, "php"
-			, "js"
-			, "url"
-			, "dataSource"
-			, "sql"
-			, "query"
-		);
+		$types = node::get_types();
 		$select_type = '<select name="type" value="' . ifNull($node->type, '') . '">';
-		foreach($types as $type)
+		foreach($types as $type => $typeObj)
 			$select_type .= '<option value="' . $type . '"'
 				. ($node->type == $type ? ' selected="selected"' : '')
 			 	. '>' . htmlentities($type) . '</option>';
 		$select_type .= '</select>';
 
-		// icon
-		$icons = array("file file-file"
-			, "file file-folder"
-			, "file file-folder-sys"
-			, "file file-sql"
-			, "file file-cs"
-			, "file file-css"
-			, "file file-htm"
-			, "file file-php"
-			, "file file-c"
-			, "file file-iso"
-			, "file file-js"
-			, "file file-pdf"
-			, "file file-query"
-		);
+		// icon 
+		$icons = node::get_icons();
 		$select_icon = '<select name="icon" value="' . ifNull($node->icon, '') . '">';
 		foreach($icons as $icon)
 			$select_icon .= '<option value="' . $icon . '"'
@@ -88,12 +70,7 @@ class nodeViewer_node extends nodeViewer {
 		$select_icon .= '</select>';
 		
 		// ulvl
-		$ulvls = array(
-			"0" => "Administrateur"
-			, "1" => "Gestionnaire"
-			, "2" => "Utilisateur"
-			, "999" => "Public"
-		);
+		$ulvls = node::get_ulvls();
 		$select_ulvl = '<select name="ulvl" value="' . ifNull($node->ulvl, '') . '">';
 		foreach($ulvls as $ulvl => $text)
 			$select_ulvl .= '<option value="' . $ulvl . '"'
@@ -103,8 +80,24 @@ class nodeViewer_node extends nodeViewer {
 				. '</option>';
 		$select_ulvl .= '</select>';
 		
+		// color
+		$color = ifNull($node->color, '');
+		$color_input = '<div id="' . $uid . '--colorPicker" class="colorpicker-holder"><div style="background-color: ' . $color . '">
+<input type="hidden" id="' . $uid . '-color" name="color" value="' . $color . '" size="12"/></div></div>';
+		$color_script = '$("#' . $uid . '--colorPicker").ColorPicker({
+			color: "' . $color . '"
+			, onHide: function (colpkr) {
+				var colorPicker = document.getElementById("' . $uid . '-color");
+				if(typeof(colorPicker.onchange)==="function") colorPicker.onchange();
+				return true;
+			}
+			, onChange: function (hsb, hex, rgb) {
+				$("#' . $uid . '--colorPicker > div").css("backgroundColor", "#" + hex);
+				document.getElementById("' . $uid . '-color").value = "#" + hex;
+			}
+		});';
+		
 		// Form
-		$uid = uniqid('form-');
 		$html = '<form id="' . $uid . '" method="post" action="' . $this->get_url($node) . '">'
 			. '<fieldset class="q-fields">'
 			. '<input type="hidden" name="id" value="' . $node->id . '"/>'
@@ -114,7 +107,7 @@ class nodeViewer_node extends nodeViewer {
 			. '<div><label class="ui-state-default ui-corner-all">Nom</label>'
 				. '<input size="40" name="name" value="' . $node->name . '"/></div>'
 			. '<div><label class="ui-state-default ui-corner-all">Icône</label>'
-				. $select_icon . '</div>'
+				. $select_icon . $color_input . '</div>'
 			. '<div><label class="ui-state-default ui-corner-all">Type</label>'
 				. $select_type . '</div>'
 			. '<div><label class="ui-state-default ui-corner-all">Clé externe</label>'
@@ -125,16 +118,23 @@ class nodeViewer_node extends nodeViewer {
 				. $select_ulvl . '</div>'
 			. '<div><label class="ui-state-default ui-corner-all">Propriétaire</label>'
 				. '<input size="40" name="user" value="' . ifNull($node->user, '') . '"/></div>'
+			//. '<div><label class="ui-state-default ui-corner-all">Couleur</label>'
+			//	. $color_input . '</div>'
 			. '</div></fieldset>'
 					. '<fieldset>'
 					. '<input type="submit" value="Enregistrer"/>'
 					. '</fieldset>'
-				. '</form>'
-				. $this->formScript($uid, null, '
-					var value = $("#' . $uid . '").find(\':input[name="name"]\').val();
-					$("#tree").jstree("reload_node", ' . $node->id . ');
-					//$("#tree").jstree("set_text", ' . $node->id . ', value, false);
-				')
+			. '</form>'
+			. '<script>
+				$(document).ready(function() {'
+				. $color_script
+				. '});
+			</script>'
+			. $this->formScript($uid, null, '
+				var value = $("#' . $uid . '").find(\':input[name="name"]\').val();
+				$("#tree").jstree("reload_node", ' . $node->id . ');
+				//$("#tree").jstree("set_text", ' . $node->id . ', value, false);
+			')
 		;
 		return array(
 			"title" => $node->name

@@ -3,6 +3,73 @@
 class node {
 	public $domain = null;
 	
+	/* static get_types
+	*/
+	public static function get_types(){
+		return array(
+			  "default" => array(
+				"icon" => "file file-file"
+			  ),
+			  "folder" => array(
+				"icon" => "file file-folder"
+			  ),
+			  "sql" => array(
+				"icon" => "file file-sql"
+			  ),
+			  "css" => array(
+				"icon" => "file file-css"
+			  ),
+			  "php" => array(
+				"icon" => "file file-php"
+			  ),
+			  "js" => array(
+				"icon" => "file file-js"
+			  ),
+			  "html" => array(
+				"icon" => "file file-html"
+			  ),
+			  "query" => array(
+				"icon" => "file file-query"
+			  ),
+			  "dataSource" => array(
+				"icon" => "file file-iso"
+			  ),
+			  "jqGrid" => array(
+				"icon" => "file file-query"
+			  )
+		);
+	}
+	
+	/* static get_icons
+	*/
+	public static function get_icons(){
+		return array("file file-file"
+			, "file file-folder"
+			, "file file-folder-sys"
+			, "file file-sql"
+			, "file file-cs"
+			, "file file-css"
+			, "file file-htm"
+			, "file file-php"
+			, "file file-c"
+			, "file file-iso"
+			, "file file-js"
+			, "file file-pdf"
+			, "file file-query"
+		);
+	}
+	
+	/* static get_icons
+	*/
+	public static function get_ulvls(){
+		return array(
+			"0" => "Administrateur"
+			, "1" => "Gestionnaire"
+			, "2" => "Utilisateur"
+			, "999" => "Public"
+		);
+	}
+	
 	/* static fromClass
 		retourne une instance d'après la classe spécifiée.
 		charge le fichier $class . ".php"
@@ -95,13 +162,13 @@ class node {
 		if(!isset($this->properties["path"])){
 			$this->properties = $tree->get_node((int)$this->properties['id'], array('with_path' => true, 'full' => false));
 		}
-		$path = $_SERVER['DOCUMENT_ROOT'];
+		/*$path = $_SERVER['DOCUMENT_ROOT'];
 		if(substr($path, -strlen($path)) != '/')
 			$path .= '/';
 		$path = $path
 			. preg_replace('/(\/?(.+)\/\w+\.php$)?/', '$2', $_SERVER['PHP_SELF']);
-		//var_dump(($path . '/../pages'));
-		$path = str_replace('\\', '/', realpath($path . '/../pages'))
+		//var_dump(($path . '/../pages'));*/
+		$path = helpers::get_pagesPath() //str_replace('\\', '/', realpath($path . '/../pages'))
 			. '/' . implode('/',array_map(function ($v) { return $v['nm']; }, $this->properties['path']))
 		;
 		return $path;

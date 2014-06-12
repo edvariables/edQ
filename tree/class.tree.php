@@ -47,7 +47,7 @@ class tree
 	/* get_node
 		recherche le noeud dans la table tree_data
 	*/
-	public function get_node($id, $options = array()) {
+	public function get_node($id, $options = array(), $errorIfNotExists = true) {
 		$node = $this->db->one("
 			SELECT 
 				s.".implode(", s.", $this->options['structure']).", 
@@ -64,6 +64,8 @@ class tree
 			, array( (int)$id )
 		);
 		if(!$node) {
+			if(!$errorIfNotExists)
+				return false;
 			throw new Exception('Node does not exist');
 		}
 		if(isset($options['with_children'])) {
@@ -266,6 +268,9 @@ class tree
 	*/
 	public function mv($id, $parent, $position = 0) {
 		$id			= (int)$id;
+		//ED140608
+		$idId		= $id;
+		
 		$parent		= (int)$parent;
 		if($parent == 0 || $id == 0 || $id == 1) { 
 			throw new Exception('Cannot move inside 0, or move root node');
@@ -286,6 +291,10 @@ class tree
 			throw new Exception('Could not move parent inside child');
 		}
 
+		//ED140608
+		$oldName 	= $id['nm'];
+		$oldPath 	= implode('/', array_map(function ($v) { return $v['nm']; }, $id['path']));
+		
 		$tmp = array();
 		$tmp[] = (int)$id[$this->options['structure']["id"]];
 		if($id['children'] && is_array($id['children'])) {
@@ -399,7 +408,14 @@ class tree
 				$this->reconstruct();
 				throw new Exception('Error moving');
 			}
-		}
+		}		
+		
+		//ED140608
+		$id			= $this->get_node($idId, array('with_children'=> false, 'deep_children' => false, 'with_path' => true, 'full' => false));
+		$newName 	= $id['nm'];
+		$newPath 	= implode('/', array_map(function ($v) { return $v['nm']; }, $id['path']));
+		helpers::nodeFile_mv($oldPath, $oldName, $newPath, $newName, true);
+		
 		return true;
 	}
 	
@@ -407,6 +423,7 @@ class tree
 	*/
 	public function cp($id, $parent, $position = 0) {
 		$id			= (int)$id;
+		
 		$parent		= (int)$parent;
 		if($parent == 0 || $id == 0 || $id == 1) {
 			throw new Exception('Could not copy inside parent 0, or copy root nodes');
@@ -429,6 +446,10 @@ class tree
 			$position = count($parent['children']); 
 		}
 
+		//ED140608
+		$oldName 	= $id['nm'];
+		$oldPath 	= implode('/', array_map(function ($v) { return $v['nm']; }, $id['path']));
+		
 		$tmp = array();
 		$tmp[] = (int)$id[$this->options['structure']["id"]];
 		if($id['children'] && is_array($id['children'])) {
@@ -628,16 +649,23 @@ class tree
 				throw new Exception('Erreur durant la copie : ' . $e->getMessage() . '\nRequête : ' . $v);
 			}
 		}
+		
+		//ED140608
+		$newNode	= $this->get_node($iid, array('with_children'=> false, 'deep_children' => false, 'with_path' => true, 'full' => false));
+		$newName 	= $newNode['nm'];
+		$newPath 	= implode('/', array_map(function ($v) { return $v['nm']; }, $newNode['path']));
+		helpers::nodeFile_cp($oldPath, $oldName, $newPath, $newName, true);
+		
 		return $iid;
 	}
-
+	
 	/* rm
 		suppression
 	*/
 	public function rm($id) {
 		$id = (int)$id;
 		if(!$id || $id === 1) { throw new Exception('Could not create inside roots'); }
-		$data = $this->get_node($id, array('with_children' => true, 'deep_children' => true));
+		$data = $this->get_node($id, array('with_path' => true, 'with_children' => true, 'deep_children' => true));
 		$lft = (int)$data[$this->options['structure']["left"]];
 		$rgt = (int)$data[$this->options['structure']["right"]];
 		$pid = (int)$data[$this->options['structure']["parent_id"]];
@@ -645,6 +673,10 @@ class tree
 		$dif = $rgt - $lft + 1;
 
 		$sql = array();
+		
+		//ED140608
+		$oldName 	= $data['nm'];
+		$oldPath 	= implode('/', array_map(function ($v) { return $v['nm']; }, $data['path']));
 		
 		//ED140518 : suppression préalable poour maintenir les contraintes
 		// delete node_param rows
@@ -702,15 +734,29 @@ class tree
 				throw new Exception('Could not remove');
 			}
 		}
+		
+		//ED140608
+		helpers::nodeFile_rm($oldPath, $oldName);
+		
 		return true;
 	}
 
 	/* rename and update
 	*/
 	public function rn($id, $data, $fullUpdate = false) {
-		if(!(int)$this->db->one('SELECT 1 AS res FROM '.$this->options['structure_table'].' WHERE '.$this->options['structure']['id'].' = '.(int)$id)) {
-			throw new Exception('Could not rename non-existing node');
+		//ED140608
+		$node	= $this->get_node($id, array('with_children'=> false, 'deep_children' => false, 'with_path' => true, 'full' => false), false);
+		if(!$node) {
+			//throw new Exception('Could not rename non-existing node');
+			$oldName 	= false;
 		}
+		else {
+			$oldName 	= $node['nm'];
+			$oldPath 	= implode('/', array_map(function ($v) { return $v['nm']; }, $node['path']));
+		}
+		if(isset($data['name']) && !isset($data['nm']))
+			$data['nm'] = $data['name'];
+		
 		$tmp = array();
 		foreach($this->options['data'] as $v) {
 			if(isset($data[$v])) {
@@ -737,6 +783,12 @@ class tree
 			}
 			catch(Exception $e) {
 				throw new Exception('Impossible de mettre à jour');
+			}
+		
+			//ED140608
+			if($oldName !== false && isset($data['nm']) && $data['nm'] != $oldName) {
+				$newName 	= $data['nm'];
+				helpers::nodeFile_mv($oldPath, $oldName, $oldPath, $newName, true);
 			}
 		}
 		return true;

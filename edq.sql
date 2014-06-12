@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client: localhost
--- Généré le: Lun 02 Juin 2014 à 18:43
+-- Généré le: Jeu 12 Juin 2014 à 05:13
 -- Version du serveur: 5.5.24-log
 -- Version de PHP: 5.3.13
 
@@ -160,7 +160,7 @@ INSERT INTO `node_param` (`id`, `param`, `domain`, `value`, `sortIndex`) VALUES
 (1123, 'Foot', 'query', 'function($node, $rows, $viewer){\n	 return ''<center>'' . count($rows) . '' ligne'' . (count($rows) > 1 ? ''s'' : '''') . ''</center>'';\n}', 999),
 (1123, 'SQLDelete', 'query', 'DELETE FROM contact\nWHERE a.id = :ID', 999),
 (1123, 'SQLInsert', 'query', 'INSERT INTO contact (id, name)\nVALUES(:ID, :NAME)', 999),
-(1123, 'SQLSelect', 'query', 'SELECT IdContact, Name, `EMail`, `Phone1`, `Phone2`, `Address`, `ZipCode`, `City`\nFROM contact c\nWHERE c.Name <> ''''\nORDER BY c.Name\nLIMIT 0, 10', 999),
+(1123, 'SQLSelect', 'query', 'SELECT IdContact, Name, `EMail`, `Phone1`, `Phone2`, `Address`, `ZipCode`, `City`\nFROM contact c\nWHERE c.Name <> ''''\nORDER BY c.Name\nLIMIT 0, 20', 999),
 (1123, 'SQLUpdate', 'query', 'UPDATE contact\n	SET a.name = :NAME\nWHERE a.id = :ID', 999),
 (1134, 'Columns', 'query', '"idContact" => "#",\n"name" => "Nom"', 999),
 (1134, 'SQLSelect', 'query', 'SELECT a.idContact, a.name\nFROM contact a\nORDER BY name\nLIMIT 0, 55\n', 999),
@@ -172,12 +172,12 @@ INSERT INTO `node_param` (`id`, `param`, `domain`, `value`, `sortIndex`) VALUES
 (1157, 'SQLSelect', 'query', 'SELECT IdContact, Name, `EMail`, `Phone1`, `Phone2`, `Address`, `ZipCode`, `City`\nFROM contact c\nWHERE c.Name <> ''''\nORDER BY c.Name\nLIMIT 0, 30', 999),
 (1157, 'SQLUpdate', 'query', 'UPDATE contact\n	SET a.name = :NAME\nWHERE a.id = :ID', 999),
 (1162, 'Caption', 'query', '''Noeud : '' . $node->name', 999),
-(1162, 'Columns', 'query', '"IdContact" => array(\n	 "text" => "#"\n	 , "pk" => true\n)\n, "Name" => array("text" => "Nom")\n, "EMail" => "EMail"\n, "Phone1" => array(\n	 "text" => function(){ return "Téléphone(s)"; }\n	 , "value" => function($row, $column){\n	 	 return $row["Phone1"] . ($row["Phone2"] == '''' ? '''' : '' - '' . $row["Phone2"]);\n	 })\n, "Phone2" => array("visible" => false)\n, "Address" => array("text" => "Adresse")\n, "ZipCode" => array("text" => "Code postal")\n, "City" => array("text" => "Ville")', 999),
+(1162, 'Columns', 'query', '"domain" => array(\n	 "text" => "Domaine"\n	 , "css" => "background-color: #FAFAFA;"\n)\n, "param" => array(\n	 "text" => "Paramètre"\n	 , "css" => "background-color: #FAFAFA;"\n)\n, "text" => "Nom"\n, "valueType" => "Type"\n, "icon" => "Image"\n, "defaultValue" => "Valeur par défaut"\n, "comment" => "Commentaire"\n, "sortIndex" => "Tri"', 999),
 (1162, 'Foot', 'query', 'function($node, $rows, $viewer){\n	 return ''<center>'' . count($rows) . '' ligne'' . (count($rows) > 1 ? ''s'' : '''') . ''</center>'';\n}', 999),
 (1162, 'SQLDelete', 'query', 'DELETE FROM contact\nWHERE a.id = :ID', 999),
 (1162, 'SQLInsert', 'query', 'INSERT INTO contact (id, name)\nVALUES(:ID, :NAME)', 999),
-(1162, 'SQLSelect', 'query', 'SELECT IdContact, Name, `EMail`, `Phone1`, `Phone2`, `Address`, `ZipCode`, `City`\nFROM contact c\nWHERE c.Name <> ''''\nORDER BY c.Name\nLIMIT 0, 10', 999),
-(1162, 'SQLUpdate', 'query', 'UPDATE contact\n	SET a.name = :NAME\nWHERE a.id = :ID', 999);
+(1162, 'SQLSelect', 'query', 'SELECT p.`domain`, p.`param`, p.`text`, p.`valueType`, p.`icon`, p.`defaultValue`, p.`comment`, p.`sortIndex`\n, COUNT(n.id) AS nbUse\nFROM \n	node_params p\nLEFT JOIN\n	node_param n\n	ON p.domain = n.domain\n	AND p.param = n.param\nGROUP BY\n	p.`domain`, p.`param`, p.`text`, p.`valueType`, p.`icon`, p.`defaultValue`, p.`comment`, p.`sortIndex`\nORDER BY\n	 p.`domain`, p.`sortIndex`, p.`text`, p.`param`\nLIMIT 20', 999),
+(1162, 'SQLUpdate', 'query', 'UPDATE node_params p\nSET p.text = :TEXT\nWHERE p.domain = :DOMAIN\nAND p.param = :PARAM', 999);
 
 -- --------------------------------------------------------
 
@@ -427,6 +427,7 @@ CREATE TABLE IF NOT EXISTS `tree_data` (
   `ext` varchar(64) DEFAULT NULL COMMENT 'Clé dans la source externe',
   `params` text,
   `icon` varchar(32) DEFAULT NULL COMMENT 'class de l''icône',
+  `color` varchar(16) DEFAULT NULL,
   `ulvl` int(11) NOT NULL DEFAULT '0' COMMENT 'User level',
   `user` int(11) NOT NULL DEFAULT '0' COMMENT 'private for user',
   PRIMARY KEY (`id`),
@@ -440,40 +441,66 @@ CREATE TABLE IF NOT EXISTS `tree_data` (
 -- Contenu de la table `tree_data`
 --
 
-INSERT INTO `tree_data` (`id`, `nm`, `typ`, `ext`, `params`, `icon`, `ulvl`, `user`) VALUES
-(1, 'edQ', 'folder', '', '', 'file file-folder-sys', 0, 0),
-(1065, 'UPDATE', 'sql', '', 'UPDATE maTable\nSET name = :NAME\nWHERE id = :ID\nLIMIT 0, 1', NULL, 0, 0),
-(1069, 'TerraFact', 'folder', '', '', NULL, 0, 0),
-(1070, 'DB', 'folder', '', '', NULL, 0, 0),
-(1074, '_templates', 'folder', '', '', 'file file-folder-sys', 0, 0),
-(1078, 'css', 'css', '', '', NULL, 0, 0),
-(1094, 'SELECT', 'sql', '', 'SELECT *\nFROM maTable\nWHERE id = :ID\nORDER BY name\nLIMIT 0, 10', 'file file-sql', 0, 0),
-(1095, 'SQL', 'folder', '', '', NULL, 0, 0),
-(1097, 'INSERT', 'sql', '', 'INSERT INTO maTable (id, name)\nVALUES( :ID, :NAME )\nLIMIT 0, 1', NULL, 0, 0),
-(1098, 'DELETE', 'sql', '', 'DELETE FROM maTable\nWHERE id = :ID\nLIMIT 0, 1', NULL, 0, 0),
-(1100, 'Contacts', 'folder', '', '', 'file file-folder', 0, 0),
-(1101, 'Liste', 'php', '', '', 'file file-query', 2, 1),
-(1102, 'Edition', 'php', '', '', 'file file-query', 2, 1),
-(1103, 'dataSource', 'dataSource', '', '', 'file file-iso', 2, 1),
-(1104, 'html', 'html', '', '', 'file file-file', 0, 0),
-(1105, 'css', 'css', '', '', NULL, 0, 0),
-(1106, 'html', 'html', '', '', 'file file-file', 0, 0),
-(1107, 'php', 'php', '', '', 'file file-php', 0, 0),
-(1111, 'dataSource', 'dataSource', '', '', 'file file-iso', 0, 0),
-(1117, 'Xml', 'html', '', '', 'file file-file', 0, 0),
-(1119, 'Remove', 'html', '', '', 'file file-file', 0, 0),
-(1121, 'Xml', 'html', '', '', 'file file-file', 0, 0),
-(1123, 'Requête', 'query', '', '', 'file file-query', 2, 1),
-(1132, 'Keep', NULL, NULL, NULL, NULL, 0, 0),
-(1133, 'rezo', 'folder', '', '', 'file file-folder', 0, 0),
-(1134, 'Requête', 'query', '', '', 'file file-query', 2, 1),
-(1157, 'Test', 'query', '', '', 'file file-query', 2, 1),
-(1158, '_System', 'folder', '', '', 'file file-folder-sys', 0, 1),
-(1159, 'Paramètres des noeuds', 'folder', '', '', 'file file-folder', 0, 0),
-(1160, 'Liste', 'php', '', '', 'file file-query', 2, 1),
-(1161, 'Edition', 'php', '', '', 'file file-query', 2, 1),
-(1162, 'Requête', 'query', '', '', 'file file-query', 2, 1),
-(1166, 'dataSource', 'dataSource', '', '', 'file file-iso', 0, 0);
+INSERT INTO `tree_data` (`id`, `nm`, `typ`, `ext`, `params`, `icon`, `color`, `ulvl`, `user`) VALUES
+(1, 'edQ', 'folder', '', '', 'file file-folder-sys', NULL, 0, 0),
+(1065, 'UPDATE', 'sql', '', 'UPDATE maTable\nSET name = :NAME\nWHERE id = :ID\nLIMIT 0, 1', NULL, NULL, 0, 0),
+(1069, 'TerraFact', 'folder', '', '', NULL, NULL, 0, 0),
+(1070, 'DB', 'folder', '', '', NULL, NULL, 0, 0),
+(1074, '_templates', 'folder', '', '', 'file file-folder-sys', NULL, 0, 0),
+(1078, 'css', 'css', '', '', NULL, NULL, 0, 0),
+(1094, 'SELECT', 'sql', '', 'SELECT *\nFROM maTable\nWHERE id = :ID\nORDER BY name\nLIMIT 0, 10', 'file file-sql', NULL, 0, 0),
+(1095, 'SQL', 'folder', '', '', NULL, NULL, 0, 0),
+(1097, 'INSERT', 'sql', '', 'INSERT INTO maTable (id, name)\nVALUES( :ID, :NAME )\nLIMIT 0, 1', NULL, NULL, 0, 0),
+(1098, 'DELETE', 'sql', '', 'DELETE FROM maTable\nWHERE id = :ID\nLIMIT 0, 1', NULL, NULL, 0, 0),
+(1100, 'Contacts', 'folder', '', '', 'file file-folder', NULL, 0, 0),
+(1101, 'Liste', 'php', '', '', 'file file-query', NULL, 2, 1),
+(1102, 'Edition', 'php', '', '', 'file file-query', NULL, 2, 1),
+(1103, 'dataSource', 'dataSource', '', '', 'file file-iso', NULL, 2, 1),
+(1104, 'html', 'html', '', '', 'file file-file', NULL, 0, 0),
+(1105, 'css', 'css', '', '', NULL, NULL, 0, 0),
+(1106, 'html', 'html', '', '', 'file file-file', NULL, 0, 0),
+(1107, 'php', 'php', '', '', 'file file-php', NULL, 0, 0),
+(1111, 'dataSource', 'dataSource', '', '', 'file file-iso', NULL, 0, 0),
+(1117, 'Xml', 'html', '', '', 'file file-file', NULL, 0, 0),
+(1119, 'Remove', 'html', '', '', 'file file-file', NULL, 0, 0),
+(1121, 'Xml', 'html', '', '', 'file file-file', NULL, 0, 0),
+(1123, 'Requête', 'query', '', '', 'file file-query', NULL, 2, 1),
+(1132, 'Keep', NULL, NULL, NULL, NULL, NULL, 0, 0),
+(1133, 'rezo', 'folder', '', '', 'file file-folder', NULL, 0, 0),
+(1134, 'Requête', 'query', '', '', 'file file-query', NULL, 2, 1),
+(1157, 'Test', 'query', '', '', 'file file-query', NULL, 2, 1),
+(1158, '_System', 'folder', '', '', 'file file-folder-sys', '#ebdab9', 0, 1),
+(1159, 'Paramètres des noeuds', 'folder', '', '', 'file file-folder', '#86f7ca', 0, 0),
+(1160, 'Liste', 'php', '', '', 'file file-query', '#f0b2f0', 2, 1),
+(1161, 'Edition', 'php', '', '', 'file file-query', '#c1deab', 2, 1),
+(1162, 'Requête', 'query', '', '', 'file file-query', '#eaed91', 2, 1),
+(1166, 'dataSource', 'dataSource', '', '', 'file file-iso', NULL, 0, 0),
+(1167, '_Exemples', 'folder', '', '', 'file file-folder-sys', NULL, 0, 0),
+(1168, 'DataTables', 'folder', '', '', 'file file-folder', NULL, 0, 0),
+(1169, 'Simple', 'folder', '', '', 'file file-folder', NULL, 0, 0),
+(1170, 'Zéro config', 'php', '', '', 'file file-php', NULL, 0, 0),
+(1171, 'data', 'folder', '', '', 'file file-file', NULL, 0, 0),
+(1172, 'Ajax', 'folder', '', '', 'file file-folder', NULL, 0, 0),
+(1173, 'Array', 'php', '', '', 'file file-php', NULL, 0, 0),
+(1174, 'data', 'folder', '', '', 'file file-file', NULL, 0, 0),
+(1175, 'html', NULL, NULL, NULL, NULL, NULL, 0, 0),
+(1176, 'Objets JSON', 'php', '', '', 'file file-php', NULL, 0, 0),
+(1177, 'data', 'folder', '', '', 'file file-file', NULL, 0, 0),
+(1178, 'html', NULL, NULL, NULL, NULL, NULL, 0, 0),
+(1179, 'Objets complexes', 'php', '', '', 'file file-php', NULL, 0, 0),
+(1180, 'data', 'folder', '', '', 'file file-file', NULL, 0, 0),
+(1181, 'html', NULL, NULL, NULL, NULL, NULL, 0, 0),
+(1182, 'Details', 'php', '', '', 'file file-php', NULL, 0, 0),
+(1183, 'data', 'folder', '', '', 'file file-file', NULL, 0, 0),
+(1184, 'html', NULL, NULL, NULL, NULL, NULL, 0, 0),
+(1185, 'css', 'css', '', '', 'file file-css', NULL, 0, 0),
+(1186, 'images', 'folder', '', '', 'file file-folder', NULL, 0, 0),
+(1187, 'jquery', 'folder', '', '', 'file file-folder', NULL, 0, 0),
+(1188, 'jqGrid', 'folder', '', '', 'file file-folder', NULL, 0, 0),
+(1189, 'Hide Grouping Column', 'php', '', '', 'file file-php', NULL, 0, 0),
+(1190, 'data', 'folder', '', '', 'file file-file', NULL, 0, 0),
+(1191, 'html', NULL, NULL, NULL, NULL, NULL, 0, 0),
+(1192, 'css', 'css', '', '', 'file file-css', NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -490,14 +517,14 @@ CREATE TABLE IF NOT EXISTS `tree_struct` (
   `pid` int(10) unsigned NOT NULL,
   `pos` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1167 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1214 ;
 
 --
 -- Contenu de la table `tree_struct`
 --
 
 INSERT INTO `tree_struct` (`id`, `lft`, `rgt`, `lvl`, `pid`, `pos`) VALUES
-(1, 1, 68, 0, 0, 0),
+(1, 1, 120, 0, 0, 0),
 (1065, 44, 45, 3, 1095, 2),
 (1069, 2, 21, 1, 1, 0),
 (1070, 19, 20, 2, 1069, 5),
@@ -527,10 +554,36 @@ INSERT INTO `tree_struct` (`id`, `lft`, `rgt`, `lvl`, `pid`, `pos`) VALUES
 (1157, 3, 4, 2, 1069, 0),
 (1158, 56, 67, 1, 1, 3),
 (1159, 57, 64, 2, 1158, 0),
-(1160, 58, 59, 3, 1159, 0),
+(1160, 60, 61, 3, 1159, 1),
 (1161, 62, 63, 3, 1159, 2),
-(1162, 60, 61, 3, 1159, 1),
-(1166, 65, 66, 2, 1158, 1);
+(1162, 58, 59, 3, 1159, 0),
+(1166, 65, 66, 2, 1158, 1),
+(1167, 68, 119, 1, 1, 4),
+(1168, 70, 107, 3, 1187, 0),
+(1169, 91, 104, 4, 1168, 1),
+(1170, 92, 95, 5, 1169, 0),
+(1171, 93, 94, 6, 1170, 0),
+(1172, 71, 90, 4, 1168, 0),
+(1173, 84, 89, 5, 1172, 2),
+(1174, 85, 86, 6, 1173, 0),
+(1175, 87, 88, 6, 1173, 1),
+(1176, 78, 83, 5, 1172, 1),
+(1177, 79, 80, 6, 1176, 0),
+(1178, 81, 82, 6, 1176, 1),
+(1179, 72, 77, 5, 1172, 0),
+(1180, 73, 74, 6, 1179, 0),
+(1181, 75, 76, 6, 1179, 1),
+(1182, 96, 103, 5, 1169, 1),
+(1183, 97, 98, 6, 1182, 0),
+(1184, 99, 100, 6, 1182, 1),
+(1185, 101, 102, 6, 1182, 2),
+(1186, 105, 106, 4, 1168, 2),
+(1187, 69, 118, 2, 1167, 0),
+(1188, 108, 117, 3, 1187, 1),
+(1189, 109, 116, 4, 1188, 0),
+(1190, 110, 111, 5, 1189, 0),
+(1191, 112, 113, 5, 1189, 1),
+(1192, 114, 115, 5, 1189, 2);
 
 -- --------------------------------------------------------
 

@@ -1396,6 +1396,7 @@
 					id			: tid,
 					text		: d.text || '',
 					icon		: d.icon !== undefined ? d.icon : true,
+					color		: d.color !== undefined ? d.color : false,
 					parent		: p,
 					parents		: ps,
 					children	: d.children || [],
@@ -1492,6 +1493,7 @@
 				id			: false,
 				text		: typeof d === 'string' ? d : '',
 				icon		: typeof d === 'object' && d.icon !== undefined ? d.icon : true,
+				color		: typeof d === 'object' && d.color !== undefined ? d.color : false,
 				parent		: p,
 				parents		: ps,
 				children	: [],
@@ -1738,6 +1740,9 @@
 					node.childNodes[1].childNodes[0].style.backgroundSize = 'auto';
 					node.childNodes[1].childNodes[0].className += ' jstree-themeicon-custom';
 				}
+			}
+			if(obj.color) {
+				node.childNodes[1].style.backgroundColor = obj.color;
 			}
 			//node.childNodes[1].appendChild(d.createTextNode(obj.text));
 			node.childNodes[1].innerHTML += obj.text;
@@ -2997,6 +3002,10 @@
 			if( properties.icon && properties.icon != obj.icon){
 				this.set_icon(obj, properties.icon); // .apply(this, Array.prototype.slice.call(arguments))
 			}
+			/* ED140609 */
+			if( properties.color && properties.color != obj.color){
+				this.set_color(obj, properties.color); // .apply(this, Array.prototype.slice.call(arguments))
+			}
 			/**
 			 * triggered when a node is updated
 			 * @event
@@ -3540,7 +3549,7 @@
 			h1.css(fn);
 			h2.css(fn).width(Math.min(h1.text("pW" + h2[0].value).width(),w))[0].select();
 		},
-		/** ED
+		/** ED140501
 		 * put a node in edit mode (input field to rename the node)
 		 * @name edit(obj [, default_text])
 		 * @param  {mixed} obj
@@ -3568,6 +3577,7 @@
 				icon  = node.icon,
 				typ  = node.type,
 				ext  = node.ext,
+				color  = node.color,
 				ulvl  = node.ulvl,
 				user  = node.user,
 				params = node.params,
@@ -3616,20 +3626,8 @@
 				
 			// $icon
 			var $option,
-				items = [ "file file-file"
-				, "file file-folder"
-				, "file file-folder-sys"
-				, "file file-sql"
-				, "file file-cs"
-				, "file file-css"
-				, "file file-htm"
-				, "file file-php"
-				, "file file-c"
-				, "file file-iso"
-				, "file file-js"
-				, "file file-pdf"
-				, "file file-query"
-				];
+				items = this.settings.icons;
+				
 			for(var item in items){
 					$icon.append($option = $("<"+"option/>", {
 						"value" : items[item]
@@ -3639,32 +3637,21 @@
 					if( items[item] == icon || icon == "jstree-" + items[item] )
 						$option.attr("selected", "selected");
 			};
-			items = [
-				"folder"
-				, "html"
-				, "css"
-				, "php"
-				, "js"
-				, "url"
-				, "dataSource"
-				, "sql"
-				, "query"
-				];
+			
+			// $type
+			items = this.settings.types;
 			for(var item in items){
 					$type.append($option = $("<"+"option/>", {
-						"value" : items[item]
-						, "html" : '<i class="jstree-icon ' + items[item] + '"></i>'
-							+ items[item]
+						"value" : item
+						, "html" : '<i class="jstree-icon ' + (items[item].icon ? items[item].icon : item) + '"></i>'
+							+ (items[item].text ? items[item].text : item)
 					}));
-					if( items[item] == typ )
+					if( item == typ )
 						$option.attr("selected", "selected");
 			};
-			items = {
-				"0" : "Administrateur"
-				, "1" : "Gestionnaire"
-				, "2" : "Utilisateur"
-				, "999" : "Public"
-			};
+			
+			// $ulvl
+			items = this.settings.ulvls;
 			for(var item in items){
 					$ulvl.append($option = $("<"+"option/>", {
 						"value" :item
@@ -3672,6 +3659,26 @@
 					}));
 					if( item == ulvl )
 						$option.attr("selected", "selected");
+			};
+			
+			// $color
+			var $color = $('<div class="colorpicker-holder"><div style="background-color: ' + color + '">'
+				+ '<input type="hidden" name="color" value="' + color + '" size="12"/></div></div>');
+			var color_init = function(){
+				$color.ColorPicker({
+					color: color == null ? '' : color
+					, onHide: function (colpkr) {
+						var colorPicker = $color.find("> div > input").get(0);
+						if(typeof(colorPicker.onchange)==="function") colorPicker.onchange();
+						return true;
+					}
+					, onChange: function (hsb, hex, rgb) {
+						$color.children("div")
+							.css("backgroundColor", "#" + hex)
+							.children("input").val("#" + hex)
+						;
+					}
+				});
 			};
 			
 			// build
@@ -3688,6 +3695,9 @@
 						.append("<td>Icône : ")
 						.append($("<td>")
 							.html($icon)
+							.html($color)
+								.children().each(color_init)
+								.end()
 						)
 					)
 					.append($("<tr>")
@@ -3946,6 +3956,58 @@
 			obj.icon = dom.length ? dom.children("a").children(".jstree-themeicon").attr('rel') : true;
 			if(!obj.icon) { obj.icon = true; }
 			dom.children("a").children(".jstree-themeicon").removeClass('jstree-themeicon-hidden');
+			return true;
+		},
+		
+		
+		/** ED140609
+		 * set the node color for a node
+		 * @name set_color(obj, color)
+		 * @param {mixed} obj
+		 * @param {String} color the new color - can be a path to an color or a className, if using an image that is in the current directory use a `./` prefix, otherwise it will be detected as a class
+		 */
+		set_color : function (obj, color) {
+			var t1, t2, dom, old;
+			if($.isArray(obj)) {
+				obj = obj.slice();
+				for(t1 = 0, t2 = obj.length; t1 < t2; t1++) {
+					this.set_color(obj[t1], color);
+				}
+				return true;
+			}
+			obj = this.get_node(obj);
+			if(!obj || obj.id === '#') { return false; }
+			old = obj.color;
+			obj.color = color;
+			if(color === false) {
+				this.hide_color(obj);
+			}
+			else {
+				var dom = this.get_node(obj, true).children('.jstree-anchor:first').get(0);
+				dom.style.backgroundColor = obj.color;
+			}
+			return true;
+		},
+		
+		/**
+		 * hide the color on an individual node
+		 * @name hide_color(obj)
+		 * @param {mixed} obj
+		 */
+		hide_color : function (obj) {
+			var t1, t2;
+			if($.isArray(obj)) {
+				obj = obj.slice();
+				for(t1 = 0, t2 = obj.length; t1 < t2; t1++) {
+					this.hide_color(obj[t1]);
+				}
+				return true;
+			}
+			obj = this.get_node(obj);
+			if(!obj || obj === '#') { return false; }
+			obj.color = false;
+			var dom = this.get_node(obj, true).children('.jstree-anchor:first').get(0);
+			dom.style.backgroundColor = 'transparent';
 			return true;
 		}
 	};

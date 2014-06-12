@@ -6,10 +6,10 @@ Héritée par
 - comment : affiche le commentaire du noeud
 - edit : TODO
 - file : le noeud correspond à un fichier qui contient du code php. Héritée par les classes file*
-- fileContent :  : affiche le contenu du fichier. Héritée par fileMarkItUp et fileTinyMCE
-- fileCall : affiche l'interprétation du fichier php associé au noeud
+- file.content :  : affiche le contenu du fichier. Copie de file.MarkItUp ou file.TinyMCE
+- file.call : affiche l'interprétation du fichier php associé au noeud
 - query : édition des paramétres d'une requête
-- queryCall : affiche le résultat d'une requête
+- query.call : affiche le résultat d'une requête
 */
 
 require(dirname(__FILE__) . '/../nodeType/_class.php');
@@ -33,7 +33,7 @@ class nodeViewer {
 		if($class == null || $class == '')
 			return new nodeViewer();
 		include_once(dirname(__FILE__) . '/' . $class . ".php");
-		$fullClass = __CLASS__ . "_" . $class;
+		$fullClass = __CLASS__ . "_" . str_replace('.', '_', $class);
 		return new $fullClass();
 	}
 	
@@ -55,13 +55,13 @@ class nodeViewer {
 		if(!isset($node["path"])){
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => false));
 		}
-		$path = $_SERVER['DOCUMENT_ROOT'];
+		/*$path = $_SERVER['DOCUMENT_ROOT'];
 		if(substr($path, -strlen($path)) != '/')
 			$path .= '/';
 		$path = $path
 			. preg_replace('/(\/?(.+)\/\w+\.php$)?/', '$2', $_SERVER['PHP_SELF']);
-		//var_dump(($path . '/../pages'));
-		$path = str_replace('\\', '/', realpath($path . '/../pages'))
+		//var_dump(($path . '/../pages'));*/
+		$path = helpers::get_pagesPath() //str_replace('\\', '/', realpath($path . '/../pages'))
 			. '/' . implode('/',array_map(function ($v) { return $v['nm']; }, $node['path']))
 		;
 		return $path;

@@ -8,6 +8,7 @@
 			contact c
 		WHERE
 			c.Name <> ''
+	 	 AND	 c.ContactType <> 'CHANT'
 		ORDER BY
 			c.Name
 		LIMIT ?, ?"
@@ -16,6 +17,7 @@
 	$uid = uniqid('form-');
 ?><table id="<?=$uid?>" class="edq" style="overflow: scroll;"><caption><?=$node["nm"]?></caption>
 	<thead><tr>
+	 <th/>
 	<th>#</th>
 	<th>Nom</th>
 	<th>Email</th>
@@ -26,6 +28,16 @@
 	<tbody><?php
 	foreach($rows as $row){
 		?><tr>
+	 	 <th><a href="tree/db.php?operation=get_view&id=<?=1102?>&vw=file.call&get=content&f-IdContact=<?=$row["IdContact"]?>"
+	 	 	 onclick="$.get(this.getAttribute('href'), function(html){
+	 	 	 	 $('<div></div>').appendTo('body').html(html).dialog({
+	 	 	 	 	 title: '<?=$row["IdContact"]?>',
+	 	 	 	 	 width: 'auto',
+	 	 	 	 	 height: 'auto'
+	 	 	 	 });
+	 	 	 	});
+	 	 	 return false;">éditer</a>
+	 	 </th>
 		<td><?=$row["IdContact"]?>
 		<td><?=$row["Name"]?>
 		<td><?=$row["EMail"]?>
@@ -46,6 +58,14 @@
 }
 #<?=$uid?> tbody {
 	 background-color: white;
+}
+#<?=$uid?> tbody > tr:hover {
+	background-color: #FAFAFA;
+}
+#<?=$uid?> tbody > tr > th > a {
+	font-weight: normal;
+	font-size: smaller;
+	 color: darkblue;
 }
 #<?=$uid?> tbody > tr > td {
 	padding: 1px 4px 1px 6px;

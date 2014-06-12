@@ -3,8 +3,8 @@ UTF8 é
 */
 
 require_once('file.php');
-class nodeViewer_fileCall extends nodeViewer_file {
-	public $name = 'fileCall';
+class nodeViewer_file_call extends nodeViewer_file {
+	public $name = 'file.call';
 	public $text = 'Affichage';
 	
 	public function html($node){

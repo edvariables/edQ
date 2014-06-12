@@ -1,5 +1,6 @@
 <?php
 $_SESSION['tree-root'] = isset($_REQUEST["tree-root"]) ? $_REQUEST["tree-root"] : "#";
+require('tree/nodeType/_class.php');
 ?><script>
 $().ready(function () {
 	// $(window).resize(function () {
@@ -21,26 +22,9 @@ $().ready(function () {
 					'responsive' : false
 				}
 			},
-			"types" : {
-			  "default" : {
-				"icon" : "file file-file"
-			  },
-			  "folder" : {
-				"icon" : "file file-folder"
-			  },
-			  "sql" : {
-				"icon" : "file file-sql"
-			  },
-			  "css" : {
-				"icon" : "file file-css"
-			  },
-			  "html" : {
-				"icon" : "file file-html"
-			  },
-			  "query" : {
-				"icon" : "file file-query"
-			  }
-			},
+			"types" : <?= json_encode(node::get_types()) ?>,
+			"icons" : <?= json_encode(node::get_icons()) ?>,
+			"ulvls" : <?= json_encode(node::get_ulvls()) ?>,
 			'plugins' : ['state','dnd','contextmenu','wholerow', 'types']
 		})
 		.on('delete_node.jstree', function (e, data) {

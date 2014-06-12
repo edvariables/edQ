@@ -37,18 +37,29 @@ class nodeViewer_viewers extends nodeViewer {
 				"nm" => "Requête"
 				, "icon" => "file file-query"
 			); 
-			$children["queryCall"] = array(
+			$children["query.call"] = array(
+				"nm" => "Résultat"
+				, "icon" => "file file-html"
+				, "class" => "onclick-load"
+			); 
+		}
+		else if($node["typ"] == "jqGrid"){
+			$children["jqGrid"] = array(
+				"nm" => "Requête"
+				, "icon" => "file file-query"
+			); 
+			$children["jqGrid.call"] = array(
 				"nm" => "Résultat"
 				, "icon" => "file file-html"
 				, "class" => "onclick-load"
 			); 
 		}
 		else {
-			$children["fileContent"] = array(
+			$children["file.content"] = array(
 				"nm" => "Contenu"
 				, "icon" => "file file-file"
 			);
-			$children["fileCall"] = array(
+			$children["file.call"] = array(
 				"nm" => "Affichage"
 				, "icon" => "file file-html"
 				, "class" => "onclick-load"
@@ -70,11 +81,13 @@ class nodeViewer_viewers extends nodeViewer {
 					. '&vw=' . $id
 					. '&get=content'
 			;
-			//onclick-load
+			
+			$class = ' class="edq-viewer-' . $id;
 			if(isset($view["class"]))
-				$class = ' class="' . $view["class"] . '"';
-			else
-				$class = '';
+				$class .= ' ' . $view["class"]; //onclick-load
+			$class = str_replace('.', '-', strtolower( $class ) )
+				. '"';
+
 			$html .= '<li' . $class . '><a href="' . $href . '">'
 				. $this->label($view)
 				. '</a>'
@@ -84,7 +97,11 @@ class nodeViewer_viewers extends nodeViewer {
 		$html .= '</ul>';
 		//pré-chargement du 1er
 		foreach($children as $id => $view){
-			$html .= '<div id="' . $ulId . $id . '">';
+			$class = ' class="edq-viewer-' . $id;
+			if(isset($view["class"]))
+				$class .= ' ' . $view["class"]; //onclick-load
+			$class = strtolower( $class . '"' );
+			$html .= '<div id="' . $ulId . $id . '"' . $class . '>';
 			$viewer = nodeViewer::fromClass($id);
 			$r = $viewer->html($node);
 			$html .= $r["content"];
@@ -101,6 +118,8 @@ class nodeViewer_viewers extends nodeViewer {
 			}
 		
 			ui.jqXHR.success(function(data) {
+				var className = ui.tab.attr("class").replace(/^.*(\\bedq-viewer-[^\\s]*)(\\s.*)?$/, "$1");
+				ui.panel.addClass(className);
 				ui.tab.filter(":not(.onclick-load)").data( "loaded", true );
 			});
 			

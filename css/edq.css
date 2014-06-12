@@ -37,6 +37,11 @@
 	padding-left : 1.0em;
 }
 
+.edq-viewers .ui-tabs-panel.edq-viewer-file-call
+, .edq-viewers .ui-tabs-panel.edq-viewer-query-call {
+	background-color: white;
+}
+
 table.edq {
 	padding	: 0px;
 	border	: 1px outset;
@@ -63,4 +68,13 @@ table > thead > tr > th.pk {
 
 .ui-tabs-nav .jstree-default .jstree-icon:empty {
     height: 16px;
+}
+
+.edq-toolbar {
+	font-size: smaller;
+	padding: 0 0 6px 0;
+}
+.edq-toolbar a.edq-refresh {
+	background: url(../images/refresh.png) no-repeat; 
+	padding-left: 18px;
 }

@@ -12,7 +12,11 @@
 		<link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.4.custom.min.css" />
 
 		<link rel="stylesheet" type="text/css" href="css/layout-default-latest.css" />
-		
+		<link rel="stylesheet" type="text/css" href="jquery/dataTables/css/jquery.dataTables.min.css" />
+		<link rel="stylesheet" type="text/css" media="screen" href="jquery/jqGrid/css/ui.jqgrid.css" />
+		<link rel="stylesheet" href="jquery/colorpicker/css/colorpicker.css" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="jquery/colorpicker/css/layout.css" />
+
 		<link rel="stylesheet" type="text/css" href="css/edq.css" />
 		<style type="text/css">
 		/* layout : Using an 'optional-container' instead of 'body', so need body to have a 'height' */
@@ -74,11 +78,17 @@
 		<script src="js/jquery-ui-1.10.4.custom.min.js"></script>
 		
 		<script type="text/javascript" src="js/jquery.layout-latest.js"></script>
+		<script type="text/javascript" src="jquery/dataTables/js/jquery.dataTables.min.js"></script>
+
+		<script src="jquery/jqGrid/js/grid.locale-fr.js" type="text/javascript"></script>
+		<script src="jquery/jqGrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+	
+		<script type="text/javascript" src="jquery/colorpicker/js/colorpicker.js"></script>
 		
 		<script src="tree/jstree.js"></script>
 
-<script type="text/javascript" src="markitup/jquery.markitup.js"></script>
-<script type="text/javascript" src="markitup/sets/dataSource/set.js"></script>
+		<script type="text/javascript" src="jquery/markitup/jquery.markitup.js"></script>
+		<script type="text/javascript" src="jquery/markitup/sets/dataSource/set.js"></script>
 
 		<script type="text/javascript">
 		var myLayout;

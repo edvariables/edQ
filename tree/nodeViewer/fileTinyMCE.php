@@ -47,11 +47,11 @@ class nodeViewer_fileTinyMCE extends nodeViewer_file {
 		$head = '
 	<script> if(!window["tinyMCE"]){
 		$.ajaxSetup({async:false});
-		$.getScript("tinymce/tinymce.min.js");
+		$.getScript("jquery/tinymce/tinymce.min.js");
 		
     	$.extend(tinyMCE, {
-			baseURL : "tinymce",
-			documentBaseURL : "tinymce"
+			baseURL : "jquery/tinymce",
+			documentBaseURL : "jquery/tinymce"
 		});
 	}
 	tinyMCEOptions = {

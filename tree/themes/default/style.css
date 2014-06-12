@@ -408,12 +408,23 @@
 }
 .jstree-default .jstree-anchor {
   line-height: 24px;
-  height: 24px;
+  height: 22px;/*ED140608*/
+  border-radius: 4px;/*ED140608*/
 }
+/*ED140608*/
+.jstree-default > .jstree-wholerow-ul .jstree-hovered, .jstree-default > .jstree-wholerow-ul .jstree-clicked {
+	border-radius: 4px;
+	box-shadow: 0 0 3px #999999 inset;
+	/*margin-top: 1px; provoque la barre de défilement verticale lors du survol en bas*/
+}
+
 .jstree-default .jstree-icon {
   width: 24px;
   height: 24px;
   line-height: 24px;
+}
+.jstree-default .jstree-anchor > .jstree-icon {
+  border-radius: 4px;/*ED140608*/
 }
 .jstree-default .jstree-icon:empty {
   width: 24px;

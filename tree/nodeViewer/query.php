@@ -119,13 +119,13 @@ class nodeViewer_query extends nodeViewer {
 		
 		$head = '
 		<!-- markItUp! skin -->
-		<link rel="stylesheet" type="text/css" href="markitup/skins/simple/style.css">
+		<link rel="stylesheet" type="text/css" href="jquery/markitup/skins/simple/style.css">
 		<!--  markItUp! toolbar skin -->';
 		foreach($textareas as $textarea){
-			$head .= '<link rel="stylesheet" type="text/css" href="markitup/sets/'. $textarea["type"] .'/style.css">';
+			$head .= '<link rel="stylesheet" type="text/css" href="jquery/markitup/sets/'. $textarea["type"] .'/style.css">';
 		}
 		$head .= '<script> if(!$.fn.markItUp){
-				$.getScript("markitup/jquery.markitup.js");
+				$.getScript("jquery/markitup/jquery.markitup.js");
 		}</script>'
 		/*
 		<!-- markItUp! -->
@@ -133,7 +133,7 @@ class nodeViewer_query extends nodeViewer {
 		*/
 		. '<!-- markItUp! toolbar settings -->';
 		foreach($textareas as $textarea){
-			$head .= '<script type="text/javascript" src="markitup/sets/'. $textarea["type"] .'/set.js"></script>';
+			$head .= '<script type="text/javascript" src="jquery/markitup/sets/'. $textarea["type"] .'/set.js"></script>';
 		}
 		$script = '<script type="text/javascript">
 $().ready(function() {

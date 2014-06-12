@@ -1,5 +1,6 @@
 <?php
 include_once(dirname(__FILE__) . '/../bin/session.php');
+include_once(dirname(__FILE__) . '/helpers.php');
 if(isset($_REQUEST['operation'])) {
 	$dir = dirname(__FILE__);
 	require_once($dir . '/../conf/db.conf.php');
@@ -10,7 +11,7 @@ if(isset($_REQUEST['operation'])) {
 		, array(
 			'structure_table' => 'tree_struct'
 			, 'data_table' => 'tree_data'
-			, 'data' => array('nm', 'typ', 'icon')
+			, 'data' => array('nm', 'typ', 'icon', 'color')
 			, 'full' => array('ext', 'params', 'ulvl', 'user')
 		));
 	global $tree;
@@ -40,7 +41,7 @@ if(isset($_REQUEST['operation'])) {
 							$icon = $v['rgt'] - $v['lft'] > 1 ? "jstree-folder" : "jstree-file";
 						else
 							$icon = $v['icon'];
-						$rslt[] = array('id' => $v['id'], 'text' => $v['nm'], 'icon' => $v['icon'], 'type' => $v['typ'], 'children' => ($v['rgt'] - $v['lft'] > 1));
+						$rslt[] = array('id' => $v['id'], 'text' => $v['nm'], 'icon' => $v['icon'], 'color' => $v['color'], 'type' => $v['typ'], 'children' => ($v['rgt'] - $v['lft'] > 1));
 					}
 					break;
 				case 'edit_node':
@@ -142,6 +143,8 @@ if(isset($_REQUEST['operation'])) {
 						$params["params"] = $_REQUEST['params'];
 					if(isset($_REQUEST['ulvl']))
 						$params["ulvl"] = $_REQUEST['ulvl'];
+					if(isset($_REQUEST['color']))
+						$params["color"] = $_REQUEST['color'];
 					if(isset($_REQUEST['user']))
 						$params["user"] = $_REQUEST['user'];
 					$rslt = $fs->rn($node, $params, true);

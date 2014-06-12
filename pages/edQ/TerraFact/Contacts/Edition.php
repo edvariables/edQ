@@ -2,8 +2,11 @@
 	 include(dirname(__FILE__) . '/../dataSource.php');
 	 global $db;
 
-	 $search = 2000 ; //exemple
-
+	 $search = 0;
+	 if(isset($_REQUEST["f-IdContact"]))
+	 	 $search = (int)$_REQUEST["f-IdContact"];
+	 else
+	 	 $search = 2000; //exemple
 	 $rows = $db->all("
 		SELECT *
 		FROM 

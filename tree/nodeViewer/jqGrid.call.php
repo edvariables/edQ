@@ -4,9 +4,9 @@ UTF8 é
 
 require_once(dirname(__FILE__) . '/../helpers.php');
 require_once('query.php');
-class nodeViewer_queryCall extends nodeViewer_query {
-	public $domain = 'query';
-	public $name = 'queryCall';
+class nodeViewer_jqGrid.call extends nodeViewer_query {
+	public $domain = 'jqGrid';
+	public $name = 'jqGrid.call';
 	public $text = 'Résultat';
 	
 	public $rows;
@@ -198,8 +198,18 @@ class nodeViewer_queryCall extends nodeViewer_query {
 							: htmlentities( $row[$name] )
 						: ''
 					;
+					$style = isset($row[$name])
+						? is_array($column)
+							? isset($column["css"])
+								? is_callable($column["css"])
+									? $column["css"]($row, $column, $this)
+									: $column["css"]
+								: htmlentities( $row[$name] )
+							: htmlentities( $row[$name] )
+						: ''
+					;
 					
-					?><td><?=$value?></td><?
+					?><td<?= $style === '' ? '' : ' style="' . $style . '"'?>><?=$value?></td><?
 				}
 			}
 		?>
