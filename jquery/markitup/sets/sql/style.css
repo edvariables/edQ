@@ -1,0 +1,49 @@
+/* -------------------------------------------------------------------
+// markItUp!
+// SQL
+// ------------------------------------------------------------------*/
+.markItUp.type-sql .markItUpButton a {
+	background-image:url(images/toolbar.png);
+	width:48px;
+}
+.markItUp.type-sql .markItUpButton1 a {
+	background-position: 0px 0;
+}
+.markItUp.type-sql .markItUpButton2 a { 
+	background-position: -48px 0;
+}
+.markItUp.type-sql .markItUpButton3 a {
+	background-position: -96px 0;
+}
+.markItUp.type-sql .markItUpButton4 a {
+	background-position: -144px 0;
+}
+.markItUp.type-sql .markItUpButton5 a { 
+	background-position: -192px 0;
+}
+.markItUp.type-sql .markItUpButton6 a {
+	background-position: -239px 0;
+}
+
+.markItUp.type-sql .markItUpButton7 a {/* update */
+	background-position: -288px 0;
+}
+.markItUp.type-sql .markItUpButton8 a {/* insert */
+	background-position: -335px 0;
+}
+.markItUp.type-sql .markItUpButton9 a {/* delete */
+	background-position: -384px 0;
+}
+
+.markItUp.type-sql .preview a {
+	background-image:url(images/preview.png);
+}
+
+.type-sql textarea.markItUpEditor {
+	height: auto;
+}
+
+.type-sql textarea.markItUpEditor,
+.type-sql.ui-widget textarea.markItUpEditor {
+	font-family: "Courier New", Courier, monospace;
+}

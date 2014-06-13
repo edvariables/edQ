@@ -1,0 +1,1 @@
+[08-Jun-2014 17:24:19]  > Could not execute query : Unknown column 'nm' in 'field list' <SELECT nm AS name FROM tree_struct WHERE id = 1202>
