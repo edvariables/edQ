@@ -4,7 +4,7 @@ UTF8 é
 if(isset($_POST['operation'])
 && $_POST['operation'] == 'submit') {
 	require_once(dirname(__FILE__) . '/../../conf/db.conf.php');
-	require_once(dirname(__FILE__) . '/../class.db.php');
+	require_once(dirname(__FILE__) . '/../../bin/class.db.php');
 					
 	$db = db::get(DBTYPE . '://' . DBUSER . ':' . DBPASSWORD . '@' . DBSERVER . ':' . DBPORT . '/' . DBNAME);
 	if($_POST['value'] === '')

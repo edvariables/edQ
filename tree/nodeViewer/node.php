@@ -21,6 +21,10 @@ if(isset($_POST['operation'])
 		$params["ulvl"] = $_REQUEST['ulvl'];
 	if(isset($_REQUEST['ext']))
 		$params["ext"] = $_REQUEST['ext'];
+	if(isset($_REQUEST['design']))
+		$params["design"] = $_REQUEST['design'] == 'on' || (bool)$_REQUEST['design'] ? 1 : 0;
+	else
+		$params["design"] = 0;
 	if(isset($_REQUEST['params']))
 		$params["params"] = $_REQUEST['params'];
 	if(isset($_REQUEST['ulvl']))
@@ -106,6 +110,8 @@ class nodeViewer_node extends nodeViewer {
 			. '<div>'
 			. '<div><label class="ui-state-default ui-corner-all">Nom</label>'
 				. '<input size="40" name="name" value="' . $node->name . '"/></div>'
+			. '<div><label class="ui-state-default ui-corner-all">Visiblité</label>'
+				. '<label><input type="checkbox" name="design"' . ($node->design ? 'checked="checked"' : '') . '/>visible uniquement en design</label></div>'
 			. '<div><label class="ui-state-default ui-corner-all">Icône</label>'
 				. $select_icon . $color_input . '</div>'
 			. '<div><label class="ui-state-default ui-corner-all">Type</label>'

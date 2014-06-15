@@ -1,4 +1,4 @@
-﻿<?php /*voir là : http://www.w3schools.com/xpath/xpath_syntax.asp */
+<?php /*voir là : http://www.w3schools.com/xpath/xpath_syntax.asp */
 $ids = preg_split("/\\n/", str_replace('\r', '', "
 041064
 072671

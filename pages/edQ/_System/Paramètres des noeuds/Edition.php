@@ -1,8 +1,7 @@
 <?php
-	include(dirname(__FILE__) . '/../dataSource.php');
-	global $db;
-	 $domain = isset($_REQUEST["f-domain"]) ? $_REQUEST["f-domain"] : '';
-	 $param = isset($_REQUEST["f-param"]) ? $_REQUEST["f-param"] : '';
+	$db = get_db();
+	$domain = isset($_REQUEST["f-domain"]) ? $_REQUEST["f-domain"] : '';
+	$param = isset($_REQUEST["f-param"]) ? $_REQUEST["f-param"] : '';
 	$rows = $db->all("
 		SELECT p.`domain`, p.`param`, p.`text`, p.`valueType`, p.`icon`, p.`defaultValue`, p.`comment`, p.`sortIndex`
 	 	, COUNT(n.id) AS nbUse

@@ -1676,11 +1676,6 @@
           <Ustrd>Sortir du nucleaire - 50 JOURS D'ACTION</Ustrd>
         </RmtInf>
       </DrctDbtTxInf>
-      
-      
-      
-      
-      
     </PmtInf>
   </CstmrDrctDbtInitn>
 </Document>

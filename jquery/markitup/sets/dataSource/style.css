@@ -2,7 +2,7 @@
 // markItUp!
 // ED
 // ------------------------------------------------------------------*/
-.markItUp.type-dataSource .markItUpButton a {
+.markItUp.type-dataSource .markItUpButton.edit a {
 	background-image:url(images/toolbar.png);
 	width:48px;
 }
@@ -25,10 +25,13 @@
 	background-position: -240px 0;
 }
 
-.markItUp .clean a {
+.markItUp.type-dataSource .comment a {
+	background-image:url(images/paragraph.png);
+}
+.markItUp.type-dataSource .clean a {
 	background-image:url(images/clean.png);
 }
-.markItUp .preview a {
+.markItUp.type-dataSource .preview a {
 	background-image:url(images/preview.png);
 }
 

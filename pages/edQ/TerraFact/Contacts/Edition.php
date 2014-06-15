@@ -1,6 +1,5 @@
 <?php
-	 include(dirname(__FILE__) . '/../dataSource.php');
-	 global $db;
+	 $db = get_db();
 
 	 $search = 0;
 	 if(isset($_REQUEST["f-IdContact"]))
@@ -42,7 +41,8 @@
 }
 #<?=$uid?> tbody > tr > *{
 	padding: 1px 4px 1px 6px;
-	 border: 1px solid #333333:
+	 border: 1px solid #DDDDDD;
+	 white-space: pre;
 }
 #<?=$uid?> tbody th {
 	text-align: left;

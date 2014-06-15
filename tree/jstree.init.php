@@ -1,6 +1,7 @@
 <?php
 $_SESSION['tree-root'] = isset($_REQUEST["tree-root"]) ? $_REQUEST["tree-root"] : "#";
 require('tree/nodeType/_class.php');
+$design = isDesign();
 ?><script>
 $().ready(function () {
 	// $(window).resize(function () {
@@ -12,7 +13,7 @@ $().ready(function () {
 		.jstree({
 			'core' : {
 				'data' : {
-					'url' : 'tree/db.php?operation=get_node',
+					'url' : 'tree/db.php?operation=get_node<?= $design ? '&design=1' : '' ?>',
 					'data' : function (node) {
 						return { 'id' : node.id };
 					}
@@ -22,6 +23,7 @@ $().ready(function () {
 					'responsive' : false
 				}
 			},
+			"design" : <?= $design ? '1' : '0' ?>,
 			"types" : <?= json_encode(node::get_types()) ?>,
 			"icons" : <?= json_encode(node::get_icons()) ?>,
 			"ulvls" : <?= json_encode(node::get_ulvls()) ?>,
@@ -100,7 +102,8 @@ $().ready(function () {
 			if(data && data.selected && data.selected.length) {
 				$.get('tree/db.php?operation=get_view'
 					+ '&id=' + data.selected.join(':')
-					+ '&vw=viewers'
+					+ '&vw=viewers<?=
+						$design ? '&design=true' : '' ?>'
 				, function (d) {
 					$('#data .default').html(d.content).show();
 				});

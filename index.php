@@ -1,5 +1,6 @@
 <?php
 	include('bin/session.php');
+	require('tree/helpers.php');
 ?><!DOCTYPE html>
 <html>
 	<head>
@@ -18,60 +19,6 @@
 		<link rel="stylesheet" type="text/css" href="jquery/colorpicker/css/layout.css" />
 
 		<link rel="stylesheet" type="text/css" href="css/edq.css" />
-		<style type="text/css">
-		/* layout : Using an 'optional-container' instead of 'body', so need body to have a 'height' */
-		html, body {
-			width:		100%;
-			height:		100%;
-			padding:	0;
-			margin:		0;
-			overflow:	hidden !important;
-		}
-		#container {
-			width:			98%;
-			height:			96%;
-			margin-top:		1%;
-			margin-left:	1%;
-		}
-		#inner-wrapper {
-				overflow: auto;
-		}
-		.ui-layout-center { overflow: hidden; }
-		.ui-layout-north > button {
-			float: right;
-			border: 1px outset silver;
-			background: none;
-			background-color: white;
-			font-size: smaller;
-			margin-left: 6px;
-			margin-top: 6px;
-			cursor: pointer;
-		}
-		.ui-layout-north > button:first-of-type {
-			margin-right: 20em;
-		}
-		.ui-layout-pane {
-			border-radius: 4px;
-		}
-		</style>
-		<style>
-		/* tree */
-		html, body { background:#ebebeb; font-size:10px; font-family:Verdana; margin:0; padding:0; }
-		/*#container { min-width:320px; margin:0px auto 0 auto; background:white; border-radius:0px; padding:0px; overflow:hidden; }*/
-		#tree { float:left; /*min-width:319px; border-right:1px solid silver;*/ overflow:auto; padding:0px 0; }
-		/*#data { margin-left:320px; }*/
-		/*#data textarea { margin:0; padding:0; height:100%; width:100%; border:0; background:white; display:block; line-height:18px; }*/
-		#data { font: normal normal normal 12px/18px 'Consolas', monospace !important; }
-		
-		#data pre { line-height: 1em; text-align: left; padding-left: 1em; }
-		
-		.jstree-contextmenu {
-			z-index: 9999; /* concurence avec layout */
-		}
-		.ui-tabs-anchor .jstree-icon {
-			margin-right: 3px;
-		}
-		</style>
 
 		<script src="js/jquery-1.10.2.js"></script>
 		<script src="js/jquery.form.min.js"></script>

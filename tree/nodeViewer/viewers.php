@@ -7,20 +7,22 @@ class nodeViewer_viewers extends nodeViewer {
 	
 	public function html($node){
 		$ulId = uniqid('nw-viewers-');
-		$children = array(
-			"" => array(
+		$children = array();
+		$isDesign = isDesign();
+		if($isDesign){
+			$children[''] = array(
 				"nm" => "Résumé",
 				"icon" => "file file-info"
-			),
-			"node" => array(
+			);
+			$children['node'] = array(
 				"nm" => "Noeud",
 				"icon" => "file file-edit"
-			)/*,
-			"edit" => array(
+			);/*,
+			$children['edit'] = array(
 				"nm" => "Edition",
 				"icon" => "file file-edit"
-			)*/
-		);
+			);*/
+		}
 		if(isset($node['children']) && count($node['children']) > 0)
 			$children["children"] = array(
 				"nm" => "Descendants",
@@ -33,10 +35,11 @@ class nodeViewer_viewers extends nodeViewer {
 		);
 		
 		if($node["typ"] == "query"){
-			$children["query"] = array(
-				"nm" => "Requête"
-				, "icon" => "file file-query"
-			); 
+			if($isDesign)
+				$children["query"] = array(
+					"nm" => "Requête"
+					, "icon" => "file file-query"
+				); 
 			$children["query.call"] = array(
 				"nm" => "Résultat"
 				, "icon" => "file file-html"
@@ -44,10 +47,11 @@ class nodeViewer_viewers extends nodeViewer {
 			); 
 		}
 		else if($node["typ"] == "jqGrid"){
-			$children["jqGrid"] = array(
-				"nm" => "Requête"
-				, "icon" => "file file-query"
-			); 
+			if($isDesign)
+				$children["jqGrid"] = array(
+					"nm" => "Requête"
+					, "icon" => "file file-query"
+				); 
 			$children["jqGrid.call"] = array(
 				"nm" => "Résultat"
 				, "icon" => "file file-html"
@@ -55,10 +59,11 @@ class nodeViewer_viewers extends nodeViewer {
 			); 
 		}
 		else {
-			$children["file.content"] = array(
-				"nm" => "Contenu"
-				, "icon" => "file file-file"
-			);
+			if($isDesign)
+				$children["file.content"] = array(
+					"nm" => "Contenu"
+					, "icon" => "file file-file"
+				);
 			$children["file.call"] = array(
 				"nm" => "Affichage"
 				, "icon" => "file file-html"
@@ -73,13 +78,30 @@ class nodeViewer_viewers extends nodeViewer {
 			. '</div></div>';
 		$html .= '<div class="edq-viewers" id="' . $ulId . '"><ul>';
 		$nChild = 0;
+		$defaultView = null;
+		$defaultViewIndex = 0;
+		// detection de l'onglet par défaut
 		foreach($children as $id => $view){
-			$href = $nChild == 0
+			//if($isDesign){
+				if($defaultView === null){
+					$defaultView = $id; //1er
+					$defaultViewIndex = $nChild;
+				}
+			//}
+			//else {
+			//	$defaultView = $id; //dernier
+			//	$defaultViewIndex = $nChild;
+			//}
+			$nChild++;
+		}
+		// onglets
+		foreach($children as $id => $view){
+			$href = $defaultView == $id
 				? '#' . $ulId . $id
-				: 'tree/db.php?operation=get_view'
-					. '&id=' . $node['id']
+				: 'view.php'
+					. '?id=' . $node['id']
 					. '&vw=' . $id
-					. '&get=content'
+					. ($isDesign ? '&design=1' : '')
 			;
 			
 			$class = ' class="edq-viewer-' . $id;
@@ -92,11 +114,14 @@ class nodeViewer_viewers extends nodeViewer {
 				. $this->label($view)
 				. '</a>'
 				. '</li>';
-			$nChild++;
 		}
 		$html .= '</ul>';
-		//pré-chargement du 1er
-		foreach($children as $id => $view){
+		
+		// panels
+		//pré-chargement du 'par défaut'
+		//foreach($children as $id => $view){
+		$id = $defaultView;
+		$view = $children[$id];
 			$class = ' class="edq-viewer-' . $id;
 			if(isset($view["class"]))
 				$class .= ' ' . $view["class"]; //onclick-load
@@ -107,10 +132,11 @@ class nodeViewer_viewers extends nodeViewer {
 			$html .= $r["content"];
 			$html .= '</div>';
 			//first only
-			break; 
-		}
+		//	break; 
+		//}
 		$html .= '</div>';
 		$html .= '<script>$().ready(function(){ $("#' . $ulId . '").tabs({
+		active: ' . $defaultViewIndex . ',
 		beforeLoad: function( event, ui ) {
 			if ( ui.tab.filter(":not(.onclick-load)").data( "loaded" ) ) {
 				event.preventDefault();

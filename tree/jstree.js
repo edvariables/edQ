@@ -1396,7 +1396,8 @@
 					id			: tid,
 					text		: d.text || '',
 					icon		: d.icon !== undefined ? d.icon : true,
-					color		: d.color !== undefined ? d.color : false,
+					color		: d.color !== undefined ? d.color : false,//ED140609
+					design		: d.design && d.design != '0' && d.design != 'false',//ED140614
 					parent		: p,
 					parents		: ps,
 					children	: d.children || [],
@@ -1493,7 +1494,8 @@
 				id			: false,
 				text		: typeof d === 'string' ? d : '',
 				icon		: typeof d === 'object' && d.icon !== undefined ? d.icon : true,
-				color		: typeof d === 'object' && d.color !== undefined ? d.color : false,
+				color		: typeof d === 'object' && d.color !== undefined ? d.color : false,//ED140609
+				design		: typeof d === 'object' && d.design && d.design != '0' && d.design != 'false',//ED140614
 				parent		: p,
 				parents		: ps,
 				children	: [],
@@ -1646,6 +1648,7 @@
 				f = false,
 				s = false;
 			if(!obj) { return false; }
+			if(!this.settings.design && obj.design) return false; //ED140614
 			if(obj.id === '#') {  return this.redraw(true); }
 			deep = deep || obj.children.length === 0;
 			node = !document.querySelector ? document.getElementById(obj.id) : this.element[0].querySelector('#' + ("0123456789".indexOf(obj.id[0]) !== -1 ? '\\3' + obj.id[0] + ' ' + obj.id.substr(1).replace($.jstree.idregex,'\\$&') : obj.id.replace($.jstree.idregex,'\\$&')) ); //, this.element);
@@ -1741,9 +1744,15 @@
 					node.childNodes[1].childNodes[0].className += ' jstree-themeicon-custom';
 				}
 			}
+			//ED140609
 			if(obj.color) {
 				node.childNodes[1].style.backgroundColor = obj.color;
 			}
+			//ED140614
+			if(obj.design) {
+				node.childNodes[1].style.fontStyle = 'italic';
+			}
+			
 			//node.childNodes[1].appendChild(d.createTextNode(obj.text));
 			node.childNodes[1].innerHTML += obj.text;
 			// if(obj.data) { $.data(node, obj.data); } // always work with node's data, no need to touch jquery store
@@ -1753,7 +1762,9 @@
 				k.setAttribute('role', 'group');
 				k.className = 'jstree-children';
 				for(i = 0, j = obj.children.length; i < j; i++) {
-					k.appendChild(this.redraw_node(obj.children[i], deep, true));
+					var $child;
+					if(($child = this.redraw_node(obj.children[i], deep, true)) && $child != null)
+						k.appendChild($child);
 				}
 				node.appendChild(k);
 			}
@@ -3580,6 +3591,7 @@
 				color  = node.color,
 				ulvl  = node.ulvl,
 				user  = node.user,
+				design  = node.design == '1',
 				params = node.params,
 				h1 = $("<"+"div />", { 
 					css : { 
@@ -3615,7 +3627,14 @@
 				$user = $("<"+"input />", {
 					   	"name" : "user",
 						"value" : user
-					}),
+					})
+				,
+				$design = $("<"+"input />", {
+					   	"name" : "design",
+					   	"type" : "checkbox",
+						"checked" : design ? "checked" : null
+					})
+				,
 				$params = $("<"+"textarea ></textarea>", {
 					   	"name" : "params",
 						"html" : params,
@@ -3662,7 +3681,7 @@
 			};
 			
 			// $color
-			var $color = $('<div class="colorpicker-holder"><div style="background-color: ' + color + '">'
+			var $color = $('<div class="colorpicker-holder" style="display: inline-block; vertical-align: middle; margin-left: 1em;"><div style="background-color: ' + color + '">'
 				+ '<input type="hidden" name="color" value="' + color + '" size="12"/></div></div>');
 			var color_init = function(){
 				$color.ColorPicker({
@@ -3695,9 +3714,17 @@
 						.append("<td>Icône : ")
 						.append($("<td>")
 							.html($icon)
-							.html($color)
+							.append($color)
 								.children().each(color_init)
 								.end()
+						)
+					)
+					.append($("<tr>")
+						.append("<td>Visiblité : ")
+						.append($("<td>")
+							.html($('<label>visible en design uniquement</label>')
+								.prepend($design)
+							)
 						)
 					)
 					.append($("<tr>")
@@ -3742,7 +3769,10 @@
 						i = h1
 							.find(':input[name]')
 							.each(function(){
-								data[this.getAttribute('name')] = this.value;
+								data[this.getAttribute('name')]
+									= this.getAttribute('type') == 'checkbox'
+									? this.checked
+									: this.value;
 						   })							
 						;
 						

@@ -1,7 +1,6 @@
 <?php
-	include(dirname(__FILE__) . '/../dataSource.php');
-	global $db;
-	$rows = $db->all("
+	$db = get_db();
+	 $rows = $db->all("
 		SELECT IdContact, Name,
 	 	 `EMail`, `Phone1`, `Phone2`, `Address`, `ZipCode`, `City`
 		FROM 
@@ -28,7 +27,7 @@
 	<tbody><?php
 	foreach($rows as $row){
 		?><tr>
-	 	 <th><a href="tree/db.php?operation=get_view&id=<?=1102?>&vw=file.call&get=content&f-IdContact=<?=$row["IdContact"]?>"
+	 	 <th><a href="view.php?id=<?=1102?>&vw=file.call&f-IdContact=<?=$row["IdContact"]?>"
 	 	 	 onclick="$.get(this.getAttribute('href'), function(html){
 	 	 	 	 $('<div></div>').appendTo('body').html(html).dialog({
 	 	 	 	 	 title: '<?=$row["IdContact"]?>',

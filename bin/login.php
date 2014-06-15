@@ -45,6 +45,25 @@ if(isset($_POST['action']) && $_POST['action'] == 'login'){
 		foreach($rows[0] as $colName => $value)
 			$_SESSION['edq-user'][$colName] = $value;
 	}
+	
+	$query			= '
+		SELECT r.Domain, r.Rights
+		FROM rights r
+		WHERE r.UserType = ?
+	'; 
+	$params			= array((int)$_SESSION['edq-user']['UserType']);
+	$db = db::get(DBTYPE . '://' . DBUSER . ':' . DBPASSWORD . '@' . DBSERVER . ':' . DBPORT . '/' . DBNAME);
+	$rows = $db->all($query, $params);
+	if(count($rows) <= 0){ // If no users exist with posted credentials print 0 like below.
+		if(isset($_SESSION['edq-user']))
+			unset($_SESSION['edq-user']['id']);
+		$loginError = '<span class="error">Vous n\'êtes pas autorisé à vous connecter !</span>';
+	} else {
+		if(!isset($_SESSION['edq-user']['rights']))
+			$_SESSION['edq-user']['rights'] = array();
+		foreach($rows as $row)
+			$_SESSION['edq-user']['rights'][$row['Domain']] = (int)$row['Rights'];
+	}
 }
 
 if(isset($_SESSION['edq-user']) && isset($_SESSION['edq-user']['id']) && $_SESSION['edq-user']['id'] != ''){ // Redirect to secured user page if user logged in

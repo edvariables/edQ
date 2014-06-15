@@ -1,7 +1,6 @@
 <?php 
-	include('dataSource.php');
-	global $db;
-	$rows = $db->all("
+	$db = get_db();
+	 $rows = $db->all("
 		SELECT IdContact, Name
 		FROM 
 			contact c

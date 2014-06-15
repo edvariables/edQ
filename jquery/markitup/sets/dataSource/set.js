@@ -50,7 +50,7 @@ mySettings_dataSource = mySettings = (function(){
 				return helpers.replace(markitup, "DBNAME", "your_db_name" );
 			} },
 			{name:'Utilisateur', className:'edit', replaceWith:function(markitup) {
-				return helpers.replace(markitup, "DBSUSER", "root" );
+				return helpers.replace(markitup, "DBUSER", "root" );
 			} },
 			{name:'Mot de passe', className:'edit', replaceWith:function(markitup) {
 				return helpers.replace(markitup, "DBPASSWORD", "" );

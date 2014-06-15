@@ -5,6 +5,7 @@ $root = '/' . str_replace('\\', '/', substr($dataUrl, strlen($root)));
 $dataUrl = $root . '/data.php';
 $cssUrl = $root . '/css.php';
 ?>
+<?php $uid = uniqid('datatable');?>
 <?php include(substr(__FILE__, 0, strlen(__FILE__) - 4) . '/html.php');?>
 <style><?php include(substr(__FILE__, 0, strlen(__FILE__) - 4) . '/css.php');?></style>
 <script>
@@ -15,7 +16,7 @@ function format ( d ) {
 }
  
 $(document).ready(function() {
-    var dt = $('#example').DataTable( {
+    var dt = $('#<?=$uid?>').DataTable( {
         "language": {
             "url": "jquery/dataTables/lang/dataTables.french.json"
         },
@@ -43,7 +44,7 @@ $(document).ready(function() {
     // Array to track the ids of the details displayed rows
     var detailRows = [];
  
-    $('#example tbody').on( 'click', 'tr td:first-child', function () {
+    $('#<?=$uid?> tbody').on( 'click', 'tr td:first-child', function () {
         var tr = $(this).closest('tr');
         var row = dt.row( tr );
         var idx = $.inArray( tr.attr('id'), detailRows );

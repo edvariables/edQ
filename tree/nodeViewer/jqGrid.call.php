@@ -45,7 +45,7 @@ class nodeViewer_jqGrid.call extends nodeViewer_query {
 		else if($exists){
 		
 			ob_start();
-			include( $file );
+			include(utf8_decode($file));
 			
 			global $db;
 			/* SQLSelect */

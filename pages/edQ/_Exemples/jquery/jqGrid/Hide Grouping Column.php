@@ -1,22 +1,19 @@
 <?php
-$dataUrl = substr(__FILE__, 0, strlen(__FILE__) - 4);
-$root = preg_replace('/\\$/', '', $_SERVER['DOCUMENT_ROOT']);
-$root = '/' . str_replace('\\', '/', substr($dataUrl, strlen($root)));
-$dataUrl = $root . '/data.php';
-?>
-<?php include(substr(__FILE__, 0, strlen(__FILE__) - 4) . '/html.php'); ?>
-<script>
+$dataUrl = url_page(':data');
+
+$uid = uniqid('datatable');
+call_page(':html', array( 'uid' => $uid ));
+
+?><script>
 $(document).ready(function(){
 
-var mydata = <?php include(substr(__FILE__, 0, strlen(__FILE__) - 4) . '/data.php'); ?>;
-
-jQuery("#list482").jqGrid({
-	data: mydata,
-	datatype: "local",
+jQuery("#<?=$uid?>").jqGrid({
+	data: <?php include_page(':data')?>,
+	datatype: 'local',
 	height: 'auto',
 	rowNum: 30,
 	rowList: [10,20,30],
-   	colNames:['Inv No','Date', 'Client', 'Amount','Tax','Total','Notes'],
+   	colNames:['Inv No', 'Date', 'Client', 'Amount','Tax','Total','Notes'],
    	colModel:[
    		{name:'id',index:'id', width:60, sorttype:"int"},
    		{name:'invdate',index:'invdate', width:90, sorttype:"date", formatter:"date"},
@@ -26,7 +23,7 @@ jQuery("#list482").jqGrid({
    		{name:'total',index:'total', width:80,align:"right",sorttype:"float"},		
    		{name:'note',index:'note', width:150, sortable:false}		
    	],
-   	pager: "#plist482",
+   	pager: "#<?=$uid?>-nav",
    	viewrecords: true,
    	sortname: 'name',
    	grouping:true,

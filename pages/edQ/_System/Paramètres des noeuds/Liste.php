@@ -1,7 +1,6 @@
 <?php
-	include(dirname(__FILE__) . '/../dataSource.php');
-	global $db;
-	$rows = $db->all("
+	$db = get_db();
+	 $rows = $db->all("
 		SELECT p.`domain`, p.`param`, p.`text`, p.`valueType`, p.`icon`, p.`defaultValue`, p.`comment`, p.`sortIndex`
 	 	, COUNT(n.id) AS nbUse
 		FROM 
@@ -36,7 +35,7 @@
 	foreach($rows as $row){
 		?><tr>
 	 	<th><?=$row["sortIndex"]?>
-	 	 <a href="tree/db.php?operation=get_view&id=<?=1161?>&vw=file.call&get=content&f-domain=<?=$row["domain"]?>&f-param=<?=$row["param"]?>"
+	 	 <a href="view.php?id=<?=1161?>&vw=file.call&f-domain=<?=$row["domain"]?>&f-param=<?=$row["param"]?>"
 	 	 	 onclick="$.get(this.getAttribute('href'), function(html){
 	 	 	 	 $('<div></div>').appendTo('body').html(html).dialog({
 	 	 	 	 	 title: '<?=str_replace('\'', '\\\'', $row["domain"] . '.' . $row["param"])?>',
