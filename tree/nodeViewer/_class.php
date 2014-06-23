@@ -158,15 +158,14 @@ class nodeViewer {
 	/* formScript
 		Script js de soumission d'un formulaire
 	*/
-	public function formScript($uid, $options = null, $callback = null){
+	public function formScript($uid, $options = null, $beforeSubmit = null, $callback = null){
 		return
 		'<script>  
 			$(document).ready(function() { 
 				// bind form and provide a simple callback function 
-				$("#' . $uid . '").submit(function() { 
+				$("#' . $uid . '").submit(function() { ' . $beforeSubmit . '
 					$(this).ajaxSubmit({
-						beforeSubmit: function(){
-						}
+						beforeSubmit: function(){ 	}
 						, success: function(data){
 							if(isNaN(data))
 								$("<pre>" + data + "</pre>").dialog();

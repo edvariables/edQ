@@ -21,8 +21,8 @@ if(isset($_POST['operation'])
 	die("1");
 }
 require_once('file.php');
-class nodeViewer_fileContent extends nodeViewer_file {
-	public $name = 'fileContent';
+class nodeViewer_file_content extends nodeViewer_file {
+	public $name = 'file.content';
 	public $text = 'Fichier';
 	
 	public function html($node){

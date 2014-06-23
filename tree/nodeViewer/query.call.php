@@ -198,18 +198,25 @@ class nodeViewer_query_call extends nodeViewer_query {
 							: htmlentities( $row[$name] )
 						: ''
 					;
+					$attrs='';
+					if(isset($row[$name]) && is_array($column) && isset($column["attributes"])){
+						foreach($column["attributes"] as $attr => $vattr){
+							$attrs .= ' ' . $attr . '="' . $vattr . '"';
+						}
+					}
 					$style = isset($row[$name])
 						? is_array($column)
 							? isset($column["css"])
 								? is_callable($column["css"])
 									? $column["css"]($row, $column, $this)
 									: $column["css"]
-								: htmlentities( $row[$name] )
-							: htmlentities( $row[$name] )
+								: ''
+							: ''
 						: ''
 					;
-					
-					?><td<?= $style === '' ? '' : ' style="' . $style . '"'?>><?=$value?></td><?
+					if($style !== '')
+						$attrs .= ' style="' . $style . '"';
+					?><td<?= $attrs ?>><?=$value?></td><?
 				}
 			}
 		?>

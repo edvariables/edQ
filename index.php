@@ -37,6 +37,19 @@
 		<script type="text/javascript" src="jquery/markitup/jquery.markitup.js"></script>
 		<script type="text/javascript" src="jquery/markitup/sets/dataSource/set.js"></script>
 
+		<?php
+		if(isDesign()) {?>
+		<link rel="stylesheet" href="codemirror-4.2/lib/codemirror.css">
+		<script src="codemirror-4.2/lib/codemirror.js"></script>
+		<script src="codemirror-4.2/addon/edit/matchbrackets.js"></script>
+		<script src="codemirror-4.2/mode/php/php.js"></script>
+		<script src="codemirror-4.2/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="codemirror-4.2/mode/xml/xml.js"></script>
+		<script src="codemirror-4.2/mode/javascript/javascript.js"></script>
+		<script src="codemirror-4.2/mode/css/css.js"></script>
+		<script src="codemirror-4.2/mode/clike/clike.js"></script>
+		<?php }?>
+
 		<script type="text/javascript">
 		var myLayout;
 	

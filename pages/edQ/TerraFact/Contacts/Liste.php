@@ -1,4 +1,4 @@
-<?php
+<?php /* é */
 	$db = get_db();
 	 $rows = $db->all("
 		SELECT IdContact, Name,

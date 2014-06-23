@@ -44,53 +44,44 @@ class nodeViewer_file_content extends nodeViewer_file {
 		$type = $node->type;
 		switch($type){
 		case null :
-			$type = "html";
+			$type = "application/x-httpd-php";
 			break;
 		case "php" :
-			$type = "html";
+			$type = "application/x-httpd-php";
 			break;
 		case "default" :
-			$type = "html";
+			$type = "application/x-httpd-php";
 			break;
 		case "folder" :
-			$type = "html";
+			$type = "application/x-httpd-php";
+			break;
+		case "css" :
+			$type = "text/x-scss";
 			break;
 		default:
 			break;
 		}
 		$uid = uniqid('form-');
 			
-		$head = '
-	<!-- markItUp! skin -->
-	<link rel="stylesheet" type="text/css" href="jquery/markitup/skins/simple/style.css">
-	<!--  markItUp! toolbar skin -->
-	<link rel="stylesheet" type="text/css" href="jquery/markitup/sets/'. $type .'/style.css">
-	<script> if(!$.fn.markItUp){
-			$.getScript("jquery/markitup/jquery.markitup.js");
-	}</script>'
-	/*
-	<!-- markItUp! -->
-	<script type="text/javascript" src="jquery/markitup/jquery.markitup.js"></script>
-	*/
-	. '<!-- markItUp! toolbar settings -->
-	'. ($type != "dataSource"
-		? '<script type="text/javascript" src="jquery/markitup/sets/'. $type .'/set.js"></script>'
-		: '<script>mySettings = mySettings_' . $type . '; </script>') . '
-';
+		$head = '';
 		$script = '<script type="text/javascript">
 $().ready(function() {
-	// Add markItUp! to your textarea in one line
-	var OptionalExtraSettings = {
-		previewParserPath: "~/preview.php"
-	};
-	$("#' . $uid . ' textarea:first").markItUp(mySettings, OptionalExtraSettings)
-		.parents(".markItUp:first")
-			.css("width", "99%")
-			.addClass("type-' . $type . '");
-
-
+	var $textarea = $("#' . $uid . '-input");
+	var editor = CodeMirror.fromTextArea($textarea.get(0), {
+        lineNumbers: true,
+        matchBrackets: true,
+        mode: "' . $type . '",
+        indentUnit: 4,
+        indentWithTabs: true
+	});
+	$textarea.data("editor", editor);
 });
 </script>
+		';
+		$beforeSubmit = '
+			var $textarea = $("#' . $uid . '-input");
+			var editor = $textarea.data("editor");
+			$textarea.val(editor.getValue());
 		';
 		
 		return array(
@@ -105,7 +96,7 @@ $().ready(function() {
 				. '<legend><code>' . $file . '</code>'
 					. ($exists ? '' : ' <small><i>(n\'existe pas)</i></small>')
 				. '</legend>'
-				. '<textarea name="value" style="width:100%;" rows="12" spellcheck="false">'
+				. '<textarea id="' . $uid . '-input" name="value" style="width:100%;" rows="12" spellcheck="false">'
 					. htmlspecialchars($content)
 				. '</textarea>'
 				. '</fieldset>'
@@ -113,7 +104,7 @@ $().ready(function() {
 				. '<input type="submit" value="Enregistrer"/>'
 				. '</fieldset>'
 				. '</form>'
-				. $this->formScript($uid)
+				. $this->formScript($uid, null, $beforeSubmit)
 				. $script
 		);
 	}
