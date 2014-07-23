@@ -49,9 +49,6 @@ class nodeViewer_file_content extends nodeViewer_file {
 		case "php" :
 			$type = "application/x-httpd-php";
 			break;
-		case "default" :
-			$type = "application/x-httpd-php";
-			break;
 		case "folder" :
 			$type = "application/x-httpd-php";
 			break;
@@ -59,6 +56,7 @@ class nodeViewer_file_content extends nodeViewer_file {
 			$type = "text/x-scss";
 			break;
 		default:
+			$type = "application/x-httpd-php";
 			break;
 		}
 		$uid = uniqid('form-');
@@ -72,7 +70,16 @@ $().ready(function() {
         matchBrackets: true,
         mode: "' . $type . '",
         indentUnit: 4,
-        indentWithTabs: true
+        indentWithTabs: true,
+		extraKeys: {
+			"Ctrl-S": function(instance) { $("#' . $uid . '").submit(); },
+			"Cmd-S": function(instance) { $("#' . $uid . '").submit(); }
+		  }
+	});
+	$textarea.nextAll(".CodeMirror:first").resizable({
+		resize: function() {
+			editor.setSize($(this).width(), $(this).height());
+		}
 	});
 	$textarea.data("editor", editor);
 });
@@ -80,8 +87,7 @@ $().ready(function() {
 		';
 		$beforeSubmit = '
 			var $textarea = $("#' . $uid . '-input");
-			var editor = $textarea.data("editor");
-			$textarea.val(editor.getValue());
+			$textarea.data("editor").save();
 		';
 		
 		return array(

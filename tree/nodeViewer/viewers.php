@@ -135,7 +135,9 @@ class nodeViewer_viewers extends nodeViewer {
 		//	break; 
 		//}
 		$html .= '</div>';
-		$html .= '<script>$().ready(function(){ $("#' . $ulId . '").tabs({
+		$html .= '<script>
+$().ready(function(){ $("#' . $ulId . '")
+	.tabs({
 		active: ' . $defaultViewIndex . ',
 		beforeLoad: function( event, ui ) {
 			if ( ui.tab.filter(":not(.onclick-load)").data( "loaded" ) ) {

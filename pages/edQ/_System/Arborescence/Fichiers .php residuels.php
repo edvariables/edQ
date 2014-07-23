@@ -2,7 +2,6 @@
 
 /* actions */
 if(isset($_REQUEST['delete'])){
-	 session_start();
 	 if($_SESSION['edq-user']['rights']['Admin'] == 15){
 	 	 $file = utf8_decode(str_replace('/', DIRECTORY_SEPARATOR, $_REQUEST['delete']));
 	 	 if(!file_exists($file)) die('Le fichier "' . $file . '" n\'existe pas.');
@@ -14,10 +13,33 @@ if(isset($_REQUEST['delete'])){
 }
 
 if(isset($_REQUEST['create'])){
-	 session_start();
 	 if($_SESSION['edq-user']['rights']['Admin'] == 15){
-	 	 $file = utf8_decode(str_replace('/', DIRECTORY_SEPARATOR, $_REQUEST['delete']));
-	 	 if(file_exists($file)) die('Le fichier "' . $file . '" existe déjà.');
+	 	 global $tree;
+		 $type = $_REQUEST['type'];
+		 $file = utf8_decode(str_replace('/', DIRECTORY_SEPARATOR, $_REQUEST['create']));
+	 	 if(!file_exists($file)) die('Le fichier "' . $file . '" n\'existe pas.');
+		 $path = explode(DIRECTORY_SEPARATOR, substr($file, strlen(helpers::get_pagesPath()) + 1));
+		 $parent = array('id' => 1);
+		 for($i = 1; $i < count($path) - 1; $i++){
+			 $children = $tree->get_children($parent['id']);
+			 $found = false;
+			 foreach($children as $child)
+				 if($child['nm'] == $path[$i]){
+				 	$parent = $child;
+				 	$found = true;
+				 	break;
+			 	}
+			 if(!$found){
+				 die('Impossible de trouver le parent ' . $path[$i]);
+			 }
+				 
+		 }
+		 if($type == 'file')
+			 $name = preg_replace('/\\.[^\\.]+$/', '', $path[count($path) - 1]);
+		 else
+			 $name = $path[count($path) - 1];
+		 $tree->mk($child['id'], 0, array( 'nm' => $name, 'typ' => ( $type == 'file' ? 'php' : 'folder' ) ));
+		 die($child['id']);
 		 die('Programmation en cours...');
 	 	 die(1);
 	 }
@@ -26,7 +48,7 @@ if(isset($_REQUEST['create'])){
 
 /* affichage */
 
-$url= url_page('', $node);
+$url= url_view($node); //url_page('', $node);
 
 /* répertorie les noeuds MySQL triés depuis les parents vers les enfants */
 
@@ -114,7 +136,7 @@ foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), Rec
 			f = $tr.attr('f'),
 			t = $tr.attr('t');
 			$.ajax({ url: '<?= $url ?>'
-				, data : { 'delete' : f , 'type' : t }
+				, data : { 'create' : f , 'type' : t }
 				, success : function(response){
 					if(isNaN(response)) $('<div></div>').html(response).dialog( { width: 'auto', height: 'auto' });
 					else $this.css('text-decoration', 'line-through').end().end().remove();
@@ -122,4 +144,9 @@ foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), Rec
 			return false;
 		});
 	});
-	</script>
+</script>
+<style>
+	#<?=$uid?> a {
+			margin-left: 12px;
+	}
+</style>

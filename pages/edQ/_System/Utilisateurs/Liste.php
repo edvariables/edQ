@@ -1,17 +1,23 @@
 <?php /* é */
 	$db = get_db();
-	$rows = $db->all("
-		SELECT IdContact, Name,
-	 	 `EMail`, `Phone1`, `Phone2`, `Address`, `ZipCode`, `City`
+	 $rows = $db->all("
+		SELECT
+			c.IdContact, c.Name,
+	 		`EMail`, `Phone1`, `Phone2`,
+			u.`UserType`, u.Enabled
 		FROM 
 			contact c
+		INNER JOIN
+			user u
+			ON c.IdContact = u.IdUser
 		WHERE
-			c.Name <> ''
-	 	 AND	 c.ContactType <> 'CHANT'
+			u.Enabled = ?
+	 	AND
+			u.UserType >= ?
 		ORDER BY
 			c.Name
 		LIMIT ?, ?"
-		, array(0, 30)
+		, array(1, $_SESSION['edq-user']['UserType'], 0, 100)
 	);
 	$uid = uniqid('form-');
 ?><table id="<?=$uid?>" class="edq" style="overflow: scroll;"><caption><?=$node["nm"]?></caption>
@@ -20,17 +26,17 @@
 	<th>#</th>
 	<th>Nom</th>
 	<th>Email</th>
-	<th>Téléphone</th>
-	<th>Adresse</th>
-	<th>Ville</th>
+	<th>Téléphone(s)</th>
+	<th>Type</th>
+	<th>Actif</th>
 	</thead>
 	<tbody><?php
 	foreach($rows as $row){
 		?><tr>
-	 	 <th><a href="view.php?id=<?=1102?>&vw=file.call&f--IdContact=<?=$row["IdContact"]?>"
+	 	 <th><a href="view.php?id=<?=1231?>&f--IdContact=<?=$row["IdContact"]?>"
 	 	 	 onclick="$.get(this.getAttribute('href'), function(html){
 	 	 	 	 $('<div></div>').appendTo('body').html(html).dialog({
-	 	 	 	 	 title: '<?=$row["IdContact"]?>',
+	 	 	 	 	 title: '<?=$row['IdContact']?>',
 	 	 	 	 	 width: 'auto',
 	 	 	 	 	 height: 'auto'
 	 	 	 	 });
@@ -41,12 +47,12 @@
 		<td><?=$row["Name"]?>
 		<td><?=$row["EMail"]?>
 		<td><?=$row["Phone1"]?><?=$row["Phone2"] == null || $row["Phone2"] == '' ? '' : '<br/>' . $row["Phone2"]?>
-		<td><?=$row["Address"] == null ? '' : str_replace('\n', '<br>', $row["Address"])?>
-		<td><?=$row["ZipCode"]?><?=$row["City"] == null || $row["City"] == '' ? '' : ' ' . $row["City"]?>
+		<td><?=$row["UserType"]?>
+		<td><input type="checkbox"<?=$row['Enabled'] ? ' checked="checked"' : ''?>/>
 		</tr><?php
 	}
 	?></tbody>
-	<tfoot><tr><td colspan="99"><?= count($rows) . ' ligne' . (count($rows) > 1 ? 's' : '')?></tr>
+	<tfoot><tr><td/><td colspan="99"><?= count($rows) . ' utilisateur' . (count($rows) > 1 ? 's' : '')?></tr>
 	</tfoot>
 </table>
 <style>

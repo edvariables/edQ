@@ -343,6 +343,12 @@ function url_page($search, $__FILE__ = null, $extension = ".php"){
 	echo('</pre>');
 	return $file;
 }
+/* url_viewNode
+	
+*/
+function url_view($node){
+	return 'view.php?id=' . $node['id'];
+}
 /* get_db
 	include_page ('.dataSource.php')
 	return global $db
@@ -353,7 +359,7 @@ function get_db($search = '.dataSource', $__FILE__ = null){
 	global $db;
 	return $db;
 }
-/* view_page
+/* view_node
 	
 */
 function view_node($viewer, $node){
