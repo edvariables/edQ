@@ -80,7 +80,6 @@ class tree
 		$options : {
 			$recursive : boolean = false
 			$full : boolean = false
-			$filter_name : string
 		}
 		$options as boolean : $recursive = $options;
 	*/
@@ -107,7 +106,6 @@ class tree
 					s.".$this->options['structure']['id']." = d.".$this->options['data2structure']." AND 
 					s.".$this->options['structure']['left']." > ".(int)$node[$this->options['structure']['left']]." AND 
 					s.".$this->options['structure']['right']." < ".(int)$node[$this->options['structure']['right']]." 
-					" . ( isset($options['f--name']) ? " AND d.nm = '" . str_replace("'", "\\'", $options['f--name']) . "'" : "" ) . "
 				ORDER BY 
 					s.".$this->options['structure']['left']."
 			";
@@ -124,31 +122,13 @@ class tree
 				WHERE 
 					s.".$this->options['structure']['id']." = d.".$this->options['data2structure']." AND 
 					s.".$this->options['structure']['parent_id']." = ".(int)$id." 
-					" . ( isset($options['f--name']) ? " AND d.nm = '" . str_replace("'", "\\'", $options['f--name']) . "'" : "" ) . "
 				ORDER BY 
 					s.".$this->options['structure']['position']."
 			";
 		}
 		return $this->db->all($sql);
 	}
-	/* get_child_by_name
-		$options : {
-			$recursive : boolean = false
-			$full : boolean = false
-		}
-		$options as boolean : $recursive = $options;
-		ED140723
-	*/
-	public function get_child_by_name($id, $name, $options = false) {
-		if(is_bool($options))
-			$options = array();
-		$options['f--name'] = $name;
-		$children = $this->get_children($id, $options);
-		if(count($children) != 1)
-			return count($children);
-		return $children[0];
-	}
-	
+
 	/* get_path
 		return array;
 	*/
@@ -172,14 +152,6 @@ class tree
 			";
 		}
 		return $sql ? $this->db->all($sql) : false;
-	}
-	/* get_path_string
-		return string;
-		ED140723
-	*/
-	public function get_path_string($id, $joinChar = '/') {
-		$node = $this->get_node($id, array('with_path' => true, 'full' => false));
-		return $joinChar . implode($joinChar, array_map(function ($v) { return $v['nm']; }, $node['path'])). $joinChar .$node['nm'];
 	}
 
 	/* mk

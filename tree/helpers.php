@@ -196,83 +196,57 @@ class helpers {
 }
 /* include_page
 	include rel($__FILE__, $search, '.php')
-	exécute une page relative en définissant la variables $arguments
-	Recherche
-		..dataSource : chez les parents
-		.dataSource : au niveau de la référence ou chez les parents
-		:dataSource : dans la descendance
-		
 */
-function include_page($search, $__FILE__ = null, $extension = ".php", &$arguments = null){
-	if($search !== null && $search !== '' && $search[0] == '/')
-		$file = helpers::get_pagesPath() . $search . $extension;
+function include_page($search, $__FILE__ = null, $extension = ".php", $arguments = null){
+	if($__FILE__ == null){
+		//$__FILE__ = helpers::get_pagesPath();
+		$dt = debug_backtrace();
+		for($i = 0; $i < count($dt); $i++)
+			if($dt[$i]['file'] != __FILE__)
+				break;
+		$__FILE__ = $dt[$i]['file'];
+	}
+	else if(is_array($__FILE__)){ //$node
+		$node = $__FILE__;
+		$__FILE__ = helpers::combine(
+			helpers::get_pagesPath()
+			, implode('/',array_map(function ($v) { return $v['nm']; }, $node['path'])). '/'.$node['nm']  . '.php'
+		);
+		//require('nodeType/__class.php');
+	}
+	if($search === null || $search === '')
+		$file = $__FILE__;
 	else {
-		//Pas de fichier de référence fourni, on l'extrait depuis la trace
-		if($__FILE__ == null){
-			//$__FILE__ = helpers::get_pagesPath();
-			$dt = debug_backtrace();
-			for($i = 0; $i < count($dt); $i++)
-				if($dt[$i]['file'] != __FILE__)
-					break;
-			$__FILE__ = $dt[$i]['file'];
-		}
-		//Fichiers de référence multiples
-		else if(is_array($__FILE__)){ //$node
-			$node = $__FILE__;
-			$__FILE__ = helpers::combine(
-				helpers::get_pagesPath()
-				, implode('/',array_map(function ($v) { return $v['nm']; }, $node['path'])). '/'.$node['nm']  . '.php'
-			);
-			//require('nodeType/__class.php');
-		}
-		//Pas de recherche fournie
-		if($search === null || $search === '')
-			$file = $__FILE__;
-		//Recherche relative
-		else {
-			$ref = dirname($__FILE__);
-			
-			//var_dump($ref);
-			//var_dump($search);
-			
-			if($search[0] == '.')
-				if($search[1] == '.'){ // eg : '..dataSource' on cherche chez les parents
-					if(strlen($search) == 2){ // ..
-						$file = $ref . ($extension == null ? '' : $extension);
-					}
-					else {
-						$ref = dirname($ref);
-						$file = helpers::combine($ref, substr($search, 2), $extension);
-						//var_dump($file);
-						//var_dump(file_exists($file));
-						if(!file_exists($file))
-							return include_page($search, $ref, $extension, $arguments);
-					}
-				}
-				else { // eg : '.dataSource' : on cherche ici et chez les parents
-					$file = helpers::combine($ref, substr($search, 1), $extension);
-					//var_dump($file);
-					//var_dump(file_exists($file));
-					if(!file_exists($file)
-					&& dirname($ref) != $ref)
-						return include_page( $search, $ref, $extension, $arguments); //recursive chez les parents
-				}
-			else if($search[0] == ':'){ // eg : ':Liste' : dans la descendance
-				$file = helpers::combine(substr($__FILE__, 0, strlen($__FILE__) - 4), substr($search, 1), $extension); // $__FILE__ moins l'extension .php
+		$ref = dirname($__FILE__);
+		
+		//var_dump($ref);
+		//var_dump($search);
+		
+		if($search[0] == '.')
+			if($search[1] == '.'){ // eg : '..dataSource'
+				$file = helpers::combine($ref, substr($search, 2), $extension);
+				//var_dump($file);
+				//var_dump(file_exists($file));
+				if(!file_exists($file))
+					return include_page($search, $ref, $extension, $arguments);
 			}
-			else // eg : 'dataSource'
-				$file = helpers::combine($ref, $search, $extension);
+			else { // eg : '.dataSource'
+				$file = helpers::combine($ref, substr($search, 1), $extension);
+				//var_dump($file);
+				//var_dump(file_exists($file));
+				if(!file_exists($file)
+				&& dirname($ref) != $ref)
+					return include_page( $search, $ref, $extension, $arguments);
+			}
+		else if($search[0] == ':'){ // eg : ':Liste'
+			$file = helpers::combine(substr($__FILE__, 0, strlen($__FILE__) - 4), substr($search, 1), $extension); // $__FILE__ moins l'extension .php
 		}
+		else // eg : 'dataSource'
+			$file = helpers::combine($ref, $search, $extension);
 	}
 	
 	// include
-	if(file_exists($file)){
-		if($arguments == null)
-			$arguments = array();
-		include($file);
-		return $file;
-	}
-	else if(file_exists(utf8_decode($file))){
+	if(file_exists(utf8_decode($file))){
 		if($arguments == null)
 			$arguments = array();
 		include(utf8_decode($file));
@@ -297,13 +271,12 @@ function include_page($search, $__FILE__ = null, $extension = ".php", &$argument
 }
 /* call_page with $arguments defined
 	include rel($__FILE__, $search, '.php')
-	exécute une page relative en définissant la variables $arguments
 */
-function call_page($search, &$arguments = null, $__FILE__ = null, $extension = ".php"){
+function call_page($search, $arguments = null, $__FILE__ = null, $extension = ".php"){
 	return include_page($search, $__FILE__, $extension, $arguments);
 }
 /* url_page
-	retourne l'url de la page relative
+	
 */
 function url_page($search, $__FILE__ = null, $extension = ".php"){
 	if($__FILE__ == null){
@@ -327,16 +300,11 @@ function url_page($search, $__FILE__ = null, $extension = ".php"){
 		
 		if($search[0] == '.')
 			if($search[1] == '.'){ // eg : '..dataSource'
-				if(strlen($search) == 2){ // ..
-					$file = $ref . ($extension == null ? '' : $extension);
-				}
-				else {
-					$file = helpers::combine($ref, substr($search, 2), $extension);
-					//var_dump($file);
-					//var_dump(file_exists($file));
-					if(!file_exists($file))
-						return url_page($search, $ref, $extension);
-				}
+				$file = helpers::combine($ref, substr($search, 2), $extension);
+				//var_dump($file);
+				//var_dump(file_exists($file));
+				if(!file_exists($file))
+					return url_page($search, $ref, $extension);
 			}
 			else { // eg : '.dataSource'
 				$file = helpers::combine($ref, substr($search, 1), $extension);
