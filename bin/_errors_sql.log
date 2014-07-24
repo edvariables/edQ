@@ -1,3 +1,4 @@
 [08-Jun-2014 17:24:19]  > Could not execute query : Unknown column 'nm' in 'field list' <SELECT nm AS name FROM tree_struct WHERE id = 1202>
 [14-Jun-2014 11:31:25]  > Could not execute query : Table 'edq.node_query' doesn't exist < SELECT d.param, d.value FROM node_query d WHERE d.id = 1207>
 [14-Jun-2014 12:01:04]  > Could not execute query : Unknown column 'r.IdUser' in 'where clause' < SELECT r.Domain, r.Rights FROM rights r WHERE r.IdUser = 1 >
+[23-Jul-2014 23:14:15]  > Could not execute query : Erreur de syntaxe pr√®s de ''sub ORDER BY s.pos' √ la ligne 11 < SELECT s.id, s.lft, s.rgt, s.lvl, s.pid, s.pos, d.nm, d.typ, d.icon, d.color, d.design FROM tree_struct s, tree_data d WHERE s.id = d.id AND s.pid = 1233 AND d.nm = 'sub ORDER BY s.pos >
