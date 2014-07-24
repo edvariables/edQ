@@ -1,6 +1,8 @@
-<?php
-$url = 'https://rezo.sortirdunucleaire.org';
-$u = 'meli';
-$p = 'rez14MELI!';
-print_r(http_get($url));
-?>
+<ul>Test
+<li><?php
+if(!isset($arguments))
+	$arguments = array();
+call_page(':sub', $arguments, __FILE__);
+$arguments['test'] = date('now');
+print_r($arguments);
+?></ul>
