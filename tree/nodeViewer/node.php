@@ -58,17 +58,19 @@ class nodeViewer_node extends nodeViewer {
 		foreach($types as $type => $typeObj)
 			$select_type .= '<option value="' . $type . '"'
 				. ($node->type == $type ? ' selected="selected"' : '')
-			 	. '>' . htmlentities($type) . '</option>';
+				. ' icon="' . $typeObj['icon'] . '"'
+			 	. '>' 
+					. htmlentities($type) . '</option>';
 		$select_type .= '</select>';
-
+		
 		// icon 
 		$icons = node::get_icons();
 		$select_icon = '<select name="icon" value="' . ifNull($node->icon, '') . '">';
 		foreach($icons as $icon)
 			$select_icon .= '<option value="' . $icon . '"'
 					. ($node->icon == $icon ? ' selected="selected"' : '')
+				. ' icon="' . $icon . '"'
 			 	. '>'
-					. '<i class="jstree-icon ' . $icon . '"></i>'
 					. preg_replace('/^(jstree|file\sfile)-/', '', $icon)
 				. '</option>';
 		$select_icon .= '</select>';
@@ -83,6 +85,11 @@ class nodeViewer_node extends nodeViewer {
 					. htmlentities($text)
 				. '</option>';
 		$select_ulvl .= '</select>';
+		
+		$select_icon_script = '$("#' . $uid . ' select > option[icon]").each(function(){
+				$(this).prepend($(\'<i class="jstree-icon \' + this.getAttribute("icon") + \'"></i>\'));
+			})
+		';
 		
 		// color
 		$color = ifNull($node->color, '');
@@ -134,6 +141,7 @@ class nodeViewer_node extends nodeViewer {
 			. '<script>
 				$(document).ready(function() {'
 				. $color_script
+				. $select_icon_script
 				. '});
 			</script>'
 			. $this->formScript($uid, null, '

@@ -23,16 +23,16 @@ class nodeViewer_viewers extends nodeViewer {
 				"icon" => "file file-edit"
 			);*/
 		}
+		$children["comment"] = array(
+			"nm" => "Commentaires",
+			"icon" => "file file-info"
+		);
 		if(isset($node['children']) && count($node['children']) > 0)
 			$children["children"] = array(
 				"nm" => "Descendants",
 				"icon" => "file file-folder"
 			);
 		//var_dump($node['children']);
-		$children["comment"] = array(
-			"nm" => "Commentaires",
-			"icon" => "file file-info"
-		);
 		
 		if($node["typ"] == "query"){
 			if($isDesign)
@@ -72,7 +72,7 @@ class nodeViewer_viewers extends nodeViewer {
 		} 
 		
 		$html = '<div class="header-footer ui-state-default ui-corner-all edq-viewers">'
-			. $this->label($node, $this->path($node)) . ' #' . $node['id']
+			. $this->label($node, preg_replace('/^\/edQ\//', '', $this->path($node))) . ' #' . $node['id']
 			. '<div class="toolbar">'
 				. '<input type="checkbox" onchange="$(this).parents(\'.edq-viewers:first\').next().toggle();" checked="checked"/>'
 			. '</div></div>';

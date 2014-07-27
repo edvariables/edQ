@@ -84,6 +84,12 @@
 		 * @name $.jstree.plugins
 		 */
 		plugins : {},
+		/** 
+		 * definition des types de noeuds
+		 * ED140726
+		 * @name $.jstree.types
+		 */
+		types : {},
 		path : src && src.indexOf('/') !== -1 ? src.replace(/\/[^\/]+$/,'') : '',
 		idregex : /[\\:&'".,=\- \/]/g
 	};
@@ -100,6 +106,9 @@
 		options = $.extend(true, {}, $.jstree.defaults, options);
 		if(opt && opt.plugins) {
 			options.plugins = opt.plugins;
+		}
+		if(opt && opt.types) {
+			$.jstree.types = options.types = opt.types;
 		}
 		$.each(options.plugins, function (i, k) {
 			if(i !== 'core') {
@@ -1396,7 +1405,7 @@
 					id			: tid,
 					text		: d.text || '',
 					icon		: d.icon !== undefined ? d.icon : true,
-					color		: d.color !== undefined ? d.color : false,//ED140609
+					color		: d.color !== undefined && d.color != 'null' ? d.color : false,//ED140609
 					design		: d.design && d.design != '0' && d.design != 'false',//ED140614
 					parent		: p,
 					parents		: ps,
@@ -1494,7 +1503,7 @@
 				id			: false,
 				text		: typeof d === 'string' ? d : '',
 				icon		: typeof d === 'object' && d.icon !== undefined ? d.icon : true,
-				color		: typeof d === 'object' && d.color !== undefined ? d.color : false,//ED140609
+				color		: typeof d === 'object' && d.color !== undefined && d.color != 'null' ? d.color : false,//ED140609
 				design		: typeof d === 'object' && d.design && d.design != '0' && d.design != 'false',//ED140614
 				parent		: p,
 				parents		: ps,
@@ -1745,7 +1754,9 @@
 				}
 			}
 			//ED140609
-			if(obj.color) {
+			if(obj.color
+			&& obj.color != "null"
+			&& obj.color != "#ffffff" ) {
 				node.childNodes[1].style.backgroundColor = obj.color;
 			}
 			//ED140614
@@ -4530,19 +4541,42 @@
 		 * @plugin contextmenu
 		 */
 		items : function (o, cb) { // Could be an object directly
-			return {
-				"create" : {
+			var create_submenus = {};
+			var nodeTypes = $.jstree.types;
+			for(var nodeTypeName in nodeTypes){
+				var nodeType = nodeTypes[nodeTypeName];
+				if(!nodeType['icon'])
+					nodeType['icon'] = 'file file-' + nodeTypeName;
+				nodeType['id'] = nodeTypeName;
+				create_submenus[nodeTypeName] = {
 					"separator_before"	: false,
-					"separator_after"	: true,
-					"_disabled"			: false, //(this.check("create_node", data.reference, {}, "last")),
-					"label"				: "Créer",
+					"icon"				: 'jstree-icon jstree-themeicon ' + nodeType['icon'],
+					"separator_after"	: false,
+					"_disabled"			: false,
+					"label"				: nodeType['text'] ? nodeType['text'] : nodeTypeName,
+					"nodeType"			: nodeType,
 					"action"			: function (data) {
 						var inst = $.jstree.reference(data.reference),
 							obj = inst.get_node(data.reference);
-						inst.create_node(obj, {}, "last", function (new_node) {
-							setTimeout(function () { inst.edit(new_node); },0);
-						});
+						var nodeType = data.item["nodeType"];
+						inst.create_node(obj, { text: nodeType['text'] ? nodeType['text'] : nodeType['id'], icon: nodeType['icon'], type: nodeType['id'] }
+							, "last", function (new_node) {
+								setTimeout(function () { inst.edit(new_node); },0);
+							}
+						);
 					}
+				}
+			}
+
+			return {
+				
+				"create" : {
+					"icon"				: false,
+					"separator_after"	: false,
+					"label"				: "Nouveau",
+					"action"			: false,
+					"submenu"			: create_submenus,
+					"design_only"		: 1
 				},
 				"rename" : {
 					"separator_before"	: false,
@@ -4558,7 +4592,8 @@
 						var inst = $.jstree.reference(data.reference),
 							obj = inst.get_node(data.reference);
 						inst.edit(obj);
-					}
+					},
+					"design_only"		: 1
 				},
 				"edit" : {
 					"separator_before"	: false,
@@ -4574,7 +4609,8 @@
 						var inst = $.jstree.reference(data.reference),
 							obj = inst.get_node(data.reference);
 						inst.edit_node(obj);
-					}
+					},
+					"design_only"		: 0
 				},
 				"remove" : {
 					"separator_before"	: false,
@@ -4591,7 +4627,8 @@
 						else {
 							inst.delete_node(obj);
 						}
-					}
+					},
+					"design_only"		: 1
 				},
 				"ccp" : {
 					"separator_before"	: true,
@@ -4645,7 +4682,8 @@
 								inst.paste(obj);
 							}
 						}
-					}
+					},
+					"design_only"		: 1
 				}
 			};
 		}
@@ -4716,7 +4754,8 @@
 				d = this.get_node(obj, true),
 				a = d.children(".jstree-anchor"),
 				o = false,
-				i = false;
+				i = false,
+				design_only = this.settings.design == 0;
 			if(s.show_at_node || x === undefined || y === undefined) {
 				o = a.offset();
 				x = o.left;
@@ -4734,6 +4773,16 @@
 				}, this));
 			}
 			if($.isPlainObject(i)) {
+				/* ED140727 */
+				if(design_only){
+					var items = i;
+					i = {};
+					for(var k in items){
+						if(items[k]['design_only'] == 0)
+							i[k] = items[k];
+					};
+				}
+					
 				this._show_contextmenu(obj, x, y, i);
 			}
 		};
@@ -5109,6 +5158,13 @@
 		 */
 		copy : true,
 		/**
+		 * a boolean indicating if a move should be possible while dragging. Defaults to `true`.
+		 * ED140727 : en passant a false (not design), maintient le drag 'nd drop sans pouvoir modifier l'arbre
+		 * @name $.jstree.defaults.dnd.move
+		 * @plugin dnd
+		 */
+		move : true,
+		/**
 		 * a number indicating how long a node should remain hovered while dragging to be opened. Defaults to `500`.
 		 * @name $.jstree.defaults.dnd.open_timeout
 		 * @plugin dnd
@@ -5178,6 +5234,23 @@
 					off = false,
 					rel = false,
 					l, t, h, p, i, o, ok, t1, t2, op, ps, pr;
+				 /* ED140727 deplacement interdit */
+				if(ins && ins._data && ins._data.dnd){
+					if(!data.data.origin.settings.dnd.move) 
+						ins = false;
+				}
+				// deplacement ailleurs
+				else if(data.data.origin.settings.favpanel){
+					var $droppable = $(data.event.target);
+					ok = $droppable.hasClass(data.data.origin.settings.favpanel.classname);
+					if(ok) {
+						lastmv = false;
+						marker.hide();
+						data.helper.find('.jstree-icon:eq(0)').removeClass('jstree-er').addClass('jstree-ok');
+						return;
+					}
+				}
+				
 				// if we are over an instance
 				if(ins && ins._data && ins._data.dnd) {
 					marker.attr('class', 'jstree-' + ins.get_theme());
@@ -5187,7 +5260,9 @@
 
 
 					// if are hovering the container itself add a new root node
-					if( (data.event.target === ins.element[0] || data.event.target === ins.get_container_ul()[0]) && ins.get_container_ul().children().length === 0) {
+					if( (data.event.target === ins.element[0]
+					|| data.event.target === ins.get_container_ul()[0])
+					&& ins.get_container_ul().children().length === 0) {
 						ok = true;
 						for(t1 = 0, t2 = data.data.nodes.length; t1 < t2; t1++) {
 							ok = ok && ins.check( (data.data.origin && (data.data.origin.settings.dnd.always_copy || (data.data.origin.settings.dnd.copy && (data.event.metaKey || data.event.ctrlKey)) ) ? "copy_node" : "move_node"), (data.data.origin && data.data.origin !== ins ? data.data.origin.get_node(data.data.nodes[t1]) : data.data.nodes[t1]), '#', 'last', { 'dnd' : true, 'ref' : ins.get_node('#'), 'pos' : 'i', 'is_multi' : (data.data.origin && data.data.origin !== ins), 'is_foreign' : (!data.data.origin) });
@@ -6321,13 +6396,13 @@
 				case "copy_node":
 					i = ($.inArray(n, c) === -1);
 					if(!i) {
-						this._data.core.last_error = { 'error' : 'check', 'plugin' : 'unique', 'id' : 'unique_01', 'reason' : 'Child with name ' + n + ' already exists. Preventing: ' + chk, 'data' : JSON.stringify({ 'chk' : chk, 'pos' : pos, 'obj' : obj && obj.id ? obj.id : false, 'par' : par && par.id ? par.id : false }) };
+						this._data.core.last_error = { 'error' : 'check', 'plugin' : 'unique', 'id' : 'unique_01', 'reason' : 'Un noeud enfant ' + n + ' existe d&eacute;j&acute;. Attention: ' + chk, 'data' : JSON.stringify({ 'chk' : chk, 'pos' : pos, 'obj' : obj && obj.id ? obj.id : false, 'par' : par && par.id ? par.id : false }) };
 					}
 					return i;
 				case "move_node":
 					i = (obj.parent === par.id || $.inArray(n, c) === -1);
 					if(!i) {
-						this._data.core.last_error = { 'error' : 'check', 'plugin' : 'unique', 'id' : 'unique_01', 'reason' : 'Child with name ' + n + ' already exists. Preventing: ' + chk, 'data' : JSON.stringify({ 'chk' : chk, 'pos' : pos, 'obj' : obj && obj.id ? obj.id : false, 'par' : par && par.id ? par.id : false }) };
+						this._data.core.last_error = { 'error' : 'check', 'plugin' : 'unique', 'id' : 'unique_01', 'reason' : 'Un noeud enfant ' + n + ' existe d&eacute;j&acute;. Attention: ' + chk, 'data' : JSON.stringify({ 'chk' : chk, 'pos' : pos, 'obj' : obj && obj.id ? obj.id : false, 'par' : par && par.id ? par.id : false }) };
 					}
 					return i;
 			}

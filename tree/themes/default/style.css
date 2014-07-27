@@ -1008,28 +1008,28 @@
     background-position: -630px 0;
 }
 .jstree-icon:empty.file-crt, .jstree-icon:empty.file-pem, .jstree-icon:empty.file-cer {
-    background-position: -452px -18px;
+    background-position: -452px 0;
 }
 .jstree-icon:empty.file-jpg, .jstree-icon:empty.file-jpeg, .jstree-icon:empty.file-png, .jstree-icon:empty.file-gif, .jstree-icon:empty.file-bmp {
-    background-position: -126px -18px;
+    background-position: -126px 0;
 }
 .jstree-icon:empty.file-ppt, .jstree-icon:empty.file-pptx {
-    background-position: -144px -18px;
+    background-position: -144px 0;
 }
 .jstree-icon:empty.file-rb {
-    background-position: -180px -18px;
+    background-position: -180px 0;
 }
 .jstree-icon:empty.file-text, .jstree-icon:empty.file-txt, .jstree-icon:empty.file-md, .jstree-icon:empty.file-log, .jstree-icon:empty.file-htaccess {
-    background-position: -254px -18px;
+    background-position: -254px 0;
 }
 .jstree-icon:empty.file-doc, .jstree-icon:empty.file-docx {
-    background-position: -362px -18px;
+    background-position: -362px 0;
 }
 .jstree-icon:empty.file-zip, .jstree-icon:empty.file-gz, .jstree-icon:empty.file-tar, .jstree-icon:empty.file-rar {
-    background-position: -416px -18px;
+    background-position: -416px 0;
 }
 .jstree-icon:empty.file-js {
-    background-position: -434px -18px;
+    background-position: -434px 0;
 }
 .jstree-icon:empty.file-css {
     background-position: -144px 0;

@@ -1,4 +1,4 @@
-<?php /* Gestion du contenu d'un fichier
+﻿<?php /* Gestion du contenu d'un fichier
 UTF8 é
 */
 
@@ -70,7 +70,8 @@ class nodeViewer_query_call extends nodeViewer_query {
 			}
 			$tdCount = 0;
 			foreach($columns as $name => $column)
-				if(!is_array($column) || !isset($column["visible"]) || $column["visible"]){
+				if(!is_array($column)) break;
+				else if(!isset($column["visible"]) || $column["visible"]){
 					$column["index"] = $tdCount++;
 				}
 			/* Caption */
@@ -163,7 +164,7 @@ class nodeViewer_query_call extends nodeViewer_query {
 			$uid = uniqid('form-');
 ?><table id="<?=$uid?>" class="edq" style="overflow: scroll;">
 	<caption><?=$caption?></caption>
-	<thead><tr><?php
+	<?php /* ?><thead><tr><?php
 		$this->columnIndex = 0;
 		foreach($columns as $name => $column){
 			if(!is_array($column) || !isset($column["visible"]) || $column["visible"]){
@@ -180,7 +181,7 @@ class nodeViewer_query_call extends nodeViewer_query {
 			}
 		}
 	?></tr>
-	</thead>
+	</thead><?php */ ?>
 	<tbody><?php
 	$this->rowIndex = 0;
 	foreach($rows as $row){
@@ -216,11 +217,10 @@ class nodeViewer_query_call extends nodeViewer_query {
 					;
 					if($style !== '')
 						$attrs .= ' style="' . $style . '"';
-					?><td<?= $attrs ?>><?=$value?></td><?
+					?><td<?= $attrs ?>><?=$value?></td><?php
 				}
 			}
-		?>
-		</tr><?php
+		?></tr><?php
 		$this->rowIndex++;
 	}
 	?></tbody>

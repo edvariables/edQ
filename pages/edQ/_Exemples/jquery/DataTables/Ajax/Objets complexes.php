@@ -1,7 +1,10 @@
 ﻿<?php
 $dataUrl = url_page(':data');
 $uid = uniqid('datatable');
-call_page(':html', array( 'uid' => $uid ));
+if(!isset($arguments))
+	$arguments = array();
+$arguments[ 'uid' ] = $uid;
+call_page(':html', $arguments);
 
 ?><script>
 $(document).ready(function() {

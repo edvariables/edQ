@@ -13,7 +13,11 @@ class nodeViewer_file_call extends nodeViewer_file {
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => false));
 		}
 		$file = $this->get_file($node);
-		$exists = file_exists(utf8_decode($file));
+		$exists = file_exists($file);
+		if(!$exists){
+			$file = utf8_decode($file);
+			$exists = file_exists($file);
+		}
 		
 		$href = $_SERVER["REQUEST_URI"];
 		$head = '<div class="edq-toolbar">'
@@ -25,9 +29,10 @@ class nodeViewer_file_call extends nodeViewer_file {
 			. '</div>';
 			
 		if($exists){
-		
+			$view = $this;
+			
 			ob_start();
-			include(utf8_decode($file));
+			include($file);
 			$content = ob_get_clean();
 			//var_dump($content);
 		}

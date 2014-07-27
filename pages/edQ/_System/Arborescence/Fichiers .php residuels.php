@@ -3,7 +3,8 @@
 /* actions */
 if(isset($_REQUEST['delete'])){
 	 if($_SESSION['edq-user']['rights']['Admin'] == 15){
-	 	 $file = utf8_decode(str_replace('/', DIRECTORY_SEPARATOR, $_REQUEST['delete']));
+	 	 $file = str_replace('/', DIRECTORY_SEPARATOR, $_REQUEST['delete']);
+	 	 if(!file_exists($file)) $file = utf8_decode($file);
 	 	 if(!file_exists($file)) die('Le fichier "' . $file . '" n\'existe pas.');
 	 	 if($_REQUEST['type'] == 'file') unlink($file);
 	 	 else if($_REQUEST['type'] == 'dir') rmdir($file);
@@ -16,7 +17,8 @@ if(isset($_REQUEST['create'])){
 	 if($_SESSION['edq-user']['rights']['Admin'] == 15){
 	 	 global $tree;
 		 $type = $_REQUEST['type'];
-		 $file = utf8_decode(str_replace('/', DIRECTORY_SEPARATOR, $_REQUEST['create']));
+		 $file = str_replace('/', DIRECTORY_SEPARATOR, $_REQUEST['create']);
+	 	 if(!file_exists($file)) $file = utf8_decode($file);
 	 	 if(!file_exists($file)) die('Le fichier "' . $file . '" n\'existe pas.');
 		 $path = explode(DIRECTORY_SEPARATOR, substr($file, strlen(helpers::get_pagesPath()) + 1));
 		 $parent = array('id' => 1);
@@ -71,7 +73,7 @@ foreach ($nodes as $node) {
     /*echo '<tr><td>' . $node['lvl'] . '</td>';
     echo '<td>' . join('/', $parents) . '</td>'; 
     echo '<td> ' . $node['nm'] . ' </td>';*/
-	 $name = join('/', $parents) . '/' . $node['nm'];
+	 $name = (join('/', $parents) . '/' . $node['nm']);
 	 //echo '<tr><td>' . $name . '</td>';
     
 	 $known[$name] = $node;
@@ -91,17 +93,21 @@ $uid = uniqid('table');
 foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::SELF_FIRST) as $f){
 	$php = substr($f, strlen($f) - 4) == '.php';
 	$isDir = !$php && is_dir($f);
-	if($php || $isDir) {
-		 $f = utf8_encode(str_replace('\\', '/', $f));
+	if($php
+	|| ( $isDir
+		&& (substr($f, strlen($f) - 1) != '.'))
+	) {
+		 $f = str_replace('\\', '/', $f);
 		 $name = str_replace('\\', '/', substr($f, strlen($dir) + 1));
 		 if(strpos( $name, '/' ) === false)
 			 continue;
 		 if($php)
 			 $name = substr($name, 0, strlen($name) - 4);
-		 if(!isset($known[$name])){
+		 if(!isset($known[$name])
+		   && !isset($known[utf8_encode($name)])){
 			 $files[] = $name;
-			?><tr f="<?= $f ?>" t="<?= $php ? 'file' : 'dir' ?>">
-			<td><td><?= $name . ($php ? '.php' : '/') ?></td>
+			?><tr f="<?= ( $f ) ?>" t="<?= $php ? 'file' : 'dir' ?>">
+			<td><td><?= ( $name . ($php ? '.php' : '/')) ?></td>
 			<td><i><a href class="create">créer le noeud</a></i>
 			<td><i><a href class="delete">supprimer</a></i>
 		 <?php
@@ -110,7 +116,7 @@ foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), Rec
 }
 ?>
 </tbody>
-<tfoot><tr><td><?=count($files)?> fichier(s)</tfoot>
+<tfoot><tr><td><?=count($files) ? count($files) . ' fichier(s)': 'aucun fichier'?></tfoot>
 </table>
 <script>
 	$(document.body).ready(function(){

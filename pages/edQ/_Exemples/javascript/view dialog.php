@@ -3,7 +3,8 @@
  	 	 $('<div></div>').appendTo('body').html(html).dialog({
 	 	 	 title: 'Aperçu',
  	 	 	 width: 'auto',
- 	 	 	 height: 'auto'
+ 	 	 	 height: 'auto',
+			 modal: false
  	 	 });
  	 	});
 	 return false;">Afficher</a>

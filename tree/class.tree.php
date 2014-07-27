@@ -11,7 +11,7 @@ class tree
 			'param' => array(				// table des parametres de noeuds
 				'table' =>'node_param',			// 
 				'structure'	=> array(	// champs
-					'id'			=> 'id',			
+					'id'			=> 'id',
 					'param'			=> 'param',		
 					'domain'			=> 'domain',
 					'value'			=> 'value',
@@ -48,6 +48,8 @@ class tree
 		recherche le noeud dans la table tree_data
 	*/
 	public function get_node($id, $options = array(), $errorIfNotExists = true) {
+		$notDesign_only = isset($options['design']) && !$options['design'];
+		
 		$node = $this->db->one("
 			SELECT 
 				s.".implode(", s.", $this->options['structure']).", 
@@ -61,6 +63,7 @@ class tree
 					s.".$this->options['structure']['id']." = d.".$this->options['data2structure']." 
 			WHERE 
 				s.".$this->options['structure']['id']." = ?"
+				. ($notDesign_only ? ' AND d.design = 0' : '')
 			, array( (int)$id )
 		);
 		if(!$node) {
@@ -68,10 +71,10 @@ class tree
 				return false;
 			throw new Exception('Node does not exist');
 		}
-		if(isset($options['with_children'])) {
-			$node['children'] = $this->get_children($id, isset($options['deep_children']));
+		if(isset($options['with_children']) && $options['with_children']) {
+			$node['children'] = $this->get_children($id, isset($options['deep_children']) && $options['deep_children']);
 		}
-		if(isset($options['with_path'])) {
+		if(isset($options['with_path']) && $options['with_path']) {
 			$node['path'] = $this->get_path($id);
 		}
 		return $node;
@@ -90,8 +93,8 @@ class tree
 			$options = array();
 		}
 		else
-			$recursive = false;
-		
+			$recursive = isset($options['recursive']) && $options['recursive'];
+		$notDesign_only = isset($options['design']) && !$options['design'];
 		$sql = false;
 		if($recursive) {
 			$node = $this->get_node($id);
@@ -99,7 +102,8 @@ class tree
 				SELECT 
 					s.".implode(", s.", $this->options['structure']).", 
 					d.".implode(", d.", $this->options['data'])." 
-					". (isset($options['full']) && $options['full'] ? ", d.".implode(", d.", $this->options['full']) : "")."
+					". (isset($options['full']) && $options['full'] ? ", d.".implode(", d.", $this->options['full']) : "").",
+					s.rgt - s.lft - 1 AS has_children
 				FROM 
 					".$this->options['structure_table']." s, 
 					".$this->options['data_table']." d 
@@ -108,6 +112,7 @@ class tree
 					s.".$this->options['structure']['left']." > ".(int)$node[$this->options['structure']['left']]." AND 
 					s.".$this->options['structure']['right']." < ".(int)$node[$this->options['structure']['right']]." 
 					" . ( isset($options['f--name']) ? " AND d.nm = '" . str_replace("'", "\\'", $options['f--name']) . "'" : "" ) . "
+					". ($notDesign_only ? ' AND d.design = 0' : '') ."					
 				ORDER BY 
 					s.".$this->options['structure']['left']."
 			";
@@ -118,12 +123,23 @@ class tree
 					s.".implode(", s.", $this->options['structure']).", 
 					d.".implode(", d.", $this->options['data'])." 
 					". (isset($options['full']) && $options['full'] ? ", d.".implode(", d.", $this->options['full']) : "")."
+					, ". ($notDesign_only
+						? "EXISTS (SELECT 1
+						FROM ".$this->options['structure_table']." schildren, 
+							".$this->options['data_table']." dchildren 
+						WHERE 
+							schildren.".$this->options['structure']['id']." = dchildren.".$this->options['data2structure']." AND  
+							schildren.".$this->options['structure']['parent_id']." = s.".$this->options['structure']['id']." AND
+							dchildren.design = 0)"
+						: "s.rgt - s.lft - 1")
+					." AS has_children
 				FROM 
 					".$this->options['structure_table']." s, 
 					".$this->options['data_table']." d 
 				WHERE 
 					s.".$this->options['structure']['id']." = d.".$this->options['data2structure']." AND 
 					s.".$this->options['structure']['parent_id']." = ".(int)$id." 
+					" . ( $notDesign_only ? 'AND d.design = 0' : '') . "
 					" . ( isset($options['f--name']) ? " AND d.nm = '" . str_replace("'", "\\'", $options['f--name']) . "'" : "" ) . "
 				ORDER BY 
 					s.".$this->options['structure']['position']."
@@ -131,7 +147,7 @@ class tree
 		}
 		return $this->db->all($sql);
 	}
-	/* get_child_by_name
+	/* static get_child_by_name
 		$options : {
 			$recursive : boolean = false
 			$full : boolean = false
@@ -139,14 +155,89 @@ class tree
 		$options as boolean : $recursive = $options;
 		ED140723
 	*/
-	public function get_child_by_name($id, $name, $options = false) {
+	public static function get_child_by_name($id, $name, $options = false) {
+		global $tree;
+		if(is_array($id))
+			$id = $id['id'];
 		if(is_bool($options))
 			$options = array();
 		$options['f--name'] = $name;
-		$children = $this->get_children($id, $options);
+		$children = $tree->get_children($id, $options);
 		if(count($children) != 1)
 			return count($children);
 		return $children[0];
+	}
+	/* static get_node_by_name
+		$options : {
+			$recursive : boolean = false
+			$full : boolean = false
+		}
+		$options as boolean : $recursive = $options;
+		ED140723
+	*/
+	public static function get_node_by_name($name, $refersTo = false, $options = false) {
+		global $tree;
+		if(is_bool($options))
+			$options = array();
+		
+		/* chemin absolu */
+		if($name[0] == '/'){
+			$names = explode('/', substr($name, 1));
+			$sql = '';
+			$depth = 0;
+			$root = TREE_ROOT;
+			foreach($names as $shortName){
+				$sqln = "
+					SELECT 
+						". ( $depth == (count($names)-1) ? "d.*" : "s." . $tree->options['structure']['id'] ) ."
+					FROM 
+						".$tree->options['structure_table']." s
+					JOIN 
+						".$tree->options['data_table']." d 
+					ON 
+						s.".$tree->options['structure']['id']." = d.".$tree->options['data2structure']." 
+					WHERE 
+						d.nm = '" . str_replace("'", "\\'", $shortName) . "'
+				";
+				if($depth > 0){ // descendant
+					$sql = $sqln . "
+						AND s.".$tree->options['structure']['parent_id']." IN
+						(" . $sql . ")";
+				}
+				else // racine
+					$sql = $sqln . "
+						AND s.".$tree->options['structure']['parent_id']." = ". $root;
+				$depth++;
+			}
+			$nodes = $tree->db->all($sql);
+		}
+		/* chemin relatif */
+		else {
+			if(is_bool($refersTo))
+				throw new Exception('tree::get_node_by_name : argument 2, $refersTo, is missing');
+			if(is_array($refersTo))
+				$refersTo = $refersTo['id'];
+			$options['f--name'] = $name;
+			$nodes = $tree->get_children($refersTo, $options);
+		}
+		//return 1 only
+		if(count($nodes) != 1)
+			return count($nodes);//error
+		return $nodes[0];
+	}
+	/* static get_id_by_name
+		$options : {
+			$recursive : boolean = false
+			$full : boolean = false
+		}
+		$options as boolean : $recursive = $options;
+		ED140723
+	*/
+	public static function get_id_by_name($name, $refersTo = false, $options = false) {
+		$node = self::get_node_by_name($name, $refersTo, $options);
+		if(is_array($node))
+			return $node['id'];
+		return $node;
 	}
 	
 	/* get_path
@@ -182,16 +273,72 @@ class tree
 		return $joinChar . implode($joinChar, array_map(function ($v) { return $v['nm']; }, $node['path'])). $joinChar .$node['nm'];
 	}
 
+	/* get_unique_name
+		"dossier" devient "dossier_1" si un noeud existe déjà
+		"dossier_1" devient "dossier_2" si un noeud existe déjà
+		retourne le nouveau nom disponible
+		ED170726
+	*/
+	public function get_unique_name($parent, $name, $excude_id = 0){
+		if(is_array($parent))
+			$parent = (int)$parent[$this->options['structure']['id']];
+		else
+			$parent = (int)$parent;
+		$nTest = 0;
+		do {
+			$sql = "
+				SELECT d.nm
+				FROM
+					".$this->options['structure_table']." s
+				JOIN
+					".$this->options['data_table']." d 
+					ON s.".$this->options['structure']['id']." = d.".$this->options['data2structure']."
+				WHERE 
+					s.".$this->options['structure']["parent_id"]." = ? AND 
+					d.nm = ? AND
+					s.".$this->options['structure']['id']." <> ?
+				";
+			//Etend le nom avec l'index
+			//TODO trier les noms existants plutot que de boucher les trous d'index
+			if( $nTest == 0)
+				$new_name = $name;
+			else
+				$new_name = preg_replace('/(.+)_\d+$/', '$1', $name) . '_' . $nTest;
+			$par = array(
+				$parent
+				, $new_name
+				, $excude_id
+			);
+			try {
+				$existing = $this->db->all($sql, $par);
+				if(count($existing) == 0){
+					return $new_name;
+				}
+				$nTest++;
+			} catch(Exception $e) {
+				throw new Exception('Could not create ' . $name);
+			}
+		}
+		while(true);
+	}
+	
 	/* mk
 		nouveau noeud
 	*/
 	public function mk($parent, $position = 0, $data = array()) {
-		$parent = (int)$parent;
+		if(is_array($parent))
+			$parent = (int)$parent[$this->options['structure']['id']];
+		else
+			$parent = (int)$parent;
 		if($parent == 0) { throw new Exception('Parent is 0'); }
 		$parent = $this->get_node($parent, array('with_children'=> true));
 		if(!$parent['children']) { $position = 0; }
 		if($parent['children'] && $position >= count($parent['children'])) { $position = count($parent['children']); }
 
+		// CHECK NAME 
+		// unique name only
+		$data['nm'] = $this->get_unique_name($parent, $data['nm']);
+		
 		$sql = array();
 		$par = array();
 
@@ -299,7 +446,7 @@ class tree
 		//ED140608
 		$idId		= $id;
 		
-		$parent		= (int)$parent;
+		$parent		= $parent == '#' ? TREE_ROOT : (int)$parent;
 		if($parent == 0 || $id == 0 || $id == 1) { 
 			throw new Exception('Cannot move inside 0, or move root node');
 		}
@@ -332,6 +479,10 @@ class tree
 		}
 		$width = (int)$id[$this->options['structure']["right"]] - (int)$id[$this->options['structure']["left"]] + 1;
 
+		// CHECK NAME 
+		// unique name only
+		$id['nm'] = $this->get_unique_name($parent, $id['nm'], $id['id']);
+		
 		$sql = array();
 
 		// PREPARE NEW PARENT
@@ -402,6 +553,17 @@ class tree
 					".$this->options['structure']["parent_id"]." = ".(int)$parent[$this->options['structure']["id"]]." 
 				WHERE ".$this->options['structure']["id"]."  = ".(int)$id[$this->options['structure']['id']]." 
 		";
+		
+		/* ED140726 */
+		if($oldName != $id['nm']){
+			// changement de nom ( + _%index%)
+			$sql[] = "
+				UPDATE ".$this->options['data_table']." 
+					SET nm = '" . str_replace( "'", "\\'", $id['nm'] ) . "'
+					WHERE ".$this->options['structure']["id"]."  = ".(int)$id[$this->options['structure']['id']]." 
+			";
+			//var_dump($sql[count($sql)-1]);
+		}
 
 		// CLEAN OLD PARENT
 		// position of all next elements
@@ -434,17 +596,20 @@ class tree
 				$this->db->query($v);
 			} catch(Exception $e) {
 				$this->reconstruct();
-				throw new Exception('Error moving');
+				throw new Exception('Error moving ' . $v);
 			}
 		}		
 		
 		//ED140608
 		$id			= $this->get_node($idId, array('with_children'=> false, 'deep_children' => false, 'with_path' => true, 'full' => false));
-		$newName 	= $id['nm'];
-		$newPath 	= implode('/', array_map(function ($v) { return $v['nm']; }, $id['path']));
-		helpers::nodeFile_mv($oldPath, $oldName, $newPath, $newName, true);
+		$new_name 	= $id['nm'];
+		$new_path 	= implode('/', array_map(function ($v) { return $v['nm']; }, $id['path']));
+		helpers::nodeFile_mv($oldPath, $oldName, $new_path, $new_name, true);
 		
-		return true;
+		return array(
+			'id' => $id['id']
+			, 'nm' => $new_name
+		);
 	}
 	
 	/* copy
@@ -477,6 +642,10 @@ class tree
 		//ED140608
 		$oldName 	= $id['nm'];
 		$oldPath 	= implode('/', array_map(function ($v) { return $v['nm']; }, $id['path']));
+		
+		// CHECK NAME 
+		// unique name only
+		$id['nm'] = $this->get_unique_name($parent['id'], $id['nm']);
 		
 		$tmp = array();
 		$tmp[] = (int)$id[$this->options['structure']["id"]];
@@ -601,6 +770,21 @@ class tree
 			}
 		}
 		
+		/* ED140726 renamed due to existing name */
+		if($id['nm'] != $oldName){
+			try {
+				$this->db->query("
+					UPDATE ".$this->options['data_table']." 
+						SET nm = ? 
+						WHERE ".$this->options['structure']["id"]."  = ? 
+					", array( $id['nm'], $iid ));
+			} catch(Exception $e) {
+				$this->rm($iid);
+				$this->reconstruct();
+				throw new Exception('Could not update adjacency after copy');
+			}
+		}
+		
 		//ED140518
 		// copy node_param rows	
 		foreach($this->options['plugins'] as $key => $plugin){
@@ -680,9 +864,9 @@ class tree
 		
 		//ED140608
 		$newNode	= $this->get_node($iid, array('with_children'=> false, 'deep_children' => false, 'with_path' => true, 'full' => false));
-		$newName 	= $newNode['nm'];
-		$newPath 	= implode('/', array_map(function ($v) { return $v['nm']; }, $newNode['path']));
-		helpers::nodeFile_cp($oldPath, $oldName, $newPath, $newName, true);
+		$new_name 	= $newNode['nm'];
+		$new_path 	= implode('/', array_map(function ($v) { return $v['nm']; }, $newNode['path']));
+		helpers::nodeFile_cp($oldPath, $oldName, $new_path, $new_name, true);
 		
 		return $iid;
 	}
@@ -797,29 +981,40 @@ class tree
 					$tmp[$v] = $data[$v];
 				}
 			}
-		if(count($tmp)) {
-			$tmp[$this->options['data2structure']] = $id;
-			$sql = "
-				INSERT INTO 
-					".$this->options['data_table']." (".implode(',', array_keys($tmp)).") 
-					VALUES(?".str_repeat(',?', count($tmp) - 1).") 
-				ON DUPLICATE KEY UPDATE 
-					".implode(' = ?, ', array_keys($tmp))." = ?";
-			$par = array_merge(array_values($tmp), array_values($tmp));
-			try {
-				$this->db->query($sql, $par);
-			}
-			catch(Exception $e) {
-				throw new Exception('Impossible de mettre à jour');
-			}
-		
-			//ED140608
-			if($oldName !== false && isset($data['nm']) && $data['nm'] != $oldName) {
-				$newName 	= $data['nm'];
-				helpers::nodeFile_mv($oldPath, $oldName, $oldPath, $newName, true);
-			}
+		if(count($tmp) == 0)
+			return true;
+			
+		// CHECK NAME 
+		// unique name only
+		if(isset($tmp['nm']) && $tmp['nm'] != $oldName){
+			$tmp['nm'] = $this->get_unique_name($node['path'][ count($node['path']) - 1 ]['id'], $data['nm'], $node['id']);
 		}
-		return true;
+		
+		$tmp[$this->options['data2structure']] = $id;
+		$sql = "
+			INSERT INTO 
+				".$this->options['data_table']." (".implode(',', array_keys($tmp)).") 
+				VALUES(?".str_repeat(',?', count($tmp) - 1).") 
+			ON DUPLICATE KEY UPDATE 
+				".implode(' = ?, ', array_keys($tmp))." = ?";
+		$par = array_merge(array_values($tmp), array_values($tmp));
+		try {
+			$this->db->query($sql, $par);
+		}
+		catch(Exception $e) {
+			throw new Exception('Impossible de mettre à jour');
+		}
+	
+		//ED140608
+		$new_name 	= $tmp['nm'];
+		if($oldName !== false && ($new_name != null) && ($new_name != $oldName)) {
+			helpers::nodeFile_mv($oldPath, $oldName, $oldPath, $new_name, true);
+		}
+		
+		return array(
+			'id' => $id
+			, 'nm' => $new_name
+		);
 	}
 
 	public function analyze($get_errors = false) {

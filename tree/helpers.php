@@ -62,6 +62,19 @@ function rcopy($src, $dst) {
   else if (file_exists($src)) copy($src, $dst);
 }
 
+/* get_temp_dir
+	equivalent a sys_get_temp_dir mais controle les droits d'acces et substitue par $_SERVER['DOCUMENT_ROOT'], 'edQ/tmp' si nécessaire.
+*/
+function get_temp_dir(){
+	$dir = sys_get_temp_dir();
+	$perms = fileperms( sys_get_temp_dir() );
+	if(!($perms & 0x0080)){
+		$dir = helpers::combine($_SERVER['DOCUMENT_ROOT'], 'edQ/tmp');
+		if(!file_exists($dir))
+			mkdir($dir);
+	}
+	return $dir;
+}
 /* static helpers */
 class helpers {
 	/* combine
@@ -201,7 +214,7 @@ class helpers {
 		..dataSource : chez les parents
 		.dataSource : au niveau de la référence ou chez les parents
 		:dataSource : dans la descendance
-		
+		/_System/dataSource : à partir de la racine
 */
 function include_page($search, $__FILE__ = null, $extension = ".php", &$arguments = null){
 	if($search !== null && $search !== '' && $search[0] == '/')
@@ -304,6 +317,11 @@ function call_page($search, &$arguments = null, $__FILE__ = null, $extension = "
 }
 /* url_page
 	retourne l'url de la page relative
+	Recherche
+		..dataSource : chez les parents
+		.dataSource : au niveau de la référence ou chez les parents
+		:dataSource : dans la descendance
+		/_System/dataSource : à partir de la racine
 */
 function url_page($search, $__FILE__ = null, $extension = ".php"){
 	if($__FILE__ == null){
@@ -326,22 +344,18 @@ function url_page($search, $__FILE__ = null, $extension = ".php"){
 		$ref = dirname($__FILE__);
 		
 		if($search[0] == '.')
-			if($search[1] == '.'){ // eg : '..dataSource'
+			if($search[1] == '.'){ // eg : '..dataSource' : parents
 				if(strlen($search) == 2){ // ..
 					$file = $ref . ($extension == null ? '' : $extension);
 				}
 				else {
 					$file = helpers::combine($ref, substr($search, 2), $extension);
-					//var_dump($file);
-					//var_dump(file_exists($file));
 					if(!file_exists($file))
 						return url_page($search, $ref, $extension);
 				}
 			}
-			else { // eg : '.dataSource'
+			else { // eg : '.dataSource' : here or parents
 				$file = helpers::combine($ref, substr($search, 1), $extension);
-				//var_dump($file);
-				//var_dump(file_exists($file));
 				if(!file_exists($file)
 				&& dirname($ref) != $ref)
 					return url_page( $search, $ref, $extension);
@@ -349,7 +363,7 @@ function url_page($search, $__FILE__ = null, $extension = ".php"){
 		else if($search[0] == ':'){ // eg : ':Liste'
 			$file = helpers::combine(substr($__FILE__, 0, strlen($__FILE__) - 4), substr($search, 1), $extension); // $__FILE__ moins l'extension .php
 		}
-		else // eg : 'dataSource'
+		else // eg : 'dataSource' or '/_System/dataSource'
 			$file = helpers::combine($ref, $search, $extension);
 	}
 	
@@ -378,21 +392,31 @@ function url_page($search, $__FILE__ = null, $extension = ".php"){
 /* url_viewNode
 	
 */
-function url_view($node){
-	return 'view.php?id=' . $node['id'];
+function url_view($node, $arguments = null, $view_name = 'file.call'){
+	return 'view.php?id=' . ( is_numeric($node) ? $node : $node['id'] )
+		. ( $arguments == null ? '' : '&' . (is_array($arguments) ? implode('&', $arguments) : $arguments) )
+		. '&vw=' . $view_name
+	;
 }
 /* get_db
 	include_page ('.dataSource.php')
 	return global $db
-	example : $db = get_db(); //find the first dataSource.php in tree starting from dirname(__FILE__)
+	e.g : $db = get_db(); //find the first dataSource.php in tree starting from dirname(__FILE__)
 */
 function get_db($search = '.dataSource', $__FILE__ = null){
+	if($__FILE__ == null){
+		$dt = debug_backtrace();
+		for($i = 0; $i < count($dt); $i++)
+			if($dt[$i]['file'] != __FILE__)
+				break;
+		$__FILE__ = $dt[$i]['file'];
+	}
 	include_page($search, $__FILE__, '.php');
 	global $db;
 	return $db;
 }
 /* view_node
-	
+	call viewer for node
 */
 function view_node($viewer, $node){
 	$viewer = nodeViewer::fromClass($viewer);

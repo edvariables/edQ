@@ -3,19 +3,17 @@ $uid = uniqid('form');
 $count_rows = 30;
 $maxRows = 30;
 
-global $tree;
-$csv = $tree->get_child_by_name($node['id'], 'csv');
-if(is_array($csv))
-	$csv = $csv['id'];
-else
-	$csv = 'ERROR-' . $csv;
-$csv_options = "&node=" . $node['id'];
 ?>
-<form id="<?=$uid?>" method="POST" action="view.php?id=<?=$node['id']?>&vw=file.call" autocomplete="off">
+<form id="<?=$uid?>" method="POST" action="<?=url_view( $node )?>" autocomplete="off">
 <table class="edq" style="overflow: scroll;">
-	<caption style="text-align: left;"><?= $count_rows . ' ligne' . ($count_rows > 1 ? 's' : '')
-		. ( $count_rows == $maxRows ? ' ou plus' : '' )?>
-		<a href="view.php?id=<?=$csv?><?=$csv_options?>&vw=file.call" style="margin-left: 2em;">télécharger</a>
+	<caption style="text-align: left;"><h1><?=$node['nm']?></h1>
+		<?= $count_rows . ' ligne' . ($count_rows > 1 ? 's' : '')
+		. ( $count_rows == $maxRows ? ' ou plus' : '' )?><?php
+		$viewer = tree::get_node_by_name('/_Exemples/Convertisseurs/table/csv')['id'];
+		$viewer_options = "&node=" . $node['id']
+				. "&file--name=" . urlencode($node['nm'])
+				. "&node--get=html";
+		?><a class="file-download" href="<?=url_view( $viewer, $viewer_options )?>" style="margin-left: 2em;">télécharger</a>
 	</caption>
 	<thead><tr>
 	 <th></th>

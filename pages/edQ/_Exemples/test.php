@@ -1,8 +1,9 @@
-<ul>Test
-<li><?php
-if(!isset($arguments))
-	$arguments = array();
-call_page(':sub', $arguments, __FILE__);
-$arguments['test'] = date('now');
-print_r($arguments);
-?></ul>
+<?php
+
+$perms = fileperms( sys_get_temp_dir() );
+$info = (string)$perms;
+$info .= (($perms & 0x0100) ? 'r' : '-');
+$info .= (($perms & 0x0080) ? 'w' : '-');
+
+echo($info);
+?>

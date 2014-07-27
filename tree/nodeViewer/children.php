@@ -42,7 +42,6 @@ class nodeViewer_children extends nodeViewer {
 				
 				$r = $viewer->html($child);
 				$html .= $r["content"];
-				
 				$html .= '</div>';
 				//first only
 				break;

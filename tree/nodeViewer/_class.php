@@ -186,6 +186,31 @@ class nodeViewer {
 		</script> '
 		;
 	}
+	/* searchScript
+		Script js de soumission d'un formulaire et refresh du contenu
+	*/
+	public function searchScript($uid, $options = null){
+		$beforeSubmit = @$options['beforeSubmit'];
+		return
+		'<script>  
+			$(document).ready(function() { 
+				// bind form and provide a simple callback function 
+				$("#' . $uid . '").submit(function() { ' . $beforeSubmit . '
+					$(this).ajaxSubmit({
+						beforeSubmit: function(){ 	}
+						, success: function(data){
+							$("#' . $uid . '").parents(".ui-widget-content:first").html(data);
+						}
+						, error: function(jq, textStatus, errorThrown, more ) { 
+							alert(textStatus + " : " + errorThrown); 
+						}
+					});
+					return false;
+				})
+		   }); 
+		</script> '
+		;
+	}
 }
 
 ?>

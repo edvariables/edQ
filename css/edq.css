@@ -4,7 +4,7 @@ html, body {
 	height:		100%;
 	padding:	0;
 	margin:		0;
-	overflow:	hidden !important;
+	/*overflow:	hidden !important;*/
 }
 #container {
 	width:			98%;
@@ -85,6 +85,9 @@ html, body { background:#ebebeb; font-size:10px; font-family:Verdana; margin:0; 
 	font-weight: normal;
 	font-size: 11px;
 	font-family: Verdana;
+}
+.edq-viewers.header-footer.ui-state-default > label > .jstree-icon {
+	margin-right: 3px;
 }
 .edq-viewers.header-footer .toolbar {
 	float: right;

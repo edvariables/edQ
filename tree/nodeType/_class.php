@@ -8,34 +8,44 @@ class node {
 	public static function get_types(){
 		return array(
 			  "default" => array(
-				"icon" => "file file-file"
+				"text" => "Page"
+				, "icon" => "file file-file"
 			  ),
 			  "folder" => array(
-				"icon" => "file file-folder"
+				"text" => "Dossier"
+				, "icon" => "file file-folder"
 			  ),
 			  "sql" => array(
-				"icon" => "file file-sql"
+				"text" => "SQL"
+				, "icon" => "file file-sql"
 			  ),
 			  "css" => array(
-				"icon" => "file file-css"
+				"text" => "Fichier css"
+				, "icon" => "file file-css"
 			  ),
 			  "php" => array(
-				"icon" => "file file-php"
+				"text" => "Fichier php"
+				, "icon" => "file file-php"
 			  ),
 			  "js" => array(
-				"icon" => "file file-js"
+				"text" => "Fichier js"
+				, "icon" => "file file-js"
 			  ),
 			  "html" => array(
-				"icon" => "file file-html"
+				"text" => "Fichier html"
+				, "icon" => "file file-html"
 			  ),
 			  "query" => array(
-				"icon" => "file file-query"
+				"text" => "Requête"
+				, "icon" => "file file-query"
 			  ),
 			  "dataSource" => array(
-				"icon" => "file file-iso"
+				"text" => "dataSource"
+				, "icon" => "file file-iso"
 			  ),
 			  "jqGrid" => array(
-				"icon" => "file file-query"
+				"text" => "jqGrid"
+				, "icon" => "file file-query"
 			  )
 		);
 	}

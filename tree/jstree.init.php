@@ -24,10 +24,21 @@ $().ready(function () {
 				}
 			},
 			"design" : <?= $design ? '1' : '0' ?>,
+			"defaults" : { <?php /* cf plugins.edQ */ ?>
+				"dnd" : {
+					"move" : <?= $design ? '1' : '0' ?>,
+					"copy" : <?= $design ? '1' : '0' ?>,
+					"always_copy" : false
+				}
+				, "favpanel" : {
+					"design" : <?= $design ? '1' : '0' ?>,
+					"selector" : ".jstree-favpanel"
+				}
+			},
 			"types" : <?= json_encode(node::get_types()) ?>,
 			"icons" : <?= json_encode(node::get_icons()) ?>,
 			"ulvls" : <?= json_encode(node::get_ulvls()) ?>,
-			'plugins' : ['state','dnd','contextmenu','wholerow', 'types']
+			'plugins' : ['state','dnd','contextmenu','wholerow', 'types', 'edQ', 'favpanel']
 		})
 		.on('delete_node.jstree', function (e, data) {
 			if(!confirm("Supprimer ?")){
@@ -40,9 +51,13 @@ $().ready(function () {
 				});
 		})
 		.on('create_node.jstree', function (e, data) {
-			$.get('tree/db.php?operation=create_node', { 'id' : data.node.parent, 'position' : data.position, 'text' : data.node.text })
+			$.get('tree/db.php?operation=create_node', { 'id' : data.node.parent, 'position' : data.position, 'text' : data.node.text, 'icon' : data.node.icon, 'type' : data.node.type })
 				.done(function (d) {
 					data.instance.set_id(data.node, d.id);
+					if(data.node.original.text != d.nm){
+						data.instance.set_text(data.node, d.nm, false);
+						setTimeout(function () { data.instance.edit(d); },0);
+					}
 				})
 				.fail(function () {
 					data.instance.refresh();
@@ -51,9 +66,17 @@ $().ready(function () {
 		.on('rename_node.jstree', function (e, data) {
 			if(data.toServer || data.toServer === undefined) {
 				$.get('tree/db.php?operation=rename_node', { 'id' : data.node.id, 'text' : data.text })
-					.fail(function () {
-						data.instance.refresh();
-					});
+					.done(function (d) {
+					//mise a jour du noeud
+					if(d.nm
+					&& (data.node.text != d.nm)){
+						data.node.text = d.nm;
+						data.instance.refresh_node( data.node );
+					}
+				})
+				.fail(function () {
+					data.instance.refresh();
+				});
 			}
 		})
 		.on('update_node.jstree', function (e, data) {
@@ -75,11 +98,12 @@ $().ready(function () {
 					, async: false
 				})
 				.done(function (d) {
-					//mise a jour du noeud
-					for(var prop in d[0])
-						if(prop != "id" || prop != "children") 
-							//TODO prop == "data" : écrase la propriété data
-							data.node[prop] = d[0][prop];
+					if(d === 'object')
+						//mise a jour du noeud
+						for(var prop in d[0])
+							if(prop != "id" || prop != "children") 
+								//TODO prop == "data" : écrase la propriété data
+								data.node[prop] = d[0][prop];
 				})
 				.fail(function () {
 					data.instance.refresh();
@@ -88,6 +112,14 @@ $().ready(function () {
 		
 		.on('move_node.jstree', function (e, data) {
 			$.get('tree/db.php?operation=move_node', { 'id' : data.node.id, 'parent' : data.parent, 'position' : data.position })
+				.done(function (d) {
+					//mise a jour du noeud
+					if(d.nm
+					&& (data.node.text != d.nm)){
+						data.node.text = d.nm;
+						data.instance.refresh_node( data.node );
+					}
+				})
 				.fail(function () {
 					data.instance.refresh();
 				});

@@ -13,7 +13,7 @@ $loginUser = isset($_SESSION['edq-user'])
 
 // Check
 if(isset($_POST['action']) && $_POST['action'] == 'login'){ 
-	require_once('../conf/db.conf.php');
+	require_once('../conf/edQ.conf.php');
 	require_once('class.db.php');
 	function encrypt($string){
 		return base64_encode(base64_encode(base64_encode($string)));

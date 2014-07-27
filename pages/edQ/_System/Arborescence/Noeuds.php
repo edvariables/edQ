@@ -18,21 +18,35 @@ foreach ($nodes as $node) {
 	 	 $parents[] = $prev_node['nm'];  
 	 else if($prev_lvl > $node['lvl'])
 	 	 $parents = array_slice($parents, 0, $node['lvl']);
-    echo '<tr>';
+	$dir_exists = file_exists( $file );
+	$php_exists = file_exists( $file . '.php' );
+    echo '<tr class="'. ($dir_exists ? 'is-dir' : '') . ($php_exists ? ' is-php' : '') . '">';
     echo '<td>' . join('/', $parents) . '/</td>'; 
     echo '<td> ' . $node['nm'] . ' </td>';
-	 $file = $dir . '/' . join('/', $parents) . '/' . $node['nm'];
-    echo '<td> ' . ( file_exists( $file ) ? ' répertoire' : '' ). ' </td>';
-    echo '<td> ' . ( file_exists( $file . '.php' ) ? ' fichier ' : '' ). ' </td>';
-	 $counter++;
-	 $prev_node = $node;
-	 $prev_lvl = $node['lvl'];
+	$file = $dir . '/' . join('/', $parents) . '/' . $node['nm'];
+    echo '<td> ' . ( $dir_exists ? ' répertoire' : '' ). ' </td>';
+    echo '<td> ' . ( $php_exists ? ' fichier ' : '' ). ' </td>';
+	$counter++;
+	$prev_node = $node;
+	$prev_lvl = $node['lvl'];
 }
 ?>
 </tbody>
 <tfoot><tr><td><?=$counter?> noeuds</tfoot>
 </table>
 <style>
+#<?=$uid?> tr {
+	 background-color: #EAEAEA;
+}
+#<?=$uid?> tr.is-dir {
+	 background-color: yellow;
+}
+#<?=$uid?> tr.is-dir.is-php {
+	 background-color: lightgreen;
+}
+#<?=$uid?> tr.is-php {
+	 background-color: lightblue;
+}
 #<?=$uid?> td:nth-child(3), #<?=$uid?> td:nth-child(4) {
 	 font-style: italic;
 }

@@ -9,7 +9,6 @@
 		<title>edQ</title>
 		<meta name="viewport" content="width=device-width" />
 		<link rel="stylesheet" href="tree/themes/default/style.css" />
-		<!--link rel="stylesheet" href="css/smoothness/jquery-ui-1.10.4.custom.min.css" /-->
 		<link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.4.custom.min.css" />
 
 		<link rel="stylesheet" type="text/css" href="css/layout-default-latest.css" />
@@ -33,6 +32,7 @@
 		<script type="text/javascript" src="jquery/colorpicker/js/colorpicker.js"></script>
 		
 		<script src="tree/jstree.js"></script>
+		<script src="tree/jstree.plugins.js"></script>
 
 		<script type="text/javascript" src="jquery/markitup/jquery.markitup.js"></script>
 		<script type="text/javascript" src="jquery/markitup/sets/dataSource/set.js"></script>
@@ -137,7 +137,7 @@
 	</head>
 	<body>
 		<div id="container" role="main">
-			<div class="ui-layout-north" style="text-align: center;">
+			<div id="favpanel" class="ui-layout-north jstree-default jstree-favpanel" style="text-align: center;">
 				<?php include('north.php');?>
 			</div>
 		
