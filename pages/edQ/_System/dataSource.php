@@ -1,10 +1,10 @@
 <?php
 global $db;
-$DBSERVER = "localhost";
-$DBNAME = "edq";
-$DBUSER = "ED";
-$DBPASSWORD = "";
-$DBTYPE = "mysqli";
-$DBPORT = "";
+$DBSERVER = DBSERVER;
+$DBNAME = DBNAME;
+$DBUSER = DBUSER;
+$DBPASSWORD = DBPASSWORD;
+$DBTYPE = DBTYPE;
+$DBPORT = DBPORT;
 $db = db::get($DBTYPE . '://' . $DBUSER . ':' . $DBPASSWORD . '@' . $DBSERVER . '/' . $DBNAME);
 ?>

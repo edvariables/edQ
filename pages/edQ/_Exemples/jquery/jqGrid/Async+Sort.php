@@ -1,11 +1,10 @@
 <?php
-$dataUrl = url_page(':data');
 
 $uid = uniqid('datatable');
 if(!isset($arguments))
 	$arguments = array();
 $arguments[ 'uid' ] = $uid;
-call_page(':html', $arguments);
+page::call(':html', $arguments);
 
 ?><script>
 $(document).ready(function(){
@@ -13,7 +12,7 @@ $(document).ready(function(){
 jQuery("#<?=$uid?>").jqGrid({
 	datatype: function(postdata) {
 	    jQuery.ajax({
-	 	 url: '<?=url_page(':data')?>',
+	 	 url: '<?= page::url(':data', __FILE__) ?>',
 	 	 data: postdata,
 	 	 dataType:"text",
 	 	 success: function(response,stat){

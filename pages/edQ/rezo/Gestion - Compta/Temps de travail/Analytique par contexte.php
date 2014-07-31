@@ -146,8 +146,8 @@ $uid = uniqid('form');
 		<td><?=$row["CodeAnalytique"]?>
 		<td><?=htmlspecialchars( preg_replace('/\\/*$/', '', $row["Contexte"]) )?>
 		<td><?=$row["Mois"]?>
-		<td><?=preg_replace('/\./', ',', number_format($row["Heures"], 2)) ?>
-		<td><?=preg_replace('/\./', ',', number_format($row["Valorisation"], 2)) ?>
+		<td><?=number_format($row["Heures"], 2, ',', '') ?>
+		<td><?=number_format($row["Valorisation"], 2, ',', '') ?>
 		</tr><?php
 	}
 	?></tbody>

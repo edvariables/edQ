@@ -52,6 +52,14 @@ html, body { background:#ebebeb; font-size:10px; font-family:Verdana; margin:0; 
 .ui-tabs-anchor .jstree-icon {
 	margin-right: 3px;
 }
+/* favpanel */
+.tree-favpanel-toolbar a {
+	margin: 2px;
+	opacity: 0.5;
+}
+.tree-favpanel-toolbar a:hover {
+	opacity: 1;
+}
 
 /* */		
 .edq-error {
@@ -90,6 +98,9 @@ html, body { background:#ebebeb; font-size:10px; font-family:Verdana; margin:0; 
 	margin-right: 3px;
 }
 .edq-viewers.header-footer .toolbar {
+	float: right;
+}
+.edq-viewers.header-footer .toolbar > * {
 	float: right;
 }
 .edq-viewers.ui-tabs > .ui-tabs-panel {
@@ -136,4 +147,15 @@ table > thead > tr > th.pk {
 .edq-toolbar a.edq-refresh {
 	background: url(../images/refresh.png) no-repeat; 
 	padding-left: 18px;
+}
+
+#edQ .CodeMirror {
+  /* Set height, width, borders, and global font properties here */
+  height: 400px;
+}
+
+/* boutons de barres d'outils */
+.ui-border-none
+, .ui-state-default.ui-border-none {
+	border: none;
 }

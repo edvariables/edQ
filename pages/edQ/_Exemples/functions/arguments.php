@@ -10,11 +10,11 @@ else if(!isset($arguments)){
 	$arguments[ 'boucle' ] = 'bouclée';
 
 	echo "<li><h1>appel de arguments.php sans arguments</h1>";
-	echo '<li>' . call_page('arguments', $arguments, __FILE__);
+	echo '<li>' . page::call('arguments', $arguments, __FILE__);
 }
 else {
 	echo "<li><h1>appel de arguments.php avec arguments vide</h1>";
-	echo '<li>' . call_page('arguments', $arguments, __FILE__);
+	echo '<li>' . page::call('arguments', $arguments, __FILE__);
 }
 echo "</ul>";
 ?>

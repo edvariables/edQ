@@ -1,4 +1,6 @@
-<?php
+<?php /* exemple */
+ini_set( "display_errors", 1);
+error_reporting (E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
 $uid = uniqid('form');
 $count_rows = 30;
 $maxRows = 30;
@@ -9,11 +11,11 @@ $maxRows = 30;
 	<caption style="text-align: left;"><h1><?=$node['nm']?></h1>
 		<?= $count_rows . ' ligne' . ($count_rows > 1 ? 's' : '')
 		. ( $count_rows == $maxRows ? ' ou plus' : '' )?><?php
-		$viewer = tree::get_node_by_name('/_Exemples/Convertisseurs/table/csv')['id'];
+		$viewer = tree::get_node_by_name('/_Exemples/Convertisseurs/table/csv');
 		$viewer_options = "&node=" . $node['id']
 				. "&file--name=" . urlencode($node['nm'])
 				. "&node--get=html";
-		?><a class="file-download" href="<?=url_view( $viewer, $viewer_options )?>" style="margin-left: 2em;">télécharger</a>
+		?><a class="file-download" href="<?=url_view( $viewer['id'], $viewer_options )?>" style="margin-left: 2em;">télécharger</a>
 	</caption>
 	<thead><tr>
 	 <th></th>

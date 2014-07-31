@@ -1,3 +1,3 @@
 <?php
-include_page(':Liste', $node);
+page::execute(':Liste', $node);
 ?>

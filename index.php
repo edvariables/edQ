@@ -1,6 +1,7 @@
 <?php
 	include('bin/session.php');
 	require('tree/helpers.php');
+	require('tree/page.php');
 ?><!DOCTYPE html>
 <html>
 	<head>
@@ -12,8 +13,11 @@
 		<link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.4.custom.min.css" />
 
 		<link rel="stylesheet" type="text/css" href="css/layout-default-latest.css" />
+		
 		<link rel="stylesheet" type="text/css" href="jquery/dataTables/css/jquery.dataTables.min.css" />
+		
 		<link rel="stylesheet" type="text/css" media="screen" href="jquery/jqGrid/css/ui.jqgrid.css" />
+		
 		<link rel="stylesheet" href="jquery/colorpicker/css/colorpicker.css" type="text/css" />
 		<link rel="stylesheet" type="text/css" href="jquery/colorpicker/css/layout.css" />
 
@@ -24,6 +28,7 @@
 		<script src="js/jquery-ui-1.10.4.custom.min.js"></script>
 		
 		<script type="text/javascript" src="js/jquery.layout-latest.js"></script>
+		
 		<script type="text/javascript" src="jquery/dataTables/js/jquery.dataTables.min.js"></script>
 
 		<script src="jquery/jqGrid/js/grid.locale-fr.js" type="text/javascript"></script>
@@ -39,22 +44,21 @@
 
 		<?php
 		if(isDesign()) {?>
-		<link rel="stylesheet" href="codemirror-4.2/lib/codemirror.css">
-		<script src="codemirror-4.2/lib/codemirror.js"></script>
-		<script src="codemirror-4.2/addon/edit/matchbrackets.js"></script>
-		<script src="codemirror-4.2/mode/php/php.js"></script>
-		<script src="codemirror-4.2/mode/htmlmixed/htmlmixed.js"></script>
-		<script src="codemirror-4.2/mode/xml/xml.js"></script>
-		<script src="codemirror-4.2/mode/javascript/javascript.js"></script>
-		<script src="codemirror-4.2/mode/css/css.js"></script>
-		<script src="codemirror-4.2/mode/clike/clike.js"></script>
+		<link rel="stylesheet" href="jquery/codemirror/lib/codemirror.css">
+		<script src="jquery/codemirror/lib/codemirror.js"></script>
+		<script src="jquery/codemirror/addon/edit/matchbrackets.js"></script>
+		<script src="jquery/codemirror/mode/php/php.js"></script>
+		<script src="jquery/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="jquery/codemirror/mode/xml/xml.js"></script>
+		<script src="jquery/codemirror/mode/javascript/javascript.js"></script>
+		<script src="jquery/codemirror/mode/css/css.js"></script>
+		<script src="jquery/codemirror/mode/clike/clike.js"></script>
 		<?php }?>
 
 		<script type="text/javascript">
 		var myLayout;
 	
 		$(document).ready(function(){
-	
 	
 			$(".header-footer").hover(
 				function(){ $(this).addClass('ui-state-hover'); }
@@ -73,7 +77,9 @@
 				, stateManagement__enabled:	false // enable stateManagement - automatic cookie load & save enabled by default
 				,	stateManagement__autoLoad:	false // disable automatic cookie-load
 				,	stateManagement__autoSave:	false // disable automatic cookie-save
-				,	onload:	 function(layout, panes){ // run custom state-code when Layout loads
+				<?php /*
+					charge les paramètres de la page
+				*/?>,	onload:	 function(layout, panes){ // run custom state-code when Layout loads
 					var data;
 					if((data = window.localStorage.getItem('edq-layout')) != null && data != ''){
 						data = JSON.parse(data);
@@ -112,8 +118,9 @@
 						}
 					}
 
-				}
-				,	onunload: function(layout, panes){ // ditto when page unloads OR Layout is 'destroyed'
+				}<?php /*
+					enregistre les paramètres de la page
+				*/?>,	onunload: function(layout, panes){ // ditto when page unloads OR Layout is 'destroyed'
 					var data = {}, pane;
 					for(pane in layout.panes)
 						if(pane != 'center'
@@ -127,15 +134,15 @@
 							};
 						}
 					window.localStorage.setItem('edq-layout', JSON.stringify(data));
-				}
+				}<?php
 				/*, stateManagement__autoLoad:	true // automatic cookie-load
-				, stateManagement__autoSave:	true // automatic cookie-save*/
+				, stateManagement__autoSave:	true // automatic cookie-save*/?>
 			} );
 	
 		});
-		</script>
+	</script>
 	</head>
-	<body>
+	<body id="edQ">
 		<div id="container" role="main">
 			<div id="favpanel" class="ui-layout-north jstree-default jstree-favpanel" style="text-align: center;">
 				<?php include('north.php');?>

@@ -1,3 +1,3 @@
 <?php
-	 include_page('._Exemples\jquery\DataTables\Ajax\Array', __FILE__);
+	 page::execute('._Exemples\jquery\DataTables\Ajax\Array', __FILE__);
 ?>

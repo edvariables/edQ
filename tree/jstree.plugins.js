@@ -33,10 +33,21 @@
 		 * @name $.jstree.defaults.favpanel.classname
 		 * @plugin favpanel
 		 */
-		classname : 'jstree-favpanel'
+		classname : 'jstree-favpanel',
+		
+		/**
+		 * an array defining the drag grid steps
+		 * @name $.jstree.defaults.favpanel.grid
+		 * @plugin favpanel
+		 */
+		grid: [ 8, 8 ]
+					
 	};
 	$.jstree.plugins.favpanel = function (options, parent) {
+		
+		/* tree instance */
 		var self = this;
+		
 		this.bind = function () {
 			parent.bind.call(this);
 			
@@ -60,13 +71,22 @@
 							$dom.removeClass('noclick');
 							return;
 						}
+						
+						self.deselect_all();
+						
+						var $node = self.get_node($dom.attr('node_id'), true);
+						if($node){
+							self.select_node($node);
+							return;
+						}
 						$.get('tree/db.php?operation=get_view'
-							+ '&id=' + $dom.attr('id')
+							+ '&id=' + $dom.attr('node_id')
 							+ '&vw=viewers'
 							+ (self.settings.design ? '&design=true' : '')
 							, function (d) {
 								$('#data .default').html(d.content).show();
-							});
+							}
+						);
 					})
 				)
 				.css({
@@ -78,12 +98,13 @@
 					, "top" : node.y + "px"
 				})
 				.attr({
-					'id': node.id
+					'node_id': node.id
 					, 'role': 'treeitem'
 				})
 				.draggable({
+					revert: false,
 					distance: 4,
-					grid: [ 4, 4 ],
+					grid: self.settings.favpanel.grid,
 					start: function() {
 						$(this).addClass('noclick');
 					},
@@ -91,7 +112,8 @@
 						var page = { x : $droppable.scrollLeft(), y : $droppable.scrollTop() };
 						var $this = $(this);
 						var pos = $this.position();
-						if((page.y + pos.top + $this.height()) <= 14)
+						if((page.y + pos.top + $this.height()) <= 14
+						|| (page.x + pos.left) <= 4)
 							$this.css("color", "red");
 						else
 							$this.css("color", "black");
@@ -107,6 +129,8 @@
 			var $panels = $(this.settings.favpanel.selector);
 			if($panels.length === 0) return;
 			
+			this.toolbar($panels);
+			
 			$.post('view.php?id=/_System/Utilisateur/Preferences/get', { 
 					domain : 'jstree-favpanel-nodes'
 				})
@@ -119,7 +143,9 @@
 						// pour le dom correspondant au param
 						$panels.filter( data[panel].param ).each(function(){
 							$droppable = $(this);
-							if(typeof data[panel].value === "string")
+							if(!data[panel].value)
+								data[panel].value = {};
+							else if(typeof data[panel].value === "string")
 								data[panel].value = eval('(' + data[panel].value + ')');
 							// pour chaque noeud enregistré
 							for(var nodeId in data[panel].value){
@@ -135,32 +161,155 @@
 			});
 		};
 		
+		/* toolbar
+		 * create and return
+		*/
+		this.toolbar = function($panels){
+			if(!$panels && $panels)
+				$panels = $(this.settings.favpanel.selector);
+			if($panels.length === 0) return;
+			var $toolbar = $panels.children('.tree-favpanel-toolbar');
+			if($toolbar.length == 0){
+				/* see edQ.css @ .tree-favpanel-toolbar */
+				$toolbar = $('<div class="tree-favpanel-toolbar"></div>')
+					.append($('<a class="tree-favpanel-toolbar-trash"></a>')
+						.html('<span class="ui-icon ui-icon-trash" title="déplacer ici un élément"> </span>')
+						.css({
+							'cursor': 'pointer'
+							, 'position': 'absolute'
+							, 'top' : '2px'
+							, 'left' : '2px'
+							, 'margin' : '2px'
+						})
+						.hover(function(){
+								$(this).css({
+									/* 'border': '2px outset gray'
+									, 'background-color': '#F0F0F0'
+									, 'margin' : '0', */
+									'opacity': '1'
+								});
+							}, function(){
+								$(this).css({
+									'border': 'none'
+									, 'background-color': 'transparent'
+									, 'margin' : '2px',
+									'opacity': '0.5'
+								});
+							}
+						)
+						.click(function(){
+							if(!confirm('Le panneau va etre efface et la page rechargee.'))
+								return;
+							self.save($panels, 'reset', function(data){
+								if(data) return;
+								document.location.reload();
+								return true;
+							} );
+							return false;
+						})
+						.droppable({
+							accept: ".jstree-node",
+							//hoverClass: "ui-state-active",
+							over: function( event, ui ){
+								$(this).css({
+									'border': '2px outset gray'
+									, 'background-color': '#F0F0F0'
+									, 'margin' : '0',
+									'opacity': '1'
+								});
+								ui.draggable.css({
+									'color': 'red'
+								});
+							},
+							out: function( event, ui ){
+								$(this).css({
+									'border': 'none'
+									, 'background-color': 'transparent'
+									, 'margin' : '2px',
+									'opacity': '0.5'
+								})
+								ui.draggable.css({
+									'color': 'inherit'
+								});
+							},
+							drop : function( event, ui ){
+								ui.draggable.remove();
+								self.save($droppable);
+							}
+						})
+					)
+					.append($('<a class="tree-favpanel-toolbar-prev"></a>')
+						.html('<span class="ui-icon ui-icon-arrowthick-1-w" title="precedent (en dev)"> </span>')
+						.css({
+							'cursor': 'pointer'
+							, 'position': 'absolute'
+							, 'top' : '22px'
+							, 'left' : '2px'
+							, 'margin' : '2px'
+						})
+						.hover(function(){
+								/*$(this).css({
+									'border': '2px outset gray'
+									, 'background-color': '#F0F0F0'
+									, 'margin' : '0'
+								});*/
+							}, function(){
+								$(this).css({
+									'border': 'none'
+									, 'background-color': 'transparent'
+									, 'margin' : '2px'
+								});
+							}
+						)
+						.click(function(){
+							self.load();
+							return false;
+						})
+					)
+					.css({
+						'position': 'absolute'
+						, 'background-color': '#F7F7F7'
+						, top: '2px'
+						, left: '2px'
+					})
+					.prependTo($panels)
+				;
+			}
+			return $toolbar;
+		};
+		
 		/* save nodes
 		*/
-		this.save = function($dom){
-			var data = {};
-			var page = { x : $dom.scrollLeft(), y : $dom.scrollTop() };
-			$dom.children('.jstree-node').each(function(){
-				var $this = $(this);
-				var pos = $this.position();
-				if((page.y + pos.top + $this.height()) <= 14)
-					return;
-				data[this.id] = {
-					h: Math.round($this.height())
-					, w: Math.round($this.width())
-					, x: Math.round(page.x + pos.left)
-					, y: Math.round(page.y + pos.top)
-					, text: $this.text()
-					, icon: $this.find('> a > i').attr('class').replace(/(\s*\jstree[^\s]+(\s|$))/g, '')
-				};
-			});
+		this.save = function($dom, data, callback){
+			if(!data){
+				data = {};
+				var page = { x : $dom.scrollLeft(), y : $dom.scrollTop() };
+				$dom.children('.jstree-node').each(function(){
+					var $this = $(this);
+					var pos = $this.position();
+					if((page.y + pos.top + $this.height()) <= 14)
+						return;
+					data[this.getAttribute('node_id')] = {
+						h: Math.round($this.height())
+						, w: Math.round($this.width())
+						, x: Math.round(page.x + pos.left)
+						, y: Math.round(page.y + pos.top)
+						, text: $this.text()
+						, icon: $this.find('> a > i').attr('class').replace(/(\s*\jstree[^\s]+(\s|$))/g, '')
+					};
+				});
+			}
 			
 			$.post('view.php?id=/_System/Utilisateur/Preferences/set', { 
 					domain : 'jstree-favpanel-nodes',
 					param : $dom[0].tagName + '#' + $dom.attr('id'),
-					value : data
+					value : typeof data === "object" ? JSON.stringify(data) : data
 				})
 				.done(function(data){
+					if(typeof callback === 'function')
+						if(callback.call(this, data))
+							return;
+						
 					if(data){
 						$('<div></div>').appendTo('body')
 							.html(data)
@@ -171,7 +320,9 @@
 					}
 				})
 				.fail(function(e, data){
-					alert('Erreur de sauvegarde');
+					$('<div>Erreur de sauvegarde</div>')
+						.append(data)
+						.dialog();
 			});
 		}
 	};
@@ -193,10 +344,11 @@
 						x = data.event.offsetX==undefined ? data.event.pageX - 24 : data.event.offsetX,
 						y = data.event.offsetY==undefined ? data.event.pageY - 16 : data.event.offsetY
 						;
+						var grid = data.data.origin.settings.favpanel.grid;
 						data.data.origin.add_node($droppable, {
 							'id': data.data.nodes[0]
-							, "x" : Math.round((x) / 4) * 4 + page.x
-							, "y" : Math.round((y) / 4) * 4 + page.y
+							, "x" : Math.round((x) / grid[0]) * grid[0] + page.x
+							, "y" : Math.round((y) / grid[1]) * grid[1] + page.y
 							, "text" :  $a.text()
 							, "icon" : $a.children('i').attr('class')
 						});

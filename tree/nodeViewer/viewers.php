@@ -71,12 +71,22 @@ class nodeViewer_viewers extends nodeViewer {
 			);
 		} 
 		
-		$html = '<div class="header-footer ui-state-default ui-corner-all edq-viewers">'
+		$toolbar = '<div class="header-footer ui-state-default ui-corner-all edq-viewers">'
 			. $this->label($node, preg_replace('/^\/edQ\//', '', $this->path($node))) . ' #' . $node['id']
 			. '<div class="toolbar">'
-				. '<input type="checkbox" onchange="$(this).parents(\'.edq-viewers:first\').next().toggle();" checked="checked"/>'
+				. '<button class="ui-button ui-state-default ui-border-none" onclick="$(this).children(\':first\').toggleClass(\'ui-icon-triangle-1-n\').toggleClass(\'ui-icon-triangle-1-s\')'
+					. '.parents(\'.header-footer:first\').next().toggle(function() { $(this).animate({ }, 200);}, function(){$(this).animate({}, 200);}); return false;">'
+					. '<span class="ui-icon ui-icon-triangle-1-n" title="masque/affiche"> </span></button>'
+				//. '<input type="checkbox" onchange="$(this).parents(\'.header-footer:first\').next().toggle();" checked="checked"/>'
+				// lien qui déplace les noeuds du viewer dans un autre div + dialog
+				. '<button class="ui-button ui-state-default ui-border-none" onclick="var $tb = $(this).parents(\'.header-footer:first\');'
+					. '$(\'<div></div>\').append($tb.parent().children())'
+						.'.dialog({ title: $tb.children(\'label\').text(), width: \'auto\', height: \'auto\' });
+						$(this).remove(); return false;">'
+					. '<span class="ui-icon ui-icon-newwin" title="affiche dans fen&ecirc;tre"> </span></button>'
 			. '</div></div>';
-		$html .= '<div class="edq-viewers" id="' . $ulId . '"><ul>';
+		$html .= $toolbar . '<div class="edq-viewers" id="' . $ulId . '"><ul>';
+		//$html = '<div class="edq-viewers" id="' . $ulId . '">'.$toolbar.'<ul>';
 		$nChild = 0;
 		$defaultView = null;
 		$defaultViewIndex = 0;

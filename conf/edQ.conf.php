@@ -1,4 +1,7 @@
 <?php
+ini_set( "display_errors", 1);
+error_reporting (E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+
 setlocale(LC_TIME, 'fr','fr_FR','fr_FR@euro','fr_FR.utf8','fr-FR','fra');
 
 define ("DBSERVER", "localhost");

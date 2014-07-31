@@ -79,6 +79,7 @@ $().ready(function() {
 	$textarea.nextAll(".CodeMirror:first").resizable({
 		resize: function() {
 			editor.setSize($(this).width(), $(this).height());
+			editor.refresh();
 		}
 	});
 	$textarea.data("editor", editor);
@@ -90,6 +91,28 @@ $().ready(function() {
 			$textarea.data("editor").save();
 		';
 		
+		$toolbar = '
+			<div class="edq-toolbar">
+			<input type="submit" value="Enregistrer"/>
+			<div style="float: right; opacity: 0.6;">
+				<span title="ui-icon-arrowthick-1-n" class="ui-icon ui-icon-arrowthick-1-n"
+					onclick="var $textarea = $(this).parents(\'form:first\').find(\'textarea:first\');
+						var editor = CodeMirror.fromTextArea($textarea.get(0));
+						var $codeMirror = $textarea.nextAll(\'.CodeMirror:first\');
+						editor.setSize($codeMirror.width(), $codeMirror.height()*0.7);
+						editor.refresh();
+						">&nbsp;</span>
+				<span title="ui-icon-arrowthick-1-s" class="ui-icon ui-icon-arrowthick-1-s"
+					onclick="var $textarea = $(this).parents(\'form:first\').find(\'textarea:first\');
+						var editor = CodeMirror.fromTextArea($textarea.get(0));
+						var $codeMirror = $textarea.nextAll(\'.CodeMirror:first\');
+						//editor.setSize($codeMirror.width(), $codeMirror.height()*1.7);
+						$codeMirror.css(\'height\', $codeMirror.height() * 1.4);
+						editor.refresh();
+						">&nbsp;</span>
+			</div>
+			</div>
+		';
 		return array(
 			"title" => $node->label()
 			, "content" => $head
@@ -107,7 +130,7 @@ $().ready(function() {
 				. '</textarea>'
 				. '</fieldset>'
 				. '<fieldset>'
-				. '<input type="submit" value="Enregistrer"/>'
+				. $toolbar
 				. '</fieldset>'
 				. '</form>'
 				. $this->formScript($uid, null, $beforeSubmit)

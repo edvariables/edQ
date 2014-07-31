@@ -1,13 +1,14 @@
 <?php
-
 if(isset($arguments) && isset($arguments['value']))
 	$value = $arguments['value'];
 else if(isset($_REQUEST) && isset($_REQUEST['value']))
 	$value = $_REQUEST['value'];
 else
 	die('Aucune donnée');
-$value = json_encode($value);
-
+if($value == 'reset')
+	$value = '';
+else if(is_array($value))
+	$value = json_encode($value);
 if(isset($arguments) && isset($arguments['domain']))
 	$domain = $arguments['domain'];
 else if((isset($_REQUEST) && isset($_REQUEST['domain'])))

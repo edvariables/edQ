@@ -1,17 +1,17 @@
 <?php
-$dataUrl = url_page(':data');
+$dataUrl = page::url(':data');
 
 $uid = uniqid('datatable');
 if(!isset($arguments))
 	$arguments = array();
 $arguments[ 'uid' ] = $uid;
-call_page(':html', $arguments);
+page::call(':html', $arguments);
 
 ?><script>
 $(document).ready(function(){
 
 jQuery("#<?=$uid?>").jqGrid({
-	data: <?php include_page(':data')?>,
+	data: <?php page::execute(':data', __FILE__)?>,
 	datatype: 'local',
 	height: 'auto',
 	rowNum: 30,

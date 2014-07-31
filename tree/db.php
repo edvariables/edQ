@@ -1,11 +1,16 @@
-<?php
-include_once(dirname(__FILE__) . '/../bin/session.php');
-include_once(dirname(__FILE__) . '/helpers.php');
+<?php /* point d'entrée lors d'un appel de view.php 
+Fait le lien entre l'arborescence dans le navigateur et dans la base de données.
+L'opératon get_view transfert le traitement à une classe dans /tree/viewers/
+*/
+$this_dir = dirname(__FILE__);
+include_once($this_dir . '/../bin/session.php');
+include_once($this_dir . '/helpers.php');
+include_once($this_dir . '/page.php');
+// opération demandée
 if(isset($_REQUEST['operation'])) {
-	$dir = dirname(__FILE__);
-	require_once($dir . '/../conf/edQ.conf.php');
-	require_once($dir . '/../bin/class.db.php');
-	require_once($dir . '/class.tree.php');
+	require_once($this_dir . '/../conf/edQ.conf.php');
+	require_once($this_dir . '/../bin/class.db.php');
+	require_once($this_dir . '/class.tree.php');
 				
 	$fs = new tree(db::get(DBTYPE . '://' . DBUSER . ':' . DBPASSWORD . '@' . DBSERVER . ':' . DBPORT . '/' . DBNAME)
 		, array(
@@ -118,7 +123,7 @@ if(isset($_REQUEST['operation'])) {
 					}
 					break;
 				case "get_view":
-					require_once(dirname(__FILE__) . '/nodeViewer/_class.php');
+					require_once($this_dir . '/nodeViewer/_class.php');
 				
 					$vw = isset($_REQUEST['vw']) && $_REQUEST['vw'] !== null ? $_REQUEST['vw'] : '';
 					$viewer = nodeViewer::fromClass($vw);

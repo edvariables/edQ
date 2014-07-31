@@ -109,7 +109,7 @@ $uid = uniqid('form');
 		//bouton de recherche
 		?><input type="submit" value="Rechercher" style="margin-left: 2em;"/><?php
 		//lien de téléchargement
-		$viewer = tree::get_node_by_name('/_Exemples/Convertisseurs/table/csv')['id'];
+		$viewer = tree::get_id_by_name('/_Exemples/Convertisseurs/table/csv');
 		$viewer_options = "&node=" . $node['id']
 				. "&file--name=" . urlencode($node['nm'])
 				. "&node--get=html";
@@ -133,8 +133,8 @@ $uid = uniqid('form');
 		<td><?=htmlspecialchars( $row["Salarié"] )?></td>
 		<td><?=$row["CodeAnalytique"]?>
 		<td><?=$row["Mois"]?>
-		<td><?=preg_replace('/\./', ',', number_format($row["Heures"], 2)) ?>
-		<td><?=preg_replace('/\./', ',', number_format($row["Valorisation"], 2)) ?>
+		<td><?=number_format($row["Heures"], 2, ',', '') ?>
+		<td><?=number_format($row["Valorisation"], 2, ',', '') ?>
 		</tr><?php
 	}
 	?></tbody>
