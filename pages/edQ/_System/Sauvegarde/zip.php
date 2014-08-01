@@ -19,12 +19,12 @@ if($backup == null){
 	?><form id="<?=$uid?>">
 	<fieldset><legend>Téléchargez une sauvegarde compressée</legend>
 	<ul>
-	<li><a href="<?=url_view($node)?>&backup=sql+pages+sources">SQL + Pages + Sources</a>
-	<li><a href="<?=url_view($node)?>&backup=sql+sources">SQL + Sources</a>
-	<li><a href="<?=url_view($node)?>&backup=sql+pages">SQL + Pages</a>
-	<li><a href="<?=url_view($node)?>&backup=pages">Pages seules</a>
-	<li><a href="<?=url_view($node)?>&backup=sql">SQL seul</a>
-	<li><a href="<?=url_view($node)?>&backup=sources">Sources seules</a>
+	<li><a href="<?=page::url($node)?>&backup=sql+pages+sources">SQL + Pages + Sources</a>
+	<li><a href="<?=page::url($node)?>&backup=sql+sources">SQL + Sources</a>
+	<li><a href="<?=page::url($node)?>&backup=sql+pages">SQL + Pages</a>
+	<li><a href="<?=page::url($node)?>&backup=pages">Pages seules</a>
+	<li><a href="<?=page::url($node)?>&backup=sql">SQL seul</a>
+	<li><a href="<?=page::url($node)?>&backup=sources">Sources seules</a>
 	</ul></fieldset>
 	<style> 
 		#<?=$uid?> ul { list-style: none; }
@@ -109,7 +109,7 @@ if(isset($backup['sql'])){
 // sources
 if(isset($backup['sources'])){
 	$root = helpers::combine($_SERVER[ 'DOCUMENT_ROOT' ], dirname(substr($_SERVER[ 'REQUEST_URI' ], 1)));
-	folderToZip($root, $zip, NULL, '/[\\\\\/](((pages|sessions|backup)(\.[^\\\\\/]+)?)$|\.)/');
+	folderToZip($root, $zip, NULL, '/[\\\\\/](((pages|sessions|backup|tmp)(\.[^\\\\\/]+)?)$|\.)/');
 	foreach(array('_System', '_templates', '_Exemples', '_Demo', '_Lib') as $path)
 		folderToZip($root . '/pages/edQ/' . $path, $zip, 'pages/edQ/' . $path);
 }

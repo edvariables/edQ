@@ -29,7 +29,7 @@ error_reporting (E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
 	/* execution */
 	ob_start();
 
-	call_page($nodesource, $arguments, __FILE__);
+	page::call($nodesource, $arguments, __FILE__);
 	
 	$table = ob_get_clean();
 

@@ -1,4 +1,4 @@
-<?php
+<?php /* cf /conf/edQ.conf.php */
 global $db;
 $DBSERVER = DBSERVER;
 $DBNAME = DBNAME;

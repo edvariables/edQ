@@ -69,10 +69,17 @@ function get_temp_dir(){
 	$dir = sys_get_temp_dir();
 	$perms = fileperms( sys_get_temp_dir() );
 	if(!($perms & 0x0080)){
-		$dir = helpers::combine($_SERVER['DOCUMENT_ROOT'], 'edQ/tmp');
-		if(!file_exists($dir))
-			mkdir($dir);
+		return get_local_temp_dir();
 	}
+	return $dir;
+}
+/* get_local_temp_dir
+	$_SERVER['DOCUMENT_ROOT'], 'edQ/tmp' si nécessaire.
+*/
+function get_local_temp_dir(){
+	$dir = helpers::combine($_SERVER['DOCUMENT_ROOT'], 'edQ/tmp');
+	if(!file_exists($dir))
+		mkdir($dir);
 	return $dir;
 }
 

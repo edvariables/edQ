@@ -3,9 +3,9 @@ $uid = uniqid('debug');
 ?><form id="<?=$uid?>">
 <fieldset><legend>Convertir en .csv </legend>
 <ul>
-	<li><a href="<?=url_view(tree::get_id_by_name('rows', $node))?>"
+	<li><a href="<?=page::url(':rows', $node)?>"
    onclick="return dialog.call(this);">rows : retourne les données</a>
-	<li><a href="<?=url_view(tree::get_id_by_name('table', $node))?>"
+	<li><a href="<?=page::url(':table', $node)?>"
    onclick="return dialog.call(this);">table : retourne le html de la table</a>
 </ul></fieldset>
 </form>

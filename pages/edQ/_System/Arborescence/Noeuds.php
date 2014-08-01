@@ -25,6 +25,7 @@ racine : <input size="32" value="<?=$root?>" name="f--root"/>
 	<th></th>
 	<th></th>
 	<th>nom</th>
+	<th>taille</th>
 	<th>modifié</th>
 	</tr></thead>
 	<tbody><?php
@@ -39,7 +40,7 @@ $search_len = strlen($search);
 foreach ($nodes as $node) {
 	 if($prev_lvl < $node['lvl'])
 	 	 $parents[] = $prev_node['nm'];  
-	 else if($prev_lvl > $node['lvl'])
+	 else if($prev_lvl >= $node['lvl'])
 	 	 $parents = array_slice($parents, 0, $node['lvl']);
 	$file = $dir . '/' . join('/', $parents) . '/' . $node['nm'];
     $dir_exists = file_exists( $file );
@@ -52,6 +53,16 @@ foreach ($nodes as $node) {
 		echo '<td class="is-dir jstree-default"> ' . ( $dir_exists ? ' <i class="jstree-icon file file-folder"></i>' : '' ). ' </td>';
 		echo '<td class="is-file jstree-default"> ' . ( $php_exists ? ' <i class="jstree-icon file file-file"></i>' : '' ). ' </td>';
 		echo '<td class="nm"> ' . $node['nm'] . ' </td>';
+		if($php_exists){
+			$filesize = filesize( realpath($file . '.php'));
+			if($filesize >= 1024)
+				$filesize = number_format($filesize / 1024, 0 ) . ' ko';
+			else
+				$filesize = $filesize . ' o';
+		}
+		else
+			$filesize = '';
+		echo '<td class="size"> ' . $filesize . ' </td>';
 		echo '<td class="date"> ' . ( $php_exists ? date('d/m/Y H:i:s', filemtime( realpath($file . '.php')) ) : '' ). ' </td>';
 		$counter++;
 	}

@@ -5,13 +5,12 @@ if(!isset($arguments))
 	$arguments = array();
 $arguments[ 'uid' ] = $uid;
 page::call(':html', $arguments);
-
 ?><script>
 $(document).ready(function(){
 
 jQuery("#<?=$uid?>").jqGrid({
 	datatype: function(postdata) {
-	    jQuery.ajax({
+		jQuery.ajax({
 	 	 url: '<?= page::url(':data', __FILE__) ?>',
 	 	 data: postdata,
 	 	 dataType:"text",

@@ -20,7 +20,7 @@ if(isset($_FILES) && isset($_FILES['q--filename'])){
 $uid = uniqid('form');
 ?>
 <form id="<?=$uid?>" method="POST" enctype="multipart/form-data"
-	  action="<?=url_view( $node )?>"
+	  action="<?=page::url( $node )?>"
 	  autocomplete="off" style="margin-bottom: 1em;">
 	<fieldset><legend>Chargement du fichier mensuel en provenance de l'expert-comptable</legend>
 	<input type="file" name="q--filename"/>
@@ -99,7 +99,7 @@ $args = array(
 	, 'q--date-fin' => $datePayesFin
 );
 
-call_page('Analytique/Synthese', $args, __FILE__);
+page::call('Analytique/Synthese', $args, __FILE__);
 $salaries = $args['rows'];
 
 /*$args = array(
@@ -128,7 +128,7 @@ for($nRow = 0; $nRow < count($salaries); $nRow++){
 /*$args = array(
 	'rows' => $salaries
 );
-call_page('/edQ/_Exemples/html/table/rows', $args, __FILE__);*/
+page::call('/edQ/_Exemples/html/table/rows', $args, __FILE__);*/
 
 $nbRows = count($rows);
 $rowsCptes = array();
@@ -302,7 +302,7 @@ $args = array(
 	, 'csv--rows' => 'rows'
 		
 );
-call_page('/edQ/_Exemples/html/table/rows', $args, __FILE__);?>
+page::call('/edQ/_Exemples/html/table/rows', $args, __FILE__);?>
 </fieldset></form>
 <pre><?php var_dump($analytic)?></pre>
 	

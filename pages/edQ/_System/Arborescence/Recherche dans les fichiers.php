@@ -30,6 +30,10 @@ $parents = array();
 $counter = 0;
 $search_lvl = count( explode( '/', preg_replace('/^\/|\/$/', '', $root) )) - 1;
 $search = $dir . $root;
+if(DIRECTORY_SEPARATOR == '\\'){
+	$dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);	
+	$search = str_replace('/', DIRECTORY_SEPARATOR, $search);
+}
 $search_len = strlen($search);
 $pos = null;
 //$columns
@@ -39,33 +43,43 @@ $columns = array(
 	, array( 'title' => 'path' )
 	, array( 'title' => 'name' )
 	, array( 'title' => 'date' )
+	, array( 'title' => 'size' )
 );
 if($content)
 	$columns[] = array( 'title' => 'trouvé' );
 
 foreach ($nodes as $node) {
-	 if($prev_lvl < $node['lvl'])
+	if($prev_lvl < $node['lvl'])
 	 	 $parents[] = $prev_node['nm'];  
-	 else if($prev_lvl > $node['lvl'])
+	else if($prev_lvl >= $node['lvl'])
 	 	 $parents = array_slice($parents, 0, $node['lvl']);
-	$file = $dir . '/' . join('/', $parents) . '/' . $node['nm'];
+	
+	$file = $dir . DIRECTORY_SEPARATOR . join(DIRECTORY_SEPARATOR, $parents) . DIRECTORY_SEPARATOR . $node['nm'];
     $dir_exists = file_exists( $file );
 	$php_exists = file_exists( $file . '.php' );
 	if($php_exists
-	&& substr( $file, 0, $search_len ) == $search ){
+	&& (substr( $file, 0, $search_len ) == $search) ){
 		if($content){
-			$pos = strpos(file_get_contents($file . '.php' ), $content);
-			if($pos === FALSE)
+			$pos = strpos(file_get_contents( $file . '.php' ), $content);
+			if($pos === FALSE){
 				continue;
+			}
 		}
+		$filesize = filesize( realpath($file . '.php'));
+		if($filesize >= 1024)
+			$filesize = number_format($filesize / 1024, 0 ) . ' ko';
+		else
+			$filesize = $filesize . ' o';
+		
 		$files[] = array(
 			/*'index' =>*/ $counter
-			, /*'path' =>*/ implode('/', array_slice ($parents, $search_lvl ))
+			, /*'path' =>*/ implode(DIRECTORY_SEPARATOR, array_slice ($parents, $search_lvl ))
 			, /*'name' =>*/ $node['nm']
 			, /*'date' =>*/ date('d/m/Y H:i:s', filemtime( realpath($file . '.php')) )
+			, /*'filesize' =>*/ $filesize
 		);
 		if($content)
-			$files[$counter][] = $pos;
+			$files[count($files) - 1][] = $pos;
 	
 		$counter++;
 	}

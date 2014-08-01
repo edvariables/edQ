@@ -48,6 +48,13 @@ class tree
 		recherche le noeud dans la table tree_data
 	*/
 	public function get_node($id, $options = array(), $errorIfNotExists = true) {
+		// $id est un noeud
+		if(is_array($id) && isset($id['id'])){
+			// sauf si on veut la parenté et qu'on ne le connait pas, retourne $id
+			if(!(isset($options['with_path']) && $options['with_path']
+			&& !isset($id['path']))) 
+				return $id;
+		}
 		$notDesign_only = isset($options['design']) && !$options['design'];
 		
 		$node = $this->db->one("
@@ -69,7 +76,7 @@ class tree
 		if(!$node) {
 			if(!$errorIfNotExists)
 				return false;
-			throw new Exception('Node does not exist');
+			throw new Exception('Node does not exist : ' . print_r($id, true));
 		}
 		if(isset($options['with_children']) && $options['with_children']) {
 			$node['children'] = $this->get_children($id, isset($options['deep_children']) && $options['deep_children']);
@@ -87,6 +94,32 @@ class tree
 		}
 		$options as boolean : $recursive = $options;
 	*/
+	public function get_parent($id, $options = false) {
+		if(!$id)
+			throw new Exception('tree::get_parent : $id est incorrect');
+		
+		// $id est un noeud
+		if(is_array($id) && isset($id['id'])){
+			if(isset($id['path'])){
+				if($id['path'][ count($id['path']) - 1 ]['id'] != $id['id'])
+					return $this->get_node($id['path'][ count($id['path']) - 1 ], $options);
+				else
+					return $this->get_node($id['path'][ count($id['path']) - 2 ], $options);
+			}
+			if(!$id['pid'] || ($id['id'] == $id['pid']))
+				throw new Exception('tree::get_parent : $id est la racine');
+			return $this->get_node($id['pid'], $options);
+		}
+		return $this->get_parent($this->get_node($id), $options);
+	}
+	/* get_children
+		$options : {
+			$recursive : boolean = false
+			$full : boolean = false
+			$filter_name : string
+		}
+		$options as boolean : $recursive = $options;
+	*/
 	public function get_children($id, $options = false) {
 		if(is_bool($options)){
 			$recursive = $options;
@@ -94,10 +127,14 @@ class tree
 		}
 		else
 			$recursive = isset($options['recursive']) && $options['recursive'];
-		$notDesign_only = isset($options['design']) && !$options['design'];
+		$notDesign_only = isset($options['design']) && ($options['design'] == false);
 		$sql = false;
-		if($recursive) {
+		if(is_array($id) && $id['id'])
+			$node = $id;
+		else
 			$node = $this->get_node($id);
+		
+		if($recursive) {
 			$sql = "
 				SELECT 
 					s.".implode(", s.", $this->options['structure']).", 
@@ -112,7 +149,7 @@ class tree
 					s.".$this->options['structure']['left']." > ".(int)$node[$this->options['structure']['left']]." AND 
 					s.".$this->options['structure']['right']." < ".(int)$node[$this->options['structure']['right']]." 
 					" . ( isset($options['f--name']) ? " AND d.nm = '" . str_replace("'", "\\'", $options['f--name']) . "'" : "" ) . "
-					". ($notDesign_only ? ' AND d.design = 0' : '') ."					
+					" . ($notDesign_only ? ' AND d.design = 0' : '') ."					
 				ORDER BY 
 					s.".$this->options['structure']['left']."
 			";
@@ -138,13 +175,14 @@ class tree
 					".$this->options['data_table']." d 
 				WHERE 
 					s.".$this->options['structure']['id']." = d.".$this->options['data2structure']." AND 
-					s.".$this->options['structure']['parent_id']." = ".(int)$id." 
+					s.".$this->options['structure']['parent_id']." = ".$node['id']." 
 					" . ( $notDesign_only ? 'AND d.design = 0' : '') . "
 					" . ( isset($options['f--name']) ? " AND d.nm = '" . str_replace("'", "\\'", $options['f--name']) . "'" : "" ) . "
 				ORDER BY 
 					s.".$this->options['structure']['position']."
 			";
 		}
+		
 		return $this->db->all($sql);
 	}
 	/* static get_child_by_name
@@ -179,6 +217,18 @@ class tree
 		global $tree;
 		if(is_bool($options))
 			$options = array();
+		
+		global $tree;
+		
+		/* deja un noeud */
+		if(is_array($name) && isset($name['id'])){
+			return $tree->get_node($name, array_merge(array('with_path' => false, 'with_children' => false, 'full' => true), $options));
+		}
+		
+		/* identifiant */
+		if(is_numeric($name)){
+			return $tree->get_node($name, array_merge(array('with_path' => false, 'with_children' => false, 'full' => true), $options));
+		}
 		
 		/* chemin absolu */
 		if($name[0] == '/'){
@@ -215,10 +265,81 @@ class tree
 		else {
 			if(is_bool($refersTo))
 				throw new Exception('tree::get_node_by_name : argument 2, $refersTo, is missing');
-			if(is_array($refersTo))
-				$refersTo = $refersTo['id'];
-			$options['f--name'] = $name;
-			$nodes = $tree->get_children($refersTo, $options);
+			
+			global $tree;
+					
+			$search = $name;
+			//var_dump($ref);
+			//var_dump($search);
+			if($search[0] == '.'){
+				if($search[1] == '.'){ // eg : '..dataSource' on cherche chez les parents
+					if(strlen($search) == 2){ // ..
+						$parent = $tree->get_parent($refersTo, array_merge(array('with_path' => false, 'with_children' => false, 'full' => true), $options));
+						/*print_r($parent['id']);
+						print_r($refersTo['id']);*/
+						return $parent;
+					}
+					else {
+						$refersTo = $tree->get_parent($refersTo, array('with_path' => false, 'with_children' => false, 'full' => false));
+						if(!is_array($refersTo)
+						|| ($refersTo['nm'] == substr($search, 2)))
+							return $refersTo;
+						$parent = $tree->get_parent($refersTo, array('with_path' => false, 'with_children' => false, 'full' => false));
+						if($parent['id'] == $refersTo['id']) {
+							function get_callstack() {
+							  $dt = debug_backtrace();
+							  $cs = '';
+							  foreach ($dt as $t) {
+								$cs .= $t['file'] . ' line ' . $t['line'] . ' function ' . $t['function'] . "()\n";
+							  }
+
+							  return $cs;
+							}
+							echo('<pre>');
+							print_r( get_callstack() );
+							echo('</pre>');
+
+							var_dump($refersTo);
+							var_dump($parent);
+							echo 'Erreur d\'ascendant ' . print_r($search, true);
+							return null;
+						}
+						if(!is_array($parent)
+						|| ($parent['nm'] == substr($search, 2)))
+							return $parent;
+						$child = self::get_child_by_name($parent, substr($search, 2), $options);
+						if(is_array($child))
+							return $child;
+						if(!is_array($parent) || ($parent['id'] == TREE_ROOT)) {
+							echo 'Aucun ascendant ' . print_r($search);
+							return null;
+						}
+						var_dump($parent);
+						return self::get_node_by_name($search, $parent, $options);
+					}
+				}
+				else { // eg : '.dataSource' : on cherche ici et chez les parents
+					$parent = $tree->get_parent($refersTo, array_merge(array('with_path' => false, 'with_children' => false, 'full' => false), $options));
+					$options['f--name'] = substr($name, 1);
+					$nodes = $tree->get_children($parent, $options);
+					if(count($nodes) == 0)
+						return self::get_node_by_name( '.' . $search, $parent); //recursive chez les parents
+				}
+			}
+			else if($search[0] == ':'){ // eg : ':Liste' : dans la descendance
+				//$file = helpers::combine(substr($__FILE__, 0, strlen($__FILE__) - 4), substr($search, 1), $extension); // $__FILE__ moins l'extension .php
+				$options['f--name'] = substr($name, 1);
+				$nodes = $tree->get_children($refersTo, $options);
+			}
+			else {// eg : 'dataSource'
+				$parent = $tree->get_parent($refersTo, array('with_path' => false, 'with_children' => false, 'full' => false));
+				if(!$parent)
+					throw new Exception('tree:get_node_by_name : $parent est introuvable. ' . print_r($refersTo, true));
+				$options['f--name'] = $name;
+				$nodes = $tree->get_children($parent, $options);
+			}
+			
+			
 		}
 		//return 1 only
 		if(count($nodes) != 1)

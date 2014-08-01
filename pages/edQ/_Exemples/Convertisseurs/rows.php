@@ -11,7 +11,7 @@ if(isset($arguments) && ($arguments['node--get'] == 'rows')){
 	$arguments['rows'] = $rows;
 	return;
 }
-$viewer = tree::get_node_by_name('/_Exemples/Convertisseurs/table/csv')['id'];
+$viewer = tree::get_id_by_name('/_Exemples/Convertisseurs/table/csv');
 $viewer_options = "&node=" . $node['id']
 				. "&file--name=" . urlencode($node['nm']);
 ?><h1>requete</h1>

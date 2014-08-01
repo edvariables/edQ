@@ -3,10 +3,12 @@ $uid = uniqid('debug');
 ?><form id="<?=$uid?>">
 <fieldset><legend>Afficher des informations de débuggage</legend>
 <ul>
-	<li><a href="<?=url_view(tree::get_id_by_name('session', $node))?>"
+	<li><a href="<?=page::url(':session', $node)?>"
    onclick="return dialog.call(this);">Session</a>
-	<li><a href="<?=url_view(tree::get_id_by_name('server', $node))?>"
+	<li><a href="<?=page::url(':server', $node)?>"
    onclick="return dialog.call(this);">Serveur</a>
+	<li><a href="<?=page::url(':phpinfo', $node)?>"
+   onclick="return dialog.call(this);">Php info</a>
 </ul></fieldset>
 </form>
 <script>

@@ -73,7 +73,7 @@ $sql = " SELECT * FROM (
 
 $uid = uniqid('form');
 ?>
-<form id="<?=$uid?>" method="POST" action="<?=url_view( $node )?>" autocomplete="off">
+<form id="<?=$uid?>" method="POST" action="<?=page::url( $node )?>" autocomplete="off">
 <input type="hidden" name="q--limit" value="9999"/>
 <table class="edq" style="overflow: scroll;">
 	<caption style="text-align: left;"><?= count($rows) . ' ligne' . (count($rows) > 1 ? 's' : '')
