@@ -1,7 +1,7 @@
 <?php
 $_SESSION['tree-root'] = isset($_REQUEST["tree-root"]) ? $_REQUEST["tree-root"] : "#";
 require('tree/nodeType/_class.php');
-$design = isDesign();
+$design = is_design();
 ?><script>
 $().ready(function () {
 	// $(window).resize(function () {

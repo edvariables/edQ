@@ -1,1 +1,1 @@
-﻿<?php include_page(':CodeMirror')?>
+<?php page::call(':CodeMirror', $node)?>

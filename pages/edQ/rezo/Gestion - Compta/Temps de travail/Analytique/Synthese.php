@@ -86,6 +86,6 @@ $args = array(
 		)
 	)
 );
-page::call('/edQ/_Exemples/html/table/rows', $args, __FILE__);
+page::call('/_html/table/rows', $args, __FILE__);
 
 ?>

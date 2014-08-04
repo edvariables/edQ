@@ -7,6 +7,10 @@
 ini_set( "display_errors", 1);
 error_reporting (E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
 
+if(!isset($node)){
+	$node = page::node('.', __FILE__);
+	if(!$node) throw new Exception('Noeud introuvable');
+}
 if(isset($arguments) && isset($arguments['backup']))
 	$backup = $arguments['backup'];
 else if(isset($_REQUEST['backup']))
@@ -16,23 +20,17 @@ else
 
 if($backup == null){
 	$uid = uniqid('zip');
+	$url = page::url($node);
 	?><form id="<?=$uid?>">
 	<fieldset><legend>Téléchargez une sauvegarde compressée</legend>
-	<ul>
-	<li><a href="<?=page::url($node)?>&backup=sql+pages+sources">SQL + Pages + Sources</a>
-	<li><a href="<?=page::url($node)?>&backup=sql+sources">SQL + Sources</a>
-	<li><a href="<?=page::url($node)?>&backup=sql+pages">SQL + Pages</a>
-	<li><a href="<?=page::url($node)?>&backup=pages">Pages seules</a>
-	<li><a href="<?=page::url($node)?>&backup=sql">SQL seul</a>
-	<li><a href="<?=page::url($node)?>&backup=sources">Sources seules</a>
-	</ul></fieldset>
-	<style> 
-		#<?=$uid?> ul { list-style: none; }
-		#<?=$uid?> li { display: inline-block; padding: 1em 0; margin : 1em; border: 2px outset gray; border-radius: 4px; }
-		#<?=$uid?> li:hover { background-color: #F7F7F7; }
-		#<?=$uid?> li:hover:active { border-style: inset; }
-		#<?=$uid?> a { padding: 1em 2em; }
-	</style>
+	<ul class="edq-buttons">
+	<li><a href="<?=$url?>&backup=sql+pages+sources">SQL + Pages + Sources</a>
+	<li><a href="<?=$url?>&backup=sql+sources">SQL + Sources</a>
+	<li><a href="<?=$url?>&backup=sql+pages">SQL + Pages</a>
+	<li><a href="<?=$url?>&backup=pages">Pages seules</a>
+	<li><a href="<?=$url?>&backup=sql">SQL seul</a>
+	<li><a href="<?=$url?>&backup=sources">Sources seules</a>
+	</ul></fieldset></form>
 	<?php
 	return;
 }
@@ -103,21 +101,27 @@ if(isset($backup['sql'])){
 	passthru( $cmd );
 	
     $zip->addEmptyDir('mySQL');
-    $zip->addFile($filename, 'mySQL/' . basename($filename));
+    $zip->addFile($filename, 'MySql/' . basename($filename));
 }
 
 // sources
 if(isset($backup['sources'])){
 	$root = helpers::combine($_SERVER[ 'DOCUMENT_ROOT' ], dirname(substr($_SERVER[ 'REQUEST_URI' ], 1)));
 	folderToZip($root, $zip, NULL, '/[\\\\\/](((pages|sessions|backup|tmp)(\.[^\\\\\/]+)?)$|\.)/');
-	foreach(array('_System', '_templates', '_Exemples', '_Demo', '_Lib') as $path)
-		folderToZip($root . '/pages/edQ/' . $path, $zip, 'pages/edQ/' . $path);
+	global $tree;
+	// pages sous /edQ/
+	$rootPages = $tree->get_children(TREE_ROOT);
+	foreach($rootPages as $path)
+		if($path['nm'][0] == '_') //commence par '_'
+			folderToZip($root . '/pages/' . TREE_ROOT_NAME . '/' . $path['nm']
+						, $zip
+						, 'pages/' . TREE_ROOT_NAME . '/' . $path['nm']);
 }
 
 // pages
 if(isset($backup['pages'])){
     $zip->addEmptyDir('pages');
-	folderToZip(helpers::get_pagesPath(), $zip, 'pages', '/[\\\\\/]pages[\\\\\/]edQ[\\\\\/]_[^\\\\\/]+$/');
+	folderToZip(helpers::get_pages_path(), $zip, 'pages', '/[\\\\\/]pages[\\\\\/]' . TREE_ROOT_NAME . '[\\\\\/]_[^\\\\\/]+$/');
 }
 
 $zip->close();

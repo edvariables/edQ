@@ -53,9 +53,19 @@ html, body { background:#ebebeb; font-size:10px; font-family:Verdana; margin:0; 
 	margin-right: 3px;
 }
 /* favpanel */
+.jstree-favpanel a {
+	cursor : pointer;
+}
+.jstree-favpanel .jstree-node {
+	display : inline-block;
+	position : absolute;
+	background-image : none;
+}
 .tree-favpanel-toolbar a {
 	margin: 2px;
 	opacity: 0.5;
+	position: absolute; 
+	left: 2px;
 }
 .tree-favpanel-toolbar a:hover {
 	opacity: 1;
@@ -68,6 +78,7 @@ html, body { background:#ebebeb; font-size:10px; font-family:Verdana; margin:0; 
 	padding: 4px;    
 	border: 1px outset #000000;
     margin-top: 8px;
+	white-space: pre;
 }
 /* tabs dont chaque onglet est un noeud */
 .edq-nodes > .ui-widget-header {
@@ -159,3 +170,21 @@ table > thead > tr > th.pk {
 , .ui-state-default.ui-border-none {
 	border: none;
 }
+
+ul.edq-doc, .edq-doc  ul {
+	list-style: none;
+}
+.edq-doc  code {
+	white-space: pre;
+}
+#data .edq-doc  pre, .edq-doc  pre {
+	font-family: inherit;
+	line-height : 1.3em;
+}
+
+.edq-buttons.ul { list-style: none; }
+.edq-buttons > li { display: inline-block; padding: 1em 0; margin : 1em; 
+		border: 2px outset gray; border-radius: 4px; }
+.edq-buttons > li:hover { background-color: #F7F7F7; }
+.edq-buttons> li:hover:active { border-style: inset; }
+.edq-buttons> li a { padding: 1em 2em; }

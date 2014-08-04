@@ -40,7 +40,14 @@
 		 * @name $.jstree.defaults.favpanel.grid
 		 * @plugin favpanel
 		 */
-		grid: [ 8, 8 ]
+		grid: [ 8, 8 ],
+		
+		/**
+		 * le nom du domain de sauvegarde des préférences utilisateur
+		 * @name $.jstree.defaults.favpanel.userpref_domain
+		 * @plugin favpanel
+		 */
+		userpref_domain: 'jstree-favpanel-nodes'
 					
 	};
 	$.jstree.plugins.favpanel = function (options, parent) {
@@ -90,10 +97,7 @@
 					})
 				)
 				.css({
-					"cursor" : "pointer"
-					, "display" : "inline-block"
-					, "position" : "absolute"
-					, "background-image" : "none"
+					"position" : "absolute" //!important
 					, "left" : node.x + "px"
 					, "top" : node.y + "px"
 				})
@@ -109,15 +113,16 @@
 						$(this).addClass('noclick');
 					},
 					stop: function() {
-						var page = { x : $droppable.scrollLeft(), y : $droppable.scrollTop() };
 						var $this = $(this);
+						var $div = $this.parent();
+						var page = { x : $div.scrollLeft(), y : $div.scrollTop() };
 						var pos = $this.position();
 						if((page.y + pos.top + $this.height()) <= 14
 						|| (page.x + pos.left) <= 4)
 							$this.css("color", "red");
 						else
 							$this.css("color", "black");
-						self.save($droppable);
+						self.save($div);
 					}
 				})
 			);
@@ -132,7 +137,7 @@
 			this.toolbar($panels);
 			
 			$.post('view.php?id=/_System/Utilisateur/Preferences/get', { 
-					domain : 'jstree-favpanel-nodes'
+					domain : this.settings.favpanel.userpref_domain
 				})
 				.done(function(data){
 					if(!data) return;
@@ -175,28 +180,8 @@
 					.append($('<a class="tree-favpanel-toolbar-trash"></a>')
 						.html('<span class="ui-icon ui-icon-trash" title="déplacer ici un élément"> </span>')
 						.css({
-							'cursor': 'pointer'
-							, 'position': 'absolute'
-							, 'top' : '2px'
-							, 'left' : '2px'
-							, 'margin' : '2px'
+							'top' : '2px'
 						})
-						.hover(function(){
-								$(this).css({
-									/* 'border': '2px outset gray'
-									, 'background-color': '#F0F0F0'
-									, 'margin' : '0', */
-									'opacity': '1'
-								});
-							}, function(){
-								$(this).css({
-									'border': 'none'
-									, 'background-color': 'transparent'
-									, 'margin' : '2px',
-									'opacity': '0.5'
-								});
-							}
-						)
 						.click(function(){
 							if(!confirm('Le panneau va etre efface et la page rechargee.'))
 								return;
@@ -209,7 +194,6 @@
 						})
 						.droppable({
 							accept: ".jstree-node",
-							//hoverClass: "ui-state-active",
 							over: function( event, ui ){
 								$(this).css({
 									'border': '2px outset gray'
@@ -234,6 +218,8 @@
 							},
 							drop : function( event, ui ){
 								ui.draggable.remove();
+								$(this).droppable('option', 'out')
+									.call(this, event, ui);
 								self.save($droppable);
 							}
 						})
@@ -241,26 +227,8 @@
 					.append($('<a class="tree-favpanel-toolbar-prev"></a>')
 						.html('<span class="ui-icon ui-icon-arrowthick-1-w" title="precedent (en dev)"> </span>')
 						.css({
-							'cursor': 'pointer'
-							, 'position': 'absolute'
-							, 'top' : '22px'
-							, 'left' : '2px'
-							, 'margin' : '2px'
+							 'top' : '22px'
 						})
-						.hover(function(){
-								/*$(this).css({
-									'border': '2px outset gray'
-									, 'background-color': '#F0F0F0'
-									, 'margin' : '0'
-								});*/
-							}, function(){
-								$(this).css({
-									'border': 'none'
-									, 'background-color': 'transparent'
-									, 'margin' : '2px'
-								});
-							}
-						)
 						.click(function(){
 							self.load();
 							return false;
@@ -301,9 +269,10 @@
 			}
 			
 			$.post('view.php?id=/_System/Utilisateur/Preferences/set', { 
-					domain : 'jstree-favpanel-nodes',
+					domain : this.settings.favpanel.userpref_domain,
 					param : $dom[0].tagName + '#' + $dom.attr('id'),
-					value : typeof data === "object" ? JSON.stringify(data) : data
+					value : typeof data === "object" ? JSON.stringify(data) : data,
+					'get' : false
 				})
 				.done(function(data){
 					if(typeof callback === 'function')
@@ -341,8 +310,8 @@
 					if(ok) {
 						var page = { x : $droppable.scrollLeft(), y : $droppable.scrollTop() };
 						var $a = data.data.obj.children('a:first'),
-						x = data.event.offsetX==undefined ? data.event.pageX - 24 : data.event.offsetX,
-						y = data.event.offsetY==undefined ? data.event.pageY - 16 : data.event.offsetY
+						x = data.event.offsetX==undefined ? data.event.pageX - 32 : data.event.offsetX - 24,
+						y = data.event.offsetY==undefined ? data.event.pageY - 8 : data.event.offsetY + 8
 						;
 						var grid = data.data.origin.settings.favpanel.grid;
 						data.data.origin.add_node($droppable, {

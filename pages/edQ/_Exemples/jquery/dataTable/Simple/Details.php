@@ -1,13 +1,13 @@
-﻿<?php
-$dataUrl = substr(__FILE__, 0, strlen(__FILE__) - 4);
-$root = preg_replace('/\\$/', '', $_SERVER['DOCUMENT_ROOT']);
-$root = '/' . str_replace('\\', '/', substr($dataUrl, strlen($root)));
+<?php
+$root = page::folder_url('', __FILE__);
 $dataUrl = $root . '/data.php';
 $cssUrl = $root . '/css.php';
+
+$root = page::folder($node);
 ?>
 <?php $uid = uniqid('datatable');?>
-<?php include(substr(__FILE__, 0, strlen(__FILE__) - 4) . '/html.php');?>
-<style><?php include(substr(__FILE__, 0, strlen(__FILE__) - 4) . '/css.php');?></style>
+<?php include($root . '/html.php');?>
+<style><?php include($root . '/css.php');?></style>
 <script>
 function format ( d ) {
     return 'Full name: '+d.first_name+' '+d.last_name+'<br>'+

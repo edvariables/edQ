@@ -28,21 +28,22 @@ if(isset($_POST['operation'])) {
 				$property = isset($matches[3]) ? $matches[3] : '';
 				if($property === '')
 					$property = "value";
-				
-				$q = $db->query("INSERT INTO node_param (id, param, domain, " . $property . ")"
+	
+				$q = $db->query("INSERT INTO node_param (id, domain, param, " . $property . ")"
 					. " VALUES (?, ?, ?, ?)"
 					. " ON DUPLICATE KEY UPDATE"
-					. " param = ?"
-					. ", domain = ?"
+					. " domain = ?"
+					. ", param = ?"
 					. ", value = ?"
-					, array($_POST['id'], $param, $domain, $value, $param, $domain, $value)
+					, array($_POST['id'], $domain, $param, $value, $domain, $param, $value)
 				);
 			}
 		}
 		if(isset($q))
 			die((string)$q->af());
-		else
+		else {
 			die("0");
+		}
 		break;
 	
 	// delete

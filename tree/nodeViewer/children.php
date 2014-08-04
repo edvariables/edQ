@@ -9,9 +9,9 @@ class nodeViewer_children extends nodeViewer {
 		$ulId = uniqid('nw-children-');
 		$html = '<div class="edq-nodes" id="' . $ulId . '"><ul>';
 		global $tree;
-		$children = $tree->get_children($node['id']);
+		$children = $tree->get_children($node);
 		$nChild = 0;
-		$design = isDesign();
+		$design = is_design();
 		foreach($children as $child)
 			if($design || !$child['design']){
 				$href = $nChild == 0

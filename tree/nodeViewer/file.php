@@ -9,8 +9,8 @@ class nodeViewer_file extends nodeViewer {
 	*/
 	public function get_file($node){
 		if(is_array($node))
-			return $this->get_pagePath($node) . '/' .$node['nm'] . '.php';
-		return $node->get_pagePath() . '/' .$node->name . '.php';
+			return $this->get_page_path($node) . '/' .$node['nm'] . '.php';
+		return $node->get_page_path() . '/' .$node->name . '.php';
 	}
 	
 	/* html
@@ -22,7 +22,7 @@ class nodeViewer_file extends nodeViewer {
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => false));
 		}
 		$file = $this->get_file($node);
-		$exists = file_exists(utf8_decode($file));
+		$exists = file_exists($file) || file_exists(utf8_decode($file));
 		if($exists){
 			$content = '<h3>' . $file . '</h3>';
 		}

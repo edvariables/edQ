@@ -12,4 +12,7 @@ define ("DBTYPE", "mysqli");
 define ("DBPORT", "");
 
 define ("TREE_ROOT", 1);
+define ("TREE_ROOT_NAME", 'edQ'); 
+
+define("MYSQLDUMP", "D:\\Wamp\\bin\\mysql\\mysql5.6.17\\bin\\mysqldump.exe");
 ?>

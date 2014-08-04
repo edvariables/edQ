@@ -49,9 +49,9 @@ class nodeViewer {
 	}
 	
 	
-	/* get_filePath
+	/* get_page_path
 	*/
-	public function get_pagePath($node){
+	public function get_page_path($node){
 		if(!isset($node["path"])){
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => false));
 		}
@@ -61,7 +61,7 @@ class nodeViewer {
 		$path = $path
 			. preg_replace('/(\/?(.+)\/\w+\.php$)?/', '$2', $_SERVER['PHP_SELF']);
 		//var_dump(($path . '/../pages'));*/
-		$path = helpers::get_pagesPath() //str_replace('\\', '/', realpath($path . '/../pages'))
+		$path = helpers::get_pages_path() //str_replace('\\', '/', realpath($path . '/../pages'))
 			. '/' . implode('/',array_map(function ($v) { return $v['nm']; }, $node['path']))
 		;
 		return $path;

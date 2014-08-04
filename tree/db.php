@@ -43,9 +43,9 @@ if(isset($_REQUEST['operation'])) {
 				if(isset($_REQUEST['ulvl']))
 					$params["ulvl"] = $_REQUEST['ulvl'];
 				if(isset($_REQUEST['design']))
-					$params["design"] = $_REQUEST['design'] == 'on' || $_REQUEST['design'] == 'true' || $_REQUEST['design'] == '1' ? 1 : 0;
+					$params["design"] = $_REQUEST['design'] && $_REQUEST['design'] != '0' ? 1 : 0;
 				else
-					$params["design"] = 0;
+					$params["design"] = 1;
 				if(isset($_REQUEST['color']))
 					$params["color"] = $_REQUEST['color'];
 				if(isset($_REQUEST['user']))
@@ -57,7 +57,7 @@ if(isset($_REQUEST['operation'])) {
 			switch($_REQUEST['operation']) {
 				case 'get_node':
 					$node = isset($_REQUEST['id']) && $_REQUEST['id'] !== '#' ? (int)$_REQUEST['id'] : TREE_ROOT;
-					$isDesign = isDesign();
+					$isDesign = is_design();
 					if($_REQUEST['id'] === '#'
 					&& isset($_SESSION['tree-root'])
 					&& (is_numeric( $_SESSION['tree-root'] ))
@@ -152,6 +152,8 @@ if(isset($_REQUEST['operation'])) {
 					}
 						
 					if(isset($_REQUEST["get"]) && $_REQUEST["get"] != ''){
+						if($_REQUEST["get"] === false)
+							die();
 						$contentType = 'application/html';	
 						if(is_array($rslt))
 							$rslt = $rslt[$_REQUEST["get"]];

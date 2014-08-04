@@ -46,7 +46,7 @@ error_reporting (E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
 			die('aucun r&eacute;sultat');
 
 		// $is_associative
-		$is_associative = count($rows) > 0 && isAssociative($rows[0]);
+		$is_associative = count($rows) > 0 && is_associative($rows[0]);
 		if(!$is_associative)
 			$columns = $arguments['columns'];
 

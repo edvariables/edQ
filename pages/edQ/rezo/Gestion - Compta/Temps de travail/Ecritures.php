@@ -105,7 +105,7 @@ $salaries = $args['rows'];
 /*$args = array(
 	'rows' => $salaries
 );
-call_page('/edQ/_Exemples/html/table/rows', $args, __FILE__);*/
+call_page('/_html/table/rows', $args, __FILE__);*/
 
 //Comparaison des totaux des salaires
 /*$salairesDeclares = 0;
@@ -128,7 +128,7 @@ for($nRow = 0; $nRow < count($salaries); $nRow++){
 /*$args = array(
 	'rows' => $salaries
 );
-page::call('/edQ/_Exemples/html/table/rows', $args, __FILE__);*/
+page::call('/_html/table/rows', $args, __FILE__);*/
 
 $nbRows = count($rows);
 $rowsCptes = array();
@@ -302,7 +302,7 @@ $args = array(
 	, 'csv--rows' => 'rows'
 		
 );
-page::call('/edQ/_Exemples/html/table/rows', $args, __FILE__);?>
+page::call('/_html/table/rows', $args, __FILE__);?>
 </fieldset></form>
 <pre><?php var_dump($analytic)?></pre>
 	

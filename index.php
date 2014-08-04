@@ -43,7 +43,7 @@
 		<script type="text/javascript" src="jquery/markitup/sets/dataSource/set.js"></script>
 
 		<?php
-		if(isDesign()) {?>
+		if(is_design()) {?>
 		<link rel="stylesheet" href="jquery/codemirror/lib/codemirror.css">
 		<script src="jquery/codemirror/lib/codemirror.js"></script>
 		<script src="jquery/codemirror/addon/edit/matchbrackets.js"></script>

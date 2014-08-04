@@ -1,10 +1,9 @@
 <?php
-$dataUrl = page::execute(':data', __FILE__);
+$dataUrl = page::file_url(':data', __FILE__);
 $uid = uniqid('datatable');
-if(!isset($arguments))
-	$arguments = array();
-$arguments[ 'uid' ] = $uid;
-page::call(':html', $arguments, __FILE__);
+$args = array();
+$args[ 'uid' ] = $uid;
+page::call(':html', $args, __FILE__);
 
 ?><script>
 $(document).ready(function() {

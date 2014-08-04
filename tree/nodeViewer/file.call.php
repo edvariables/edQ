@@ -19,7 +19,7 @@ class nodeViewer_file_call extends nodeViewer_file {
 			$exists = file_exists($file);
 		}
 		
-		$href = $_SERVER["REQUEST_URI"];
+		$href = page::url($node);//$_SERVER["REQUEST_URI"];
 		$head = '<div class="edq-toolbar">'
 			. '<a class="edq-refresh" href="' . $href . '"'
 			. ' onclick="var $parent = $(this).parents(\'.ui-widget-content:first\'); '
@@ -30,7 +30,6 @@ class nodeViewer_file_call extends nodeViewer_file {
 			
 		if($exists){
 			$view = $this;
-			
 			ob_start();
 			include($file);
 			$content = ob_get_clean();

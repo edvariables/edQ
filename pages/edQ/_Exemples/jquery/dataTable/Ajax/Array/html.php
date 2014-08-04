@@ -1,4 +1,7 @@
-<table id="<?=$uid?>" class="display" cellspacing="0" width="100%">
+<?php
+if(isset($arguments) && isset($arguments['uid']))
+	$uid = $arguments['uid'];
+?><table id="<?=$uid?>" class="display" cellspacing="0" width="100%">
     <thead>
         <tr>
             <th>Name</th>

@@ -1,15 +1,17 @@
 <?php
+if(!userRight()) die('Access denied');
 $db = get_db();
-$domain = isset($arguments) && isset($arguments['domain'])
+$arguments_isset = isset($arguments);
+$domain = ($arguments_isset && isset($arguments['domain']))
 		? $arguments['domain']
-		: isset($_REQUEST) && isset($_REQUEST['f--domain'])
+		: (isset($_REQUEST) && isset($_REQUEST['f--domain'])
 			? $_REQUEST['f--domain']
-			: false;
-$param = isset($arguments) && isset($arguments['param'])
+			: false);
+$param = ($arguments_isset && isset($arguments['param']))
 		? $arguments['param']
-		: isset($_REQUEST) && isset($_REQUEST['f--param'])
+		: (isset($_REQUEST) && isset($_REQUEST['f--param'])
 			? $_REQUEST['f--param']
-			: false;
+			: false);
 $sql = "
 	SELECT domain, param, value, sortIndex
 	FROM user_param up
@@ -29,12 +31,24 @@ $sql .= "
 
 	$rows = $db->all( $sql, $params );
 
-if(isset($arguments) && $arguments['node--get'] == 'rows'){
-	$arguments['rows'] = $rows;
+if($arguments_isset){
+	if(isset($arguments['node--get']) && $arguments['node--get']){
+		$arguments[ $arguments['node--get'] ] = $rows;
+	}
+	else if(isset($arguments['return']) && $arguments['return']){
+		if($arguments['return'] == 'rows')
+			$arguments[ 'rows' ] = $rows;
+		else
+			$arguments[ is_bool($arguments['return']) ? 'return' : $arguments['return'] ]
+				= count($rows) > 0 ? $rows[0]['value'] : null;
+	}
+	else 
+		$arguments[ 'return' ]
+			= count($rows) > 0 ? $rows[0]['value'] : null;
 	return;
 }
 
-die ( json_encode($rows) );
+echo ( json_encode($rows) );
 
-return;
+die();
 ?>

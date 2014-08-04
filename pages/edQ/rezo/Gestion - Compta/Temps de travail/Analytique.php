@@ -2,7 +2,6 @@
 /* Heures travaillées par contexte
 Les paramètres de filtres commencent par f-- suivi du nom du champ
 */
-
 $db = get_db();
 $sql = " SELECT * FROM (
 	SELECT `ou`.id AS IdSalarie

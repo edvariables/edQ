@@ -31,7 +31,7 @@ class nodeViewer_jqGrid.call extends nodeViewer_query {
 			. '">rafraîchir</a>'
 			. '</div>';
 		
-		$sql = $node->paramValue("SQLSelect");
+		$sql = $node->param_value("SQLSelect");
 		
 		$exists = true;
 		
@@ -52,10 +52,10 @@ class nodeViewer_jqGrid.call extends nodeViewer_query {
 			$this->rows = $rows = $db->all( $sql );
 			//var_dump($this->rows);
 			/* Columns */
-			$this->columns = $columns = $node->paramValue("Columns");
+			$this->columns = $columns = $node->param_value("Columns");
 			if($columns != ''){
 				$columns = eval('return array(' . $columns . ');');
-				if(!isAssociative($columns)){
+				if(!is_associative($columns)){
 					$src = $columns;
 					$columns = array();
 					foreach($src as $name)
@@ -74,7 +74,7 @@ class nodeViewer_jqGrid.call extends nodeViewer_query {
 					$column["index"] = $tdCount++;
 				}
 			/* Caption */
-			$caption = $node->paramValue("Caption", '<null>');
+			$caption = $node->param_value("Caption", '<null>');
 			if($caption == '<null>')
 				$caption = $node->name;
 			else if($caption != ''){
@@ -118,7 +118,7 @@ class nodeViewer_jqGrid.call extends nodeViewer_query {
 			}	
 			
 			/* Foot */
-			$foot = $node->paramValue("Foot", '<null>');
+			$foot = $node->param_value("Foot", '<null>');
 			if($foot == '<null>')
 				$foot =  count($rows) . ' ligne' . (count($rows) > 1 ? 's' : '');
 			else if($foot != ''){

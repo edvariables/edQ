@@ -165,10 +165,10 @@ class node {
 		return $joinChar . implode($joinChar, array_map(function ($v) { return $v['nm']; }, $this->properties['path'])). $joinChar .$this->name;
 	}
 	
-	/* get_pagePath
+	/* get_page_path
 		répertoire
 	*/
-	public function get_pagePath(){
+	public function get_page_path(){
 		if(!isset($this->properties["path"])){
 			$this->properties = $tree->get_node((int)$this->properties['id'], array('with_path' => true, 'full' => false));
 		}
@@ -178,7 +178,7 @@ class node {
 		$path = $path
 			. preg_replace('/(\/?(.+)\/\w+\.php$)?/', '$2', $_SERVER['PHP_SELF']);
 		//var_dump(($path . '/../pages'));*/
-		$path = helpers::get_pagesPath() //str_replace('\\', '/', realpath($path . '/../pages'))
+		$path = helpers::get_pages_path() //str_replace('\\', '/', realpath($path . '/../pages'))
 			. '/' . implode('/',array_map(function ($v) { return $v['nm']; }, $this->properties['path']))
 		;
 		return $path;
@@ -186,7 +186,7 @@ class node {
 	/* findFile
 	*/
 	function findFile($shortName){
-		$prev = $path = $this->get_pagePath();
+		$prev = $path = $this->get_page_path();
 		while($path != '' && $path != '/'){
 			if(file_exists( $path . '/' . $shortName))
 				return $path . '/' . $shortName;
@@ -217,7 +217,7 @@ class node {
 			FROM 
 				node_param d
 			'. ($domain == null ? 'LEFT ' : '') . '
-			JOIN
+			LEFT JOIN
 				node_params p
 					ON d.param = p.param
 					AND d.domain = p.domain
@@ -233,6 +233,8 @@ class node {
 				d.domain, p.sortIndex, p.text, d.param'
 			, array((int)$this->properties['id'], $domain)
 		);
+		// var_dump($dbRows);
+		// var_dump($this->properties['id']);
 		
 		$exists = count($dbRows) > 0;
 		$rows = array();
@@ -258,7 +260,7 @@ class node {
 	/* parameter value
 		valeur du paramètre issu de la table node_param
 	*/
-	public function paramValue($param, $defaultValue = '', $domain = null){
+	public function param_value($param, $defaultValue = '', $domain = null){
 		$params = $this->parameters($domain);
 		if(!isset($params[$param]))
 			return $defaultValue;

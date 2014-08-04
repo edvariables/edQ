@@ -1,7 +1,7 @@
 <?php /* àé */
 
 $uid = uniqid('code');
-$file = helpers::get_pagesPath() . '/edQ/TerraFact/Contacts/Liste.php';
+$file = helpers::get_pages_path() . '/edQ/TerraFact/Contacts/Liste.php';
 ?>
 <textarea id="<?=$uid?>"><?=htmlentities(utf8_decode(file_get_contents($file)))?></textarea>
 <script>

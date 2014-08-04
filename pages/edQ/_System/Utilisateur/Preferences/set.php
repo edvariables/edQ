@@ -1,4 +1,5 @@
 <?php
+if(!userRight()) die('Access denied');
 if(isset($arguments) && isset($arguments['value']))
 	$value = $arguments['value'];
 else if(isset($_REQUEST) && isset($_REQUEST['value']))
@@ -8,7 +9,7 @@ else
 if($value == 'reset')
 	$value = '';
 else if(is_array($value))
-	$value = json_encode($value);
+	$value = '' . json_encode($value) . '';
 if(isset($arguments) && isset($arguments['domain']))
 	$domain = $arguments['domain'];
 else if((isset($_REQUEST) && isset($_REQUEST['domain'])))
@@ -20,7 +21,7 @@ else if((isset($_REQUEST) && isset($_REQUEST['param'])))
 	$param = $_REQUEST['param'];
 else $param = false;
 if(isset($arguments) && isset($arguments['sortIndex']))
-	$sortIndex = $arguments['domain'];
+	$sortIndex = $arguments['sortIndex'];
 else if((isset($_REQUEST) && isset($_REQUEST['sortIndex'])))
 	$sortIndex = $_REQUEST['sortIndex'];
 else $sortIndex = 0;
@@ -39,5 +40,5 @@ $params[] = $value;
 $params[] = $value;
 
 $db->query( $sql, $params );
-die();
+return;
 ?>

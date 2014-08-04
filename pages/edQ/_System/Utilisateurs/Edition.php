@@ -5,7 +5,7 @@
 	 if(isset($_REQUEST["f--IdContact"]))
 	 	 $search = (int)$_REQUEST["f--IdContact"];
 	 else
-	 	 $search = 1; //exemple
+	 	 $search = $_SESSION['edq-user']['id']; //exemple
 	 $rows = $db->all("
 		SELECT *
 		FROM 
@@ -17,7 +17,7 @@
 	);
 
 	$uid = uniqid('form-');
-?><form id="<?=$uid?>" method="POST" action="<?=url_view( $node )?>" autocomplete="off">
+?><form id="<?=$uid?>" method="POST" action="<?=page::url( $node )?>" autocomplete="off">
 <input type="hidden" name="q--limit" value="9999"/>
 <table class="edq" style="overflow: scroll;">
 	<caption><?=$node["nm"]?></caption>

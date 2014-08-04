@@ -193,14 +193,14 @@ class tree
 		$options as boolean : $recursive = $options;
 		ED140723
 	*/
-	public static function get_child_by_name($id, $name, $options = false) {
+	public static function get_child_by_name($name, $refersTo, $options = false) {
 		global $tree;
-		if(is_array($id))
-			$id = $id['id'];
+		if(is_array($refersTo))
+			$refersTo = $refersTo['id'];
 		if(is_bool($options))
 			$options = array();
 		$options['f--name'] = $name;
-		$children = $tree->get_children($id, $options);
+		$children = $tree->get_children($refersTo, $options);
 		if(count($children) != 1)
 			return count($children);
 		return $children[0];
@@ -307,7 +307,7 @@ class tree
 						if(!is_array($parent)
 						|| ($parent['nm'] == substr($search, 2)))
 							return $parent;
-						$child = self::get_child_by_name($parent, substr($search, 2), $options);
+						$child = self::get_child_by_name(substr($search, 2), $parent, $options);
 						if(is_array($child))
 							return $child;
 						if(!is_array($parent) || ($parent['id'] == TREE_ROOT)) {

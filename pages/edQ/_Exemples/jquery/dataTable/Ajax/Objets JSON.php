@@ -1,11 +1,9 @@
 <?php
-$dataUrl = substr(__FILE__, 0, strlen(__FILE__) - 4);
-$root = preg_replace('/\\$/', '', $_SERVER['DOCUMENT_ROOT']);
-$dataUrl = '/' . str_replace('\\', '/', substr($dataUrl, strlen($root))) . '/data.php';
-?>
-<?php $uid = uniqid('datatable');?>
-<?php include(substr(__FILE__, 0, strlen(__FILE__) - 4) . '/html.php');?>
-<script>
+$dataUrl = page::file_url(':data', $node);
+$uid = uniqid('datatable');
+$args = array( 'uid' => $uid );
+page::call(':html', $args, $node);
+?><script>
 $(document).ready(function() {
     $('#<?=$uid?>').dataTable( {
             "language": {
@@ -20,6 +18,6 @@ $(document).ready(function() {
             { "data": "salary" }
         ]
 	 , "ajax" : "<?=$dataUrl?>"
-        } );
+    } );
 } );
 </script>

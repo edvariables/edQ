@@ -1,5 +1,5 @@
 <?php
-$design = isDesign();
+$design = is_design();
 ?><a href="bin/logout.php">déconnexion</a>
 <a href="bin/user.php" onclick="$('<div></div>').load(this.href).dialog({ 'modal':  true, 'width' : 'auto', 'height' : 'auto' });
 	return false;"><?=$_SESSION['edq-user']['Name']?></a>

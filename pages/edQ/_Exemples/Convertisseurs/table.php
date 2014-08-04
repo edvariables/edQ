@@ -6,7 +6,7 @@ $count_rows = 30;
 $maxRows = 30;
 
 ?>
-<form id="<?=$uid?>" method="POST" action="<?=url_view( $node )?>" autocomplete="off">
+<form id="<?=$uid?>" method="POST" action="<?=page::url( $node )?>" autocomplete="off">
 <table class="edq" style="overflow: scroll;">
 	<caption style="text-align: left;"><h1><?=$node['nm']?></h1>
 		<?= $count_rows . ' ligne' . ($count_rows > 1 ? 's' : '')
@@ -15,7 +15,7 @@ $maxRows = 30;
 		$viewer_options = "&node=" . $node['id']
 				. "&file--name=" . urlencode($node['nm'])
 				. "&node--get=html";
-		?><a class="file-download" href="<?=url_view( $viewer['id'], $viewer_options )?>" style="margin-left: 2em;">télécharger</a>
+		?><a class="file-download" href="<?=page::url( $viewer['id'], $viewer_options )?>" style="margin-left: 2em;">télécharger</a>
 	</caption>
 	<thead><tr>
 	 <th></th>

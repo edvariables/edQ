@@ -1,3 +1,3 @@
 <?php
-view_node('children', $node);
+page::view('children', $node);
 ?>
