@@ -1,5 +1,5 @@
 <?php
-if(!userRight()) die('Access denied');
+if(!user_right()) die('Access denied');
 if(isset($arguments) && isset($arguments['value']))
 	$value = $arguments['value'];
 else if(isset($_REQUEST) && isset($_REQUEST['value']))

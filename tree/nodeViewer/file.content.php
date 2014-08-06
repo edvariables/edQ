@@ -122,7 +122,8 @@ $().ready(function() {
 				. '<input type="hidden" name="fl" value="' . substr( $file, strlen( $_SERVER['DOCUMENT_ROOT'] ) ) . '"/>'
 				. '<input type="hidden" name="operation" value="submit"/>'
 				. '<fieldset>'
-				. '<legend><code>' . $file . '</code>'
+				. '<legend><code>' . $file
+					. ($exists ? ' <small>(' . date('d/m/Y H:i:s', filemtime($file)) . ')</small>' : '') . '</code>'
 					. ($exists ? '' : ' <small><i>(n\'existe pas)</i></small>')
 				. '</legend>'
 				. '<textarea id="' . $uid . '-input" name="value" style="width:100%;" rows="12" spellcheck="false">'

@@ -107,11 +107,14 @@ foreach(scandir($dir) as $root_dir){
 //$columns
 $columns = array(
 	array( 'title' => 'index'
-		  , 'visible'=> false )
+		  , 'visible'=> false
+			, 'type' => 'num' )
 	, array( 'title' => 'path' )
 	, array( 'title' => 'name' )
-	, array( 'title' => 'date' )
-	, array( 'title' => 'size' )
+	, array( 'title' => 'date'
+			, 'type' => 'date' )
+	, array( 'title' => 'size'
+			, 'type' => 'num-fmt' )
 );
 if($content)
 	$columns[] = array( 'title' => 'trouvé' );

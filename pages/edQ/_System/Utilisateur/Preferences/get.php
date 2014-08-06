@@ -1,5 +1,5 @@
 <?php
-if(!userRight()) die('Access denied');
+if(!user_right()) die('Access denied');
 $db = get_db();
 $arguments_isset = isset($arguments);
 $domain = ($arguments_isset && isset($arguments['domain']))

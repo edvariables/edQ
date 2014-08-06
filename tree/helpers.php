@@ -17,7 +17,7 @@ function is_associative($array){
 /* is_design
 */
 function is_design(){
-	if(!userRight('design'))
+	if(!user_right('design'))
 		return false;
 		
 	if(isset($_REQUEST['design']))
@@ -25,9 +25,9 @@ function is_design(){
 	
 	return false;
 }
-/* userRight
+/* user_right
 */
-function userRight($domain = null, $minRight = 1){
+function user_right($domain = null, $minRight = 1){
 	if(!isset($_SESSION['edq-user'])
 	|| !isset($_SESSION['edq-user']['id'])
 	|| !isset($_SESSION['edq-user']['rights']))

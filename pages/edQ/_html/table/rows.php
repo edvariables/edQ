@@ -1,4 +1,5 @@
 <?php
+
 if(isset($arguments) && isset($arguments['rows']))
 	$rows = $arguments['rows'];
 else if(isset($_REQUEST['rows']))
@@ -95,7 +96,10 @@ $is_associative = count($rows) > 0 && is_associative($rows[0]);
 		. "&node--get=" . $csv_rows;
 		?><a class="file-download" href="view.php?id=<?=$viewer?><?=$viewer_options?>&vw=file.call" style="margin-left: 2em;">télécharger</a><?php
 	}
-?></caption>
+?></caption><?php
+if(!isset($arguments['table--columns--header'])
+|| ($arguments['table--columns--header'] !== FALSE)){
+?>
 <thead><tr><?php
 	$nCol = 0;
 	foreach($columns as $column)
@@ -105,8 +109,9 @@ $is_associative = count($rows) > 0 && is_associative($rows[0]);
 			echo('</th>');
 			++$nCol;
 		}
-?></tr></thead>
-<tbody>
+?></tr></thead><?php
+}
+?><tbody>
 <?php
 	foreach($rows as $row)
 	if($row != null){

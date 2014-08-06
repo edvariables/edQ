@@ -218,8 +218,8 @@ class page {
 	/* view_node
 		call viewer for node
 	*/
-	public static function node($search, $refers_to = null){
-		if(!$search || $search == '.'){
+	public static function node($search = null, $refers_to = null){
+		if(($search == null) || !$search || $search == '.'){
 			if($refers_to == null){
 				$dt = debug_backtrace();
 				for($i = 0; $i < count($dt); $i++)

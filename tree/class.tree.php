@@ -51,9 +51,13 @@ class tree
 		// $id est un noeud
 		if(is_array($id) && isset($id['id'])){
 			// sauf si on veut la parenté et qu'on ne le connait pas, retourne $id
-			if(!(isset($options['with_path']) && $options['with_path']
-			&& !isset($id['path']))) 
-				return $id;
+			if(isset($options['with_path']) && $options['with_path']
+			&& !isset($id['path']))
+				$id['path'] = $this->get_path($id['id']);
+			if(isset($options['with_children']) && $options['with_children']
+			&& !isset($id['children']))
+				$id['children'] = $this->get_children($id['id'], isset($options['deep_children']) && $options['deep_children']);
+			return $id;
 		}
 		$notDesign_only = isset($options['design']) && !$options['design'];
 		
@@ -95,10 +99,12 @@ class tree
 		$options as boolean : $recursive = $options;
 	*/
 	public function get_parent($id, $options = false) {
+		//echo('get_parent entree $id = '); var_dump($id);
 		if(!$id)
 			throw new Exception('tree::get_parent : $id est incorrect');
 		
 		// $id est un noeud
+		//echo('get_parent is_array($id) = '); var_dump(is_array($id));
 		if(is_array($id) && isset($id['id'])){
 			if(isset($id['path'])){
 				if($id['path'][ count($id['path']) - 1 ]['id'] != $id['id'])
@@ -106,11 +112,14 @@ class tree
 				else
 					return $this->get_node($id['path'][ count($id['path']) - 2 ], $options);
 			}
-			if(!$id['pid'] || ($id['id'] == $id['pid']))
-				throw new Exception('tree::get_parent : $id est la racine');
-			return $this->get_node($id['pid'], $options);
+			if($id['pid'])
+				if(($id['id'] == $id['pid']) || ($id['id'] === TREE_ROOT ))
+					throw new Exception('tree::get_parent : $id est la racine');
+				else
+					return $this->get_node($id['pid'], $options);
+				
 		}
-		return $this->get_parent($this->get_node($id), $options);
+		return $this->get_parent($this->get_node($id, array( 'with_path' => true )), $options);
 	}
 	/* get_children
 		$options : {

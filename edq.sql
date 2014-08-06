@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Client :  127.0.0.1
--- Généré le :  Dim 27 Juillet 2014 à 22:15
+-- Généré le :  Lun 04 Août 2014 à 23:20
 -- Version du serveur :  5.6.17
 -- Version de PHP :  5.5.12
 
@@ -19,8 +19,6 @@ SET time_zone = "+00:00";
 --
 -- Base de données :  `edq`
 --
-CREATE DATABASE IF NOT EXISTS `edq` DEFAULT CHARACTER SET latin1 COLLATE latin1_swedish_ci;
-USE `edq`;
 
 -- --------------------------------------------------------
 
@@ -28,6 +26,7 @@ USE `edq`;
 -- Structure de la table `contact`
 --
 
+DROP TABLE IF EXISTS `contact`;
 CREATE TABLE IF NOT EXISTS `contact` (
   `IdContact` int(11) NOT NULL AUTO_INCREMENT,
   `IdContactRef` int(11) NOT NULL,
@@ -83,6 +82,7 @@ INSERT INTO `contact` (`IdContact`, `IdContactRef`, `ContactType`, `Name`, `Shor
 -- Structure de la table `contactparam`
 --
 
+DROP TABLE IF EXISTS `contactparam`;
 CREATE TABLE IF NOT EXISTS `contactparam` (
   `IdContact` int(11) NOT NULL,
   `Domain` varchar(16) NOT NULL,
@@ -98,6 +98,7 @@ CREATE TABLE IF NOT EXISTS `contactparam` (
 -- Structure de la table `localparameter`
 --
 
+DROP TABLE IF EXISTS `localparameter`;
 CREATE TABLE IF NOT EXISTS `localparameter` (
   `Domain` varchar(16) NOT NULL,
   `IdParam` varchar(16) NOT NULL,
@@ -125,6 +126,7 @@ INSERT INTO `localparameter` (`Domain`, `IdParam`, `Label`, `Value`, `ValueType`
 -- Structure de la table `node_comment`
 --
 
+DROP TABLE IF EXISTS `node_comment`;
 CREATE TABLE IF NOT EXISTS `node_comment` (
   `id` int(10) unsigned NOT NULL,
   `value` text,
@@ -137,10 +139,15 @@ CREATE TABLE IF NOT EXISTS `node_comment` (
 
 INSERT INTO `node_comment` (`id`, `value`) VALUES
 (1069, 'Application TerraFact'),
+(1168, 'https://datatables.net/examples/'),
 (1232, 'Lien de téléchargement du fichier .csv d''une table fournie par le noeud actuel :\n		< ?php /* télécharger */\n		$viewer = tree::get_node_by_name(''/_Exemples/Convertisseurs/table/csv'')[''id'']; /* === 1233 */\n		$viewer_options = "&node=" . $node[''id''] //fournisseur de données\n				. "&file--name=" . urlencode($node[''nm''])\n				. "&node--get=html"; // extrait les données depuis le html\n		? ><a class="file-download" href="view.php?id=<?= $viewer ?><?= $viewer_options ?>&vw=file.call">télécharger</a>\n	'),
-(1251, 'Utilisation de la fonction url_view.\nFournit une url d''appel d''une page.\n< form action="<?= url_view( $node ) ?>" >...\n\njQuery.load\njQuery.ui.dialog\n'),
+(1251, 'Utilisation de la fonction page::view_url.\nFournit une url d''appel d''une page.\n< form action="<?= page::view_url( $node ) ?>" >...\n\njQuery.load\njQuery.ui.dialog\n'),
 (1319, 'La page zip peut s''appeler directement par :\n< ?php\n$arguments[''backup''] = ''sql pages sources'';\ncall_page( ''/_System/Sauvegarde/zip'', $arguments);\n? >'),
-(1341, 'exemple de manipulation Xml');
+(1320, '\n\nMYSQLDUMP doit être défini dans /conf/edQ.conf.php'),
+(1341, 'exemple de manipulation Xml'),
+(1350, 'retourne le code html des données fournies par l''arguments rows'),
+(1361, 'Retourne le code html des données fournies par l''arguments rows.\nUtilise le plugin jquery dataTable\nL''argument columns est transmis au plugin.\nLa page html/table/rows appelle cette page si l''argument $--plugin.'),
+(1378, 'Recherche dans les sources .php, .css, .js');
 
 -- --------------------------------------------------------
 
@@ -148,6 +155,7 @@ INSERT INTO `node_comment` (`id`, `value`) VALUES
 -- Structure de la table `node_param`
 --
 
+DROP TABLE IF EXISTS `node_param`;
 CREATE TABLE IF NOT EXISTS `node_param` (
   `id` int(10) unsigned NOT NULL,
   `param` varchar(32) NOT NULL,
@@ -185,7 +193,29 @@ INSERT INTO `node_param` (`id`, `param`, `domain`, `value`, `sortIndex`) VALUES
 (1162, 'SQLDelete', 'query', 'DELETE FROM contact\nWHERE a.id = :ID', 999),
 (1162, 'SQLInsert', 'query', 'INSERT INTO contact (id, name)\nVALUES(:ID, :NAME)', 999),
 (1162, 'SQLSelect', 'query', 'SELECT p.`domain`, p.`param`, p.`text`, p.`valueType`, p.`icon`, p.`defaultValue`, p.`comment`, p.`sortIndex`\n, COUNT(n.id) AS nbUse\nFROM \n	node_params p\nLEFT JOIN\n	node_param n\n	ON p.domain = n.domain\n	AND p.param = n.param\nGROUP BY\n	p.`domain`, p.`param`, p.`text`, p.`valueType`, p.`icon`, p.`defaultValue`, p.`comment`, p.`sortIndex`\nORDER BY\n	 p.`domain`, p.`sortIndex`, p.`text`, p.`param`\nLIMIT 20', 999),
-(1162, 'SQLUpdate', 'query', 'UPDATE node_params p\nSET p.text = :TEXT\nWHERE p.domain = :DOMAIN\nAND p.param = :PARAM', 999);
+(1162, 'SQLUpdate', 'query', 'UPDATE node_params p\nSET p.text = :TEXT\nWHERE p.domain = :DOMAIN\nAND p.param = :PARAM', 999),
+(1202, 'sort', 'viewers', '["file-call","","node","comment","children","file-content"]', 999),
+(1222, 'sort', 'viewers', '["file-content","file-call","","node","comment","children"]', 999),
+(1234, 'sort', 'viewers', '["file-content","file-call","","node","comment"]', 999),
+(1241, 'sort', 'viewers', '["file-call","","node","comment","children","file-content"]', 999),
+(1248, 'sort', 'viewers', '["file-call","","node","comment","children","file-content"]', 999),
+(1319, 'sort', 'viewers', '["file-call","","node","comment","children","file-content"]', 999),
+(1320, 'sort', 'viewers', '["file-call","","node","comment","file-content"]', 999),
+(1322, 'sort', 'viewers', '["file-call","file-content","","node","comment","children"]', 999),
+(1326, 'sort', 'viewers', '["file-content","file-call","comment","","node","children"]', 999),
+(1327, 'sort', 'viewers', '["file-call","file-content","","node","comment","children"]', 999),
+(1342, 'sort', 'viewers', '["file-call","file-content","","node","comment","children"]', 999),
+(1344, 'sort', 'viewers', '["file-call","file-content","","node","comment"]', 999),
+(1350, 'sort', 'viewers', '["","comment","node","children","file-content","file-call"]', 999),
+(1354, 'sort', 'viewers', '["","node","comment","children","file-content","file-call"]', 999),
+(1356, 'sort', 'viewers', '["file-call","file-content","","node","comment"]', 999),
+(1367, 'sort', 'viewers', '["file-call","file-content","","node","comment","children"]', 999),
+(1370, 'sort', 'viewers', '["file-call","file-content","children","","node","comment"]', 999),
+(1374, 'sort', 'viewers', '["file-content","file-call","","node","comment"]', 999),
+(1378, 'sort', 'viewers', '["file-call","file-content","","node","comment"]', 999),
+(1383, 'sort', 'viewers', '["file-call","file-content","","node","comment"]', 999),
+(1387, 'sort', 'viewers', '["file-call","","node","comment","children","file-content"]', 999),
+(1388, 'sort', 'viewers', '["file-call","file-content","","node","comment"]', 999);
 
 -- --------------------------------------------------------
 
@@ -193,6 +223,7 @@ INSERT INTO `node_param` (`id`, `param`, `domain`, `value`, `sortIndex`) VALUES
 -- Structure de la table `node_params`
 --
 
+DROP TABLE IF EXISTS `node_params`;
 CREATE TABLE IF NOT EXISTS `node_params` (
   `param` varchar(32) NOT NULL,
   `domain` varchar(32) NOT NULL,
@@ -226,6 +257,7 @@ INSERT INTO `node_params` (`param`, `domain`, `text`, `valueType`, `icon`, `defa
 -- Structure de la table `parameter`
 --
 
+DROP TABLE IF EXISTS `parameter`;
 CREATE TABLE IF NOT EXISTS `parameter` (
   `Domain` varchar(16) NOT NULL,
   `IdParam` varchar(16) NOT NULL,
@@ -363,6 +395,7 @@ INSERT INTO `parameter` (`Domain`, `IdParam`, `Label`, `Value`, `ValueType`, `Im
 -- Structure de la table `rights`
 --
 
+DROP TABLE IF EXISTS `rights`;
 CREATE TABLE IF NOT EXISTS `rights` (
   `UserType` int(11) NOT NULL,
   `Domain` varchar(256) NOT NULL,
@@ -402,6 +435,7 @@ INSERT INTO `rights` (`UserType`, `Domain`, `Rights`, `Data`) VALUES
 -- Structure de la table `rightsdomain`
 --
 
+DROP TABLE IF EXISTS `rightsdomain`;
 CREATE TABLE IF NOT EXISTS `rightsdomain` (
   `Domain` varchar(256) NOT NULL,
   `Name` varchar(256) NOT NULL,
@@ -424,6 +458,7 @@ INSERT INTO `rightsdomain` (`Domain`, `Name`) VALUES
 -- Structure de la table `tree_data`
 --
 
+DROP TABLE IF EXISTS `tree_data`;
 CREATE TABLE IF NOT EXISTS `tree_data` (
   `id` int(10) unsigned NOT NULL,
   `nm` varchar(255) CHARACTER SET utf8 NOT NULL COMMENT 'nom',
@@ -474,13 +509,13 @@ INSERT INTO `tree_data` (`id`, `nm`, `typ`, `ext`, `params`, `design`, `icon`, `
 (1134, 'Requête', 'query', '', '', 1, 'file file-query', NULL, 2, 1),
 (1157, 'Test', 'query', '', '', 1, 'file file-query', NULL, 2, 1),
 (1158, '_System', 'folder', '', '', 1, 'file file-folder-sys', '#ebdab9', 0, 1),
-(1159, 'Paramètres des noeuds', 'folder', '', '', 1, 'file file-folder', '#ffffff', 0, 0),
+(1159, 'Paramètres', 'folder', '', '', 1, 'file file-folder', '#ffffff', 0, 0),
 (1160, 'Liste', 'php', '', '', 1, 'file file-query', '#f0b2f0', 2, 1),
 (1161, 'Edition', 'php', '', '', 1, 'file file-query', '#c1deab', 2, 1),
 (1162, 'Requête', 'query', '', '', 1, 'file file-query', '#eaed91', 2, 1),
 (1166, 'dataSource', 'dataSource', '', '', 1, 'file file-iso', '', 0, 0),
 (1167, '_Exemples', 'folder', '', '', 1, 'file file-folder-sys', NULL, 0, 0),
-(1168, 'DataTables', 'folder', '', '', 1, 'file file-folder', NULL, 0, 0),
+(1168, 'dataTable', 'folder', '', '', 1, 'file file-folder', '', 0, 0),
 (1169, 'Simple', 'folder', '', '', 1, 'file file-folder', NULL, 0, 0),
 (1170, 'Zéro config', 'php', '', '', 1, 'file file-php', NULL, 0, 0),
 (1171, 'data', 'folder', '', '', 1, 'file file-file', NULL, 0, 0),
@@ -506,12 +541,12 @@ INSERT INTO `tree_data` (`id`, `nm`, `typ`, `ext`, `params`, `design`, `icon`, `
 (1191, 'html', NULL, NULL, NULL, 1, NULL, NULL, 0, 0),
 (1192, 'css', 'css', '', '', 1, 'file file-css', NULL, 0, 0),
 (1194, 'functions', 'default', '', '', 1, 'file file-folder-sys', '', 0, 0),
-(1195, 'include_page', 'default', '', '', 1, 'file file-file', '', 0, 0),
+(1195, 'execute', 'default', '', '', 1, 'file file-file', '', 0, 0),
 (1196, 'get_callstack', 'default', '', '', 1, 'file file-file', '', 0, 0),
 (1198, 'arguments', NULL, NULL, NULL, 1, NULL, NULL, 0, 0),
 (1199, 'javascript', 'default', '', '', 1, 'file file-folder-sys', '', 0, 0),
 (1200, 'view dialog', 'default', '', '', 1, 'file file-file', '', 0, 0),
-(1202, 'call_page', 'default', '', '', 1, 'file file-file', '', 0, 0),
+(1202, 'call', 'default', '', '', 1, 'file file-file', '', 0, 0),
 (1203, 'subpage', 'html', '', '', 1, 'file file-htm', '', 0, 0),
 (1204, 'Xml', 'html', '', '', 0, 'file file-file', '', 0, 0),
 (1205, 'Load, Save', 'default', '', '', 1, 'file file-file', '', 0, 0),
@@ -520,11 +555,11 @@ INSERT INTO `tree_data` (`id`, `nm`, `typ`, `ext`, `params`, `design`, `icon`, `
 (1210, 'html', NULL, NULL, NULL, 1, NULL, NULL, 0, 0),
 (1211, 'css', 'css', '', '', 1, 'file file-css', NULL, 0, 0),
 (1215, 'Fichiers .php residuels', 'default', '', '', 1, 'file file-file', '', 0, 0),
-(1216, 'Arborescence', 'folder', '', '', 1, 'file file-folder', 'false', 0, 0),
+(1216, 'Pages', 'folder', '', '', 1, 'file file-folder', 'false', 0, 0),
 (1218, 'Noeuds', 'default', '', '', 1, 'file file-file', '', 0, 0),
 (1220, 'Editeurs', 'folder', '', '', 1, 'file file-folder', '', 0, 0),
 (1221, 'CodeMirror', NULL, NULL, NULL, 1, NULL, NULL, 0, 0),
-(1222, 'test', 'default', '', '', 1, 'file file-file', '', 0, 0),
+(1222, 'test', 'default', '', '', 1, 'file file-php', '', 0, 0),
 (1229, 'Utilisateurs', 'folder', '', '', 1, 'file file-folder', '', 0, 0),
 (1230, 'Liste', 'php', '', '', 1, 'file file-query', '', 0, 0),
 (1231, 'Edition', 'php', '', '', 1, 'file file-query', NULL, 2, 1),
@@ -533,35 +568,63 @@ INSERT INTO `tree_data` (`id`, `nm`, `typ`, `ext`, `params`, `design`, `icon`, `
 (1234, 'csv', 'php', '', '', 1, 'file file-php', '', 0, 0),
 (1235, 'sub', NULL, NULL, NULL, 1, NULL, NULL, 0, 0),
 (1236, 'rows', 'php', '', '', 1, 'file file-query', '', 0, 0),
-(1239, 'Gestion - Compta', 'folder', '', '', 0, 'file file-folder', '#bbd184', 0, 0),
+(1239, 'Gestion - Compta', 'folder', '', '', 0, 'file file-folder', '#d5debf', 0, 0),
 (1240, 'Temps de travail', 'folder', '', '', 0, 'file file-folder', '', 0, 0),
 (1241, 'Analytique', 'php', '', '', 0, 'file file-query', '', 0, 0),
 (1247, 'Details', 'php', '', '', 0, 'file file-query', '', 0, 0),
 (1248, 'Analytique par contexte', 'php', '', '', 0, 'file file-query', '', 0, 0),
 (1249, 'dataSource', 'php', NULL, NULL, 1, NULL, NULL, 0, 0),
-(1250, 'TODO', NULL, NULL, NULL, 1, NULL, NULL, 0, 0),
-(1251, 'url_view', 'default', '', '', 1, 'file file-file', '', 0, 0),
-(1301, 'Dossier', 'folder', NULL, NULL, 0, 'file file-folder', NULL, 0, 0),
-(1306, 'SQL', 'sql', '', '', 0, 'file file-sql', '', 0, 0),
-(1312, 'Dossier_1', 'folder', '', '', 0, 'file file-folder', '', 0, 0),
-(1315, 'Dossier_2', 'folder', '', '', 0, 'file file-folder', '', 0, 0),
-(1316, 'Dossier', 'folder', NULL, NULL, 0, 'file file-folder', NULL, 0, 0),
-(1317, 'Dossier_3', 'folder', NULL, NULL, 0, 'file file-folder', NULL, 0, 0),
-(1318, 'SQL_1', 'sql', '', '', 0, 'file file-sql', '', 0, 0),
+(1250, 'TODO', 'html', '', '', 1, 'file file-file', '', 0, 0),
+(1251, 'url', 'default', '', '', 1, 'file file-file', '', 0, 0),
 (1319, 'Sauvegarde', 'folder', NULL, NULL, 0, 'file file-folder', NULL, 0, 0),
 (1320, 'zip', 'php', '', '', 0, 'file file-iso', '', 0, 0),
 (1321, 'Divers', 'folder', '', '', 1, 'file file-folder', '', 0, 0),
-(1322, 'debug', 'folder', NULL, NULL, 0, 'file file-folder', NULL, 0, 0),
+(1322, 'debug', 'folder', '', '', 1, 'file file-folder', '', 0, 0),
 (1323, 'dialog', 'php', NULL, NULL, 0, 'file file-php', NULL, 0, 0),
-(1324, 'request', 'php', NULL, NULL, 0, 'file file-php', NULL, 0, 0),
+(1324, 'server', 'php', NULL, NULL, 0, 'file file-php', NULL, 0, 0),
 (1325, 'get', 'php', NULL, NULL, 0, 'file file-php', NULL, 0, 0),
-(1326, 'Utilisateur', 'folder', NULL, NULL, 0, 'file file-folder', NULL, 0, 0),
+(1326, 'Utilisateur', 'folder', '', '', 1, 'file file-folder', '', 0, 0),
 (1327, 'Preferences', 'folder', NULL, NULL, 0, 'file file-folder', NULL, 0, 0),
 (1328, 'session', 'php', '', '', 0, 'file file-php', '', 0, 0),
 (1329, 'dialog', 'php', NULL, NULL, 0, 'file file-php', NULL, 0, 0),
 (1331, 'set', 'php', '', '', 0, 'file file-php', '', 0, 0),
-(1332, 'test', 'default', NULL, NULL, 0, 'file file-file', NULL, 0, 0),
-(1341, 'Filters', 'php', NULL, NULL, 1, NULL, NULL, 0, 0);
+(1341, 'Filters', 'php', NULL, NULL, 1, NULL, NULL, 0, 0),
+(1342, 'UI', 'folder', NULL, NULL, 0, 'file file-folder', NULL, 0, 0),
+(1344, 'Layout', 'js', '', '', 0, 'file file-js', '', 0, 0),
+(1345, '_html', 'folder', '', '', 1, 'file file-folder-sys', '', 0, 0),
+(1346, 'input', 'folder', NULL, NULL, 0, 'file file-folder', NULL, 0, 0),
+(1347, 'file', 'html', NULL, NULL, 0, 'file file-html', NULL, 0, 0),
+(1348, 'table', 'folder', NULL, NULL, 0, 'file file-folder', NULL, 0, 0),
+(1349, 'csv', 'php', NULL, NULL, 0, 'file file-php', NULL, 0, 0),
+(1350, 'rows', 'php', NULL, NULL, 0, 'file file-php', NULL, 0, 0),
+(1351, 'demo', 'default', NULL, NULL, 0, 'file file-file', NULL, 0, 0),
+(1354, 'Ecritures', 'php', NULL, NULL, 0, 'file file-php', NULL, 0, 0),
+(1355, 'csv', 'default', NULL, NULL, 0, 'file file-file', NULL, 0, 0),
+(1356, 'Recherche', 'default', '', '', 1, 'file file-iso', '', 0, 0),
+(1357, 'phpinfo', 'php', '', '', 0, 'file file-php', '', 0, 0),
+(1360, 'form', 'php', '', '', 0, 'file file-htm', '', 0, 0),
+(1361, 'dataTable', 'php', '', '', 0, 'file file-php', '', 0, 0),
+(1362, 'demo', 'default', NULL, NULL, 0, 'file file-file', NULL, 0, 0),
+(1363, 'sdn.org', 'folder', NULL, NULL, 0, 'file file-folder', NULL, 0, 0),
+(1364, 'Synthese', 'php', NULL, NULL, 1, NULL, NULL, 0, 0),
+(1365, 'PostFix', 'folder', NULL, NULL, 1, NULL, NULL, 0, 0),
+(1366, 'conf', 'php', NULL, NULL, 1, NULL, NULL, 0, 0),
+(1367, 'logs', 'php', NULL, NULL, 1, NULL, NULL, 0, 0),
+(1368, 'section', 'php', NULL, NULL, 1, NULL, NULL, 0, 0),
+(1369, 'sections', 'php', NULL, NULL, 1, NULL, NULL, 0, 0),
+(1370, 'page', 'php', '', '', 1, 'file file-c', '', 0, 0),
+(1371, 'image', 'folder', NULL, NULL, 0, 'file file-folder', NULL, 0, 0),
+(1372, 'jquery-ui', 'php', NULL, NULL, 0, 'file file-php', NULL, 0, 0),
+(1373, 'edQ', 'php', NULL, NULL, 0, 'file file-php', NULL, 0, 0),
+(1374, 'helpers', 'php', '', '', 1, 'file file-c', '', 0, 0),
+(1377, 'Sources', 'folder', '', '', 1, 'file file-folder', '', 0, 0),
+(1378, 'Recherche', 'default', '', '', 1, 'file file-iso', '', 0, 0),
+(1383, 'Favoris', 'html', NULL, NULL, 1, 'file file-html', NULL, 0, 0),
+(1384, 'delete', 'php', '', '', 0, 'file file-php', '', 0, 0),
+(1385, 'tree', 'php', '', '', 1, 'file file-c', '', 0, 0),
+(1386, '_docs', 'folder', '', '', 1, 'file file-folder-sys', '#ffffff', 0, 0),
+(1387, 'php', 'folder', NULL, NULL, 1, 'file file-folder', NULL, 0, 0),
+(1388, 'Version', 'php', NULL, NULL, 1, 'file file-php', NULL, 0, 0);
 
 -- --------------------------------------------------------
 
@@ -569,6 +632,7 @@ INSERT INTO `tree_data` (`id`, `nm`, `typ`, `ext`, `params`, `design`, `icon`, `
 -- Structure de la table `tree_struct`
 --
 
+DROP TABLE IF EXISTS `tree_struct`;
 CREATE TABLE IF NOT EXISTS `tree_struct` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
   `lft` int(10) unsigned NOT NULL,
@@ -577,127 +641,155 @@ CREATE TABLE IF NOT EXISTS `tree_struct` (
   `pid` int(10) unsigned NOT NULL,
   `pos` int(10) unsigned NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1342 ;
+) ENGINE=InnoDB  DEFAULT CHARSET=latin1 AUTO_INCREMENT=1389 ;
 
 --
 -- Contenu de la table `tree_struct`
 --
 
 INSERT INTO `tree_struct` (`id`, `lft`, `rgt`, `lvl`, `pid`, `pos`) VALUES
-(1, 1, 228, 0, 0, 0),
-(1065, 166, 167, 3, 1095, 2),
+(1, 1, 284, 0, 0, 0),
+(1065, 76, 77, 3, 1095, 2),
 (1069, 2, 21, 1, 1, 0),
 (1070, 19, 20, 2, 1069, 5),
-(1074, 152, 177, 1, 1, 3),
-(1078, 157, 158, 2, 1074, 2),
-(1094, 168, 169, 3, 1095, 3),
-(1095, 161, 170, 2, 1074, 4),
-(1097, 164, 165, 3, 1095, 1),
-(1098, 162, 163, 3, 1095, 0),
+(1074, 62, 87, 1, 1, 3),
+(1078, 67, 68, 2, 1074, 2),
+(1094, 78, 79, 3, 1095, 3),
+(1095, 71, 80, 2, 1074, 4),
+(1097, 74, 75, 3, 1095, 1),
+(1098, 72, 73, 3, 1095, 0),
 (1100, 11, 18, 2, 1069, 4),
 (1101, 16, 17, 3, 1100, 2),
 (1102, 14, 15, 3, 1100, 1),
-(1103, 171, 172, 2, 1074, 5),
-(1104, 155, 156, 2, 1074, 1),
+(1103, 81, 82, 2, 1074, 5),
+(1104, 65, 66, 2, 1074, 1),
 (1105, 9, 10, 2, 1069, 3),
 (1106, 7, 8, 2, 1069, 2),
-(1107, 153, 154, 2, 1074, 0),
+(1107, 63, 64, 2, 1074, 0),
 (1111, 5, 6, 2, 1069, 1),
-(1121, 36, 41, 3, 1321, 0),
+(1121, 42, 47, 3, 1321, 0),
 (1123, 12, 13, 3, 1100, 0),
-(1127, 38, 37, 3, 1121, 1),
-(1133, 22, 43, 1, 1, 1),
-(1134, 159, 160, 2, 1074, 3),
+(1127, 44, 43, 3, 1121, 1),
+(1133, 22, 49, 1, 1, 1),
+(1134, 69, 70, 2, 1074, 3),
 (1157, 3, 4, 2, 1069, 0),
-(1158, 178, 227, 1, 1, 4),
-(1159, 187, 194, 2, 1158, 2),
-(1160, 190, 191, 3, 1159, 1),
-(1161, 192, 193, 3, 1159, 2),
-(1162, 188, 189, 3, 1159, 0),
-(1166, 179, 180, 2, 1158, 0),
-(1167, 44, 151, 1, 1, 2),
-(1168, 46, 83, 3, 1187, 0),
-(1169, 67, 80, 4, 1168, 1),
-(1170, 68, 71, 5, 1169, 0),
-(1171, 69, 70, 6, 1170, 0),
-(1172, 47, 66, 4, 1168, 0),
-(1173, 60, 65, 5, 1172, 2),
-(1174, 61, 62, 6, 1173, 0),
-(1175, 63, 64, 6, 1173, 1),
-(1176, 54, 59, 5, 1172, 1),
-(1177, 55, 56, 6, 1176, 0),
-(1178, 57, 58, 6, 1176, 1),
-(1179, 48, 53, 5, 1172, 0),
-(1180, 49, 50, 6, 1179, 0),
-(1181, 51, 52, 6, 1179, 1),
-(1182, 72, 79, 5, 1169, 1),
-(1183, 73, 74, 6, 1182, 0),
-(1184, 75, 76, 6, 1182, 1),
-(1185, 77, 78, 6, 1182, 2),
-(1186, 81, 82, 4, 1168, 2),
-(1187, 45, 102, 2, 1167, 0),
-(1188, 84, 101, 3, 1187, 1),
-(1189, 93, 100, 4, 1188, 1),
-(1190, 94, 95, 5, 1189, 0),
-(1191, 96, 97, 5, 1189, 1),
-(1192, 98, 99, 5, 1189, 2),
-(1194, 103, 116, 2, 1167, 1),
-(1195, 108, 109, 3, 1194, 1),
-(1196, 110, 111, 3, 1194, 2),
-(1198, 112, 113, 3, 1194, 3),
-(1199, 117, 120, 2, 1167, 2),
-(1200, 118, 119, 3, 1199, 0),
-(1202, 104, 107, 3, 1194, 0),
-(1203, 105, 106, 4, 1202, 0),
-(1204, 173, 176, 2, 1074, 6),
-(1205, 174, 175, 3, 1204, 0),
-(1208, 85, 92, 4, 1188, 0),
-(1209, 86, 87, 5, 1208, 0),
-(1210, 88, 89, 5, 1208, 1),
-(1211, 90, 91, 5, 1208, 2),
-(1215, 184, 185, 3, 1216, 1),
-(1216, 181, 186, 2, 1158, 1),
-(1218, 182, 183, 3, 1216, 0),
-(1220, 121, 124, 2, 1167, 3),
-(1221, 122, 123, 3, 1220, 0),
-(1222, 125, 128, 2, 1167, 4),
-(1229, 195, 200, 2, 1158, 3),
-(1230, 196, 197, 3, 1229, 0),
-(1231, 198, 199, 3, 1229, 1),
-(1232, 129, 136, 2, 1167, 5),
-(1233, 132, 135, 3, 1232, 1),
-(1234, 133, 134, 4, 1233, 0),
-(1235, 126, 127, 3, 1222, 0),
-(1236, 130, 131, 3, 1232, 0),
-(1239, 23, 34, 2, 1133, 0),
-(1240, 24, 33, 3, 1239, 0),
-(1241, 31, 32, 4, 1240, 2),
+(1158, 88, 153, 1, 1, 4),
+(1159, 132, 139, 3, 1216, 0),
+(1160, 135, 136, 4, 1159, 1),
+(1161, 137, 138, 4, 1159, 2),
+(1162, 133, 134, 4, 1159, 0),
+(1166, 89, 90, 2, 1158, 0),
+(1167, 200, 283, 1, 1, 7),
+(1168, 206, 243, 3, 1187, 0),
+(1169, 227, 240, 4, 1168, 1),
+(1170, 228, 231, 5, 1169, 0),
+(1171, 229, 230, 6, 1170, 0),
+(1172, 207, 226, 4, 1168, 0),
+(1173, 220, 225, 5, 1172, 2),
+(1174, 221, 222, 6, 1173, 0),
+(1175, 223, 224, 6, 1173, 1),
+(1176, 214, 219, 5, 1172, 1),
+(1177, 215, 216, 6, 1176, 0),
+(1178, 217, 218, 6, 1176, 1),
+(1179, 208, 213, 5, 1172, 0),
+(1180, 209, 210, 6, 1179, 0),
+(1181, 211, 212, 6, 1179, 1),
+(1182, 232, 239, 5, 1169, 1),
+(1183, 233, 234, 6, 1182, 0),
+(1184, 235, 236, 6, 1182, 1),
+(1185, 237, 238, 6, 1182, 2),
+(1186, 241, 242, 4, 1168, 2),
+(1187, 205, 262, 2, 1167, 1),
+(1188, 244, 261, 3, 1187, 1),
+(1189, 253, 260, 4, 1188, 1),
+(1190, 254, 255, 5, 1189, 0),
+(1191, 256, 257, 5, 1189, 1),
+(1192, 258, 259, 5, 1189, 2),
+(1194, 263, 266, 2, 1167, 2),
+(1195, 161, 162, 4, 1370, 2),
+(1196, 264, 265, 3, 1194, 0),
+(1198, 159, 160, 4, 1370, 1),
+(1199, 267, 270, 2, 1167, 3),
+(1200, 268, 269, 3, 1199, 0),
+(1202, 163, 166, 4, 1370, 3),
+(1203, 164, 165, 5, 1202, 0),
+(1204, 83, 86, 2, 1074, 6),
+(1205, 84, 85, 3, 1204, 0),
+(1208, 245, 252, 4, 1188, 0),
+(1209, 246, 247, 5, 1208, 0),
+(1210, 248, 249, 5, 1208, 1),
+(1211, 250, 251, 5, 1208, 2),
+(1215, 144, 145, 3, 1216, 3),
+(1216, 131, 146, 2, 1158, 7),
+(1218, 142, 143, 3, 1216, 2),
+(1220, 271, 274, 2, 1167, 4),
+(1221, 272, 273, 3, 1220, 0),
+(1222, 201, 204, 2, 1167, 0),
+(1229, 91, 96, 2, 1158, 1),
+(1230, 92, 93, 3, 1229, 0),
+(1231, 94, 95, 3, 1229, 1),
+(1232, 275, 282, 2, 1167, 5),
+(1233, 278, 281, 3, 1232, 1),
+(1234, 279, 280, 4, 1233, 0),
+(1235, 202, 203, 3, 1222, 0),
+(1236, 276, 277, 3, 1232, 0),
+(1239, 23, 40, 2, 1133, 0),
+(1240, 24, 39, 3, 1239, 0),
+(1241, 31, 34, 4, 1240, 2),
 (1247, 28, 29, 5, 1248, 0),
 (1248, 27, 30, 4, 1240, 1),
 (1249, 25, 26, 4, 1240, 0),
-(1250, 205, 206, 2, 1158, 5),
-(1251, 114, 115, 3, 1194, 4),
-(1301, 137, 150, 2, 1167, 6),
-(1306, 144, 145, 3, 1301, 3),
-(1312, 142, 143, 3, 1301, 2),
-(1315, 138, 139, 3, 1301, 0),
-(1316, 146, 147, 3, 1301, 4),
-(1317, 148, 149, 3, 1301, 5),
-(1318, 140, 141, 3, 1301, 1),
-(1319, 201, 204, 2, 1158, 4),
-(1320, 202, 203, 3, 1319, 0),
-(1321, 35, 42, 2, 1133, 1),
-(1322, 207, 216, 2, 1158, 6),
-(1323, 213, 214, 4, 1324, 0),
-(1324, 212, 215, 3, 1322, 1),
-(1325, 223, 224, 4, 1327, 1),
-(1326, 217, 226, 2, 1158, 7),
-(1327, 218, 225, 3, 1326, 0),
-(1328, 208, 211, 3, 1322, 0),
-(1329, 209, 210, 4, 1328, 0),
-(1331, 219, 222, 4, 1327, 0),
-(1332, 220, 221, 5, 1331, 0),
-(1341, 39, 40, 4, 1121, 0);
+(1250, 101, 102, 2, 1158, 3),
+(1251, 157, 158, 4, 1370, 0),
+(1319, 97, 100, 2, 1158, 2),
+(1320, 98, 99, 3, 1319, 0),
+(1321, 41, 48, 2, 1133, 1),
+(1322, 103, 114, 2, 1158, 4),
+(1323, 111, 112, 4, 1324, 0),
+(1324, 110, 113, 3, 1322, 2),
+(1325, 119, 120, 4, 1327, 1),
+(1326, 115, 124, 2, 1158, 5),
+(1327, 116, 123, 3, 1326, 0),
+(1328, 106, 109, 3, 1322, 1),
+(1329, 107, 108, 4, 1328, 0),
+(1331, 117, 118, 4, 1327, 0),
+(1341, 45, 46, 4, 1121, 0),
+(1342, 125, 130, 2, 1158, 6),
+(1344, 126, 127, 3, 1342, 0),
+(1345, 174, 199, 1, 1, 6),
+(1346, 175, 178, 2, 1345, 0),
+(1347, 176, 177, 3, 1346, 0),
+(1348, 179, 190, 2, 1345, 1),
+(1349, 188, 189, 3, 1348, 1),
+(1350, 180, 187, 3, 1348, 0),
+(1351, 185, 186, 4, 1350, 1),
+(1354, 35, 38, 4, 1240, 3),
+(1355, 36, 37, 5, 1354, 0),
+(1356, 140, 141, 3, 1216, 1),
+(1357, 104, 105, 3, 1322, 0),
+(1360, 191, 192, 2, 1345, 2),
+(1361, 181, 184, 4, 1350, 0),
+(1362, 182, 183, 5, 1361, 0),
+(1363, 50, 61, 1, 1, 2),
+(1364, 32, 33, 5, 1241, 0),
+(1365, 51, 60, 2, 1363, 0),
+(1366, 58, 59, 3, 1365, 1),
+(1367, 52, 57, 3, 1365, 0),
+(1368, 55, 56, 4, 1367, 1),
+(1369, 53, 54, 4, 1367, 0),
+(1370, 156, 167, 3, 1387, 0),
+(1371, 193, 198, 2, 1345, 3),
+(1372, 194, 195, 3, 1371, 0),
+(1373, 196, 197, 3, 1371, 1),
+(1374, 168, 169, 3, 1387, 1),
+(1377, 147, 150, 2, 1158, 8),
+(1378, 148, 149, 3, 1377, 0),
+(1383, 128, 129, 3, 1342, 1),
+(1384, 121, 122, 4, 1327, 2),
+(1385, 170, 171, 3, 1387, 2),
+(1386, 154, 173, 1, 1, 5),
+(1387, 155, 172, 2, 1386, 0),
+(1388, 151, 152, 2, 1158, 9);
 
 -- --------------------------------------------------------
 
@@ -705,10 +797,11 @@ INSERT INTO `tree_struct` (`id`, `lft`, `rgt`, `lvl`, `pid`, `pos`) VALUES
 -- Structure de la table `user`
 --
 
+DROP TABLE IF EXISTS `user`;
 CREATE TABLE IF NOT EXISTS `user` (
   `IdUser` int(11) NOT NULL COMMENT '= IdContact',
   `Enabled` tinyint(1) NOT NULL DEFAULT '1',
-  `Password` varchar(64) NOT NULL,
+  `Password` varchar(64) CHARACTER SET utf8 NOT NULL,
   `UserType` smallint(4) NOT NULL,
   PRIMARY KEY (`IdUser`),
   KEY `Enabled` (`Enabled`),
@@ -736,6 +829,7 @@ INSERT INTO `user` (`IdUser`, `Enabled`, `Password`, `UserType`) VALUES
 -- Structure de la table `user_param`
 --
 
+DROP TABLE IF EXISTS `user_param`;
 CREATE TABLE IF NOT EXISTS `user_param` (
   `id` int(10) unsigned NOT NULL,
   `param` varchar(32) NOT NULL,
@@ -751,7 +845,9 @@ CREATE TABLE IF NOT EXISTS `user_param` (
 --
 
 INSERT INTO `user_param` (`id`, `param`, `domain`, `value`, `sortIndex`) VALUES
-(1, 'DIV#favpanel', 'jstree-favpanel-nodes', '{"1320":{"h":"24","w":"31","x":"40","y":"12","text":"zip","icon":"file file-iso"}}', 0);
+(1, 'DIV#favpanel', 'jstree-favpanel-nodes', '{"1320":{"h":24,"w":32,"x":16,"y":8,"text":"zip","icon":"file file-iso"},"1356":{"h":24,"w":73,"x":56,"y":8,"text":"Recherche","icon":"file file-iso"},"1378":{"h":24,"w":73,"x":136,"y":8,"text":"Recherche","icon":"file file-iso"}}', 0),
+(1, 'form', '_Pages/Recherche', '{"root":"\\/edQ\\/","content":"userRight"}', 0),
+(1, 'form', '_Sources/Recherche', '{"root":"\\/","content":"userRight","extensions":"php"}', 0);
 
 --
 -- Contraintes pour les tables exportées

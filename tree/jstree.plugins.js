@@ -141,7 +141,13 @@
 				})
 				.done(function(data){
 					if(!data) return;
-					if(typeof data === 'string') data = eval('(' + data + ')');
+					if(typeof data === 'string')
+						try{
+							data = eval('(' + data + ')');
+						}
+						catch(ex){
+							alert("Erreur dans jstree.plugins.js load('/_System/Utilisateur/Preferences/get') : " + ex);
+						}
 					// pour chaque panneau sauvegarde
 					for(var panel in data){
 						if(!isNaN(panel)) panel = parseInt(panel);

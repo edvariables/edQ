@@ -30,10 +30,10 @@ Classe statique <var>helpers</var>
 			<li>détermine si l'utilisateur est en mode design.</li>
 			<li>se base sur <var>$_REQUEST['design']</var>.</li>
 		</ul></li>
-	<li><h3>userRight()</h3>
+	<li><h3>user_right()</h3>
 		<ul>
 			<li>détermine un droit de l'utilisateur.</li>
-			<li>Exemple : <code>var_dump(userRight('facture', 15));</code></li>
+			<li>Exemple : <code>var_dump(user_right('facture', 15));</code></li>
 			<li>se base sur <var>$_SESSION['edq-user']['rights']</var>.</li>
 		</ul></li>
 	<li><h3>rrmdir()</h3>

@@ -2,7 +2,7 @@
 - message d'attente de chargement
 - couleur des liens pendant leur exécution
 - $view not set (quand Domain affiche :Liste, par exemple)
-- UI userRight (cf helpers.php)
+- UI user_right (cf helpers.php)
 - exportation / importation (noeuds avec commentaires, ... + fichiers)
 - taille de l'éditeur php
 - purge de edQ/tmp

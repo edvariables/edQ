@@ -36,6 +36,9 @@ html, body {
 .ui-layout-pane {
 	border-radius: 4px;
 }
+.ui-dialog.ui-widget .ui-widget {
+	font-size: 1.2em;
+}
 /* tree */
 html, body { background:#ebebeb; font-size:10px; font-family:Verdana; margin:0; padding:0; }
 /*#container { min-width:320px; margin:0px auto 0 auto; background:white; border-radius:0px; padding:0px; overflow:hidden; }*/

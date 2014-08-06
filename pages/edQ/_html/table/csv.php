@@ -1,5 +1,5 @@
 <?php
-if(!userRight())
+if(!user_right())
 	die('Accès réservé');
 $dir = preg_replace('/\.php$/', '', __FILE__);
 $file = helpers::combine($dir, "data.csv");
