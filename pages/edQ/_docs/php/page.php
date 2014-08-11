@@ -17,13 +17,23 @@ Classe statique <var>page</var>
 		<ul><li><?=page::folder_url($node)?></li>
 		</ul></li>
 	<li><h3>page::execute()</h3>
-		<ul><li><code>page::execute($search, [$__FILE__ = null], [$extension = ".php"], [&$arguments = null])</code></li>
+		<ul><li><code>page::execute($search, [$refers_to = null], [$extension = ".php"], [&$arguments = null])</code></li>
 		<li><a href="#">voir page::call()</a></li>
 		</ul></li>
 	<li><h3>page::call()</h3>
-		<ul><li><code>page::call($search, [&$arguments = null], [$__FILE__ = null], [$extension = ".php"])</code></li>
+		<ul><li><code>page::call($search, [&$arguments = null], [$refers_to = null], [$extension = ".php"])</code></li>
 		<li>dans la page appelée, <var>$node</var> n'est pas défini<code>
 	$node = page::node($node); //garantit la disponibilité de $node</code></li>
+		<li><var>$search</var><pre>Recherche en référence à $refers_to
+	<code>'..dataSource'</code> : chez les parents
+	<code>'.dataSource'</code> : au niveau de la référence ou chez les parents
+	<code>'dataSource'</code> : au niveau de la référence
+	<code>':dataSource'</code> : dans la descendance
+	<code>'/_System/dataSource'</code> : à partir de la racine
+	peut être un identifiant numérique : <code>page::execute( $node['pid'] ); //parent id</code>
+	<code>page::execute( 1025 ); // non transposable d'un serveur à l'autre</code>
+	peut être un noeud : <code>page::execute( $child_node ); </code>
+		</pre></li>
 		<li><var>$arguments</var><pre>Arguments transmis à la page appelée
 Le passage par pointeur signifie que les modifications effectuées sur cette variable sont récupérables en sortie d'appel de page.
 	C'est la méthode pour utiliser les pages comme des fonctions.
@@ -42,17 +52,8 @@ page::execute(':sub_page', $node, '.php', $args);</code>
 			laisser le système utilisé cette méthode est déconseillé car plus gourmand en ressource,
 			alors qu'il suffit d'ajouter l'argument <code>, __FILE__</code>. : 
 			<code>page::call(':sub_page'); //déconseillé</code>
-			<code>page::execute(':sub_page', __FILE__); //conseillé</code></pre>
-		<li><var>$search</var><pre>Recherche en référence à $__FILE__
-	<code>'..dataSource'</code> : chez les parents
-	<code>'.dataSource'</code> : au niveau de la référence ou chez les parents
-	<code>'dataSource'</code> : au niveau de la référence
-	<code>':dataSource'</code> : dans la descendance
-	<code>'/_System/dataSource'</code> : à partir de la racine
-	peut être un identifiant numérique : <code>page::execute( $node['pid'] ); //parent id</code>
-	<code>page::execute( 1025 ); // non transposable d'un serveur à l'autre</code>
-	peut être un noeud : <code>page::execute( $child_node ); </code>
-		</pre></li>
+			<code>page::execute(':sub_page', __FILE__); //conseillé</code>
+			<code>page::execute(':sub_page', $node); //mieux mais en s'assurant de l'existence de $node</code></pre>
 		</ul></li>
 	<li><h3>page::node()</h3></li>
 	<li><h3>page::id()</h3>
