@@ -83,8 +83,8 @@
 						
 						var $node = self.get_node($dom.attr('node_id'), true);
 						if($node){
-							self.select_node($node);
-							return;
+							if(self.select_node($node))
+								return;
 						}
 						$.get('tree/db.php?operation=get_view'
 							+ '&id=' + $dom.attr('node_id')
