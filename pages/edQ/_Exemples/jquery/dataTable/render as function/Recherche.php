@@ -1,13 +1,11 @@
 <?php
 $args = array(
-	"domain" => '_Sources/Recherche'
+	"domain" => '_Pages/Recherche'
 	, "param" => 'form'
 	, "return" => 'value'
 );
-
 $defaults = array(
-	'root' => '/',
-	'extensions' => 'php|js|css|html?',
+	'root' => '/edQ/',
 	'content' => false
 );
 $arguments = array_merge($_REQUEST, isset($arguments) ? $arguments : array());
@@ -23,96 +21,58 @@ if(!isset($arguments['f--submit'])){
 }
 else {
 	$prefs = array(
-		'root' => $arguments['f--root'] ? $arguments['f--root'] : $defaults['root'],
-		'content' => isset($arguments['f--content']) ? $arguments['f--content'] : $defaults['content'],
-		'extensions' => isset($arguments['f--extensions']) ? $arguments['f--extensions'] : $defaults['extensions']
+		'root' => $arguments['f--root'],
+		'content' => isset($arguments['f--content']) ? $arguments['f--content'] : false
 	);
 	$args['value'] = $prefs;
 	page::call('/_System/Utilisateur/Preferences/set', $args);
 }
 
-
-$root = $prefs['root'];
-$extensions = $prefs['extensions'];
-
-$content = $prefs['content'];
-
-$dir = dirname(helpers::get_pages_path()) . $root; //TODO do better than dirname
-$dir_len = strlen($dir);
-
+$db = get_db('/_System/dataSource');
+$nodes = $db->all('SELECT d.*, s.lvl
+	 FROM tree_struct s
+	 JOIN tree_data d
+	 	 ON s.id = d.id
+	 ORDER BY s.lft');
+$dir = helpers::get_pages_path();
 $uidform = uniqid('form');
 ?>
 <form id="<?=$uidform?>" method="POST" action="<?=page::url( $node )?>&f--submit=1" autocomplete="off" style="margin-bottom: 2em;">
-	<fieldset><legend>Recherche dans les fichiers Sources</legend>
-	racine : <input size="32" value="<?=$root?>" name="f--root"/>
-	extensions : <input size="32" value="<?=$extensions?>" name="f--extensions"/> exple : <code>php|js|css|html?</code>
-<br/>contient : <input size="48" value="<?=$content?>" name="f--content"/>
-<input type="submit" value="Chercher (dans) les fichiers" style="margin-left: 2em;"/>
+<fieldset><legend>Recherche dans les noeuds et leur fichier de page</legend>
+	racine : <input size="32" value="<?=$prefs['root']?>" name="f--root"/>
+<br/>contient : <input size="48" value="<?=$prefs['content']?>" name="f--content"/>
+<input type="submit" value="Chercher dans la base et dans les fichiers" style="margin-left: 2em;"/>
 </fieldset></form>
+
 <?= isset($view) ? $view->searchScript($uidform) : '$view no set'?>
 <?php
+$content = $prefs['content'];
 $files = array();
-if($extensions)
-	$extensions = '/\.(' . $extensions . ')$/';
-$root_dir_exclude_preg = '/(\..*|pages|tmp|sessions)$/';
-
-if(!isset($_REQUEST['f--content'])){
-	echo("Cliquer sur Chercher");
-	return;
+$file = $dir;
+$prev_lvl = 0;
+$prev_node = null;
+$parents = array();
+$counter = 0;
+$search_lvl = count( explode( '/', preg_replace('/^\/|\/$/', '', $prefs['root']) )) - 1;
+$search = $dir . $prefs['root'];
+if(DIRECTORY_SEPARATOR == '\\'){
+	$dir = str_replace('/', DIRECTORY_SEPARATOR, $dir);	
+	$search = str_replace('/', DIRECTORY_SEPARATOR, $search);
 }
-$add_file = function($file) use(&$files, &$extensions, &$content){
-	$enabled = is_file($file)
-		&& $file[0] != '.'
-		&& (!$extensions
-			|| preg_match( $extensions, $file ));
-
-	if($enabled && $content){
-		$pos = stripos(file_get_contents( $file ), $content);
-		if($pos === FALSE)
-			$enabled = false;
-	}
-	if( $enabled ){
-		$filesize = filesize( $file);
-		if($filesize >= 1024)
-			$filesize = number_format($filesize / 1024, 0 ) . ' ko';
-		else
-			$filesize = $filesize . ' o';
-		$dirname = dirname($file);
-		$files[] = array(
-			/*'index' =>*/ $counter
-			, /*'path' =>*/ $dirname
-			, /*'name' =>*/ substr($file, strlen($dirname) + 1)
-			, /*'date' =>*/ date('d/m/Y H:i:s', filemtime( $file ) )
-			, /*'filesize' =>*/ $filesize
-		);
-		if($content)
-			$files[count($files) - 1][] = $pos;
-
-	}
-};
-foreach(scandir($dir) as $root_dir){
-	if($root_dir[0] != '.')
-		if(! preg_match($root_dir_exclude_preg, $root_dir)){
-			foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir . $root_dir)
-												   , RecursiveIteratorIterator::SELF_FIRST) as $f){
-				$add_file((string)$f);
-
-			}
-	
-		}
-		else 
-			$add_file($dir . $root_dir);
-		
-}
+$search_len = strlen($search);
+$pos = null;
 //$columns
 $columns = array(
 	array( 'title' => 'index'
-		  , 'visible'=> false
+		  	, 'visible'=> false
 			, 'type' => 'num' )
+	, array( 'title' => 'id'
+			, 'type' => 'num'
+		  	, 'visible'=> false)
 	, array( 'title' => 'path' )
 	, array( 'title' => 'name'
-			, 'render' => 'function ( data, type, full, meta ) {
-				 return tree_select_node_alink( data );
+			, 'render' => 'function ( data, type, full ) {
+				  return tree_select_node_alink( full[ 1 ], full[ 2 ], data );
 			}'
 	)
 	, array( 'title' => 'date'
@@ -123,6 +83,51 @@ $columns = array(
 if($content)
 	$columns[] = array( 'title' => 'trouvé' );
 
+foreach ($nodes as $node) {
+	if($prev_lvl < $node['lvl'])
+	 	 $parents[] = $prev_node['nm'];  
+	else if($prev_lvl >= $node['lvl'])
+	 	 $parents = array_slice($parents, 0, $node['lvl']);
+	
+	$file = $dir . DIRECTORY_SEPARATOR . implode(DIRECTORY_SEPARATOR, $parents) . DIRECTORY_SEPARATOR . $node['nm'];
+    $dir_exists = file_exists( $file );
+	$php_exists = file_exists( $file . '.php' );
+	
+	/*if((substr( $file, 0, $search_len ) == $search) ){
+		var_dump($node['lvl']);
+		var_dump($file);
+		var_dump($php_exists);
+	}*/
+	$enabled = $php_exists && (substr( $file, 0, $search_len ) == $search);
+	
+	if($enabled && $content){
+		$pos = stripos(file_get_contents( $file . '.php' ), $content);
+		if($pos === FALSE)
+			$enabled = false;
+	}
+	if( $enabled ){
+		$filesize = filesize( realpath($file . '.php'));
+		if($filesize >= 1024)
+			$filesize = number_format($filesize / 1024, 0 ) . ' ko';
+		else
+			$filesize = $filesize . ' o';
+		
+		$files[] = array(
+			/*'index' =>*/ $counter
+			, /*'id' =>*/ $node['id']
+			, /*'path' =>*/ implode(DIRECTORY_SEPARATOR, array_slice ($parents, $search_lvl ))
+			, /*'name' =>*/ $node['nm']
+			, /*'date' =>*/ date('d/m/Y H:i:s', filemtime( realpath($file . '.php')) )
+			, /*'filesize' =>*/ $filesize
+		);
+		if($content)
+			$files[count($files) - 1][] = $pos;
+	
+		$counter++;
+	}
+	$prev_node = $node;
+	$prev_lvl = $node['lvl'];
+}
 $uid = uniqid('nodes');
 ?><table id="<?=$uid?>" cellpadding="0" cellspacing="0" border="0" 
 		 class="display"></table>
@@ -145,8 +150,8 @@ $uid = uniqid('nodes');
 		return obj;
 	}
 	
-	function tree_select_node_alink( data ){
-		$a = $('<a href="#' + data + '"/>').html( data );
+	function tree_select_node_alink( id, path, name ){
+		$a = $('<a href="#' + path + '/' + name + '" node_id="' + id + '"/>').html( name );
 		return $a.click( tree_select_node_click );
 	}
 	function tree_select_node_click(){

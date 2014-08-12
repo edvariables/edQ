@@ -64,12 +64,15 @@ $pos = null;
 //$columns
 $columns = array(
 	array( 'title' => 'index'
-		  , 'visible'=> false
+		  	, 'visible'=> false
 			, 'type' => 'num' )
+	, array( 'title' => 'id'
+			, 'type' => 'num'
+		  	, 'visible'=> false)
 	, array( 'title' => 'path' )
 	, array( 'title' => 'name'
 			, 'render' => 'function ( data, type, full, meta ) {
-				  return \'<a href="\'+data+\'">\'+data+\'</a>\';
+				  return tree_select_node_alink( full[ 1 ], full[ 2 ], data );
 			}'
 	)
 	, array( 'title' => 'date'
@@ -111,6 +114,7 @@ foreach ($nodes as $node) {
 		
 		$files[] = array(
 			/*'index' =>*/ $counter
+			, /*'id' =>*/ $node['id']
 			, /*'path' =>*/ implode(DIRECTORY_SEPARATOR, array_slice ($parents, $search_lvl ))
 			, /*'name' =>*/ $node['nm']
 			, /*'date' =>*/ date('d/m/Y H:i:s', filemtime( realpath($file . '.php')) )
@@ -145,6 +149,36 @@ $uid = uniqid('nodes');
 			}
 		return obj;
 	}
+	
+	function tree_select_node_alink( id, path, name ){
+		$a = $('<a href="#' + path + '/' + name + '" node_id="' + id + '"/>').html( name );
+		return $a.click( tree_select_node_click );
+	}
+	function tree_select_node_click(){
+		var $dom = $(this);
+		if ($dom.hasClass('noclick')) {
+			$dom.removeClass('noclick');
+			return;
+		}
+		var self = $.jstree.reference('#tree');
+		self.deselect_all();
+
+		var $node = self.get_node($dom.attr('node_id'), true);
+		if($node){
+			if(self.select_node($node))
+				return;
+		}
+		$.get('tree/db.php?operation=get_view'
+			  + '&id=' + $dom.attr('node_id')
+			  + '&vw=viewers'
+			  + (self.settings.design ? '&design=true' : '')
+			  , function (d) {
+				  $('#data .default').html(d.content).show();
+			  }
+			 );
+		return false;
+	}
+	
 $(document).ready(function() {
 	$('#<?=$uid?>').dataTable( {
 		"language": {

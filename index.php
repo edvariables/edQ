@@ -29,7 +29,7 @@
 		
 		<script type="text/javascript" src="js/jquery.layout-latest.js"></script>
 		
-		<script type="text/javascript" src="jquery/dataTables/js/jquery.dataTables.min.js"></script>
+		<script type="text/javascript" src="jquery/dataTables/js/jquery.dataTables<?php echo '.min';?>.js"></script>
 
 		<script src="jquery/jqGrid/js/grid.locale-fr.js" type="text/javascript"></script>
 		<script src="jquery/jqGrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>

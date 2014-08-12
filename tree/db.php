@@ -136,10 +136,14 @@ if(isset($_REQUEST['operation'])) {
 					}
 					else {
 						$options = array('with_path' => true, 'with_children' => $viewer->needChildren, 'full' => true);
-						if(!is_numeric($node[0]))
-							$temp = tree::get_node_by_name($node[0], null, $options);
+						if(!is_numeric($node[0])){
+							$path = preg_replace('/^\/' . TREE_ROOT_NAME . '/', '', str_replace('\\', '/', $node[0]));
+							$temp = tree::get_node_by_name($path, null, $options);
+						}
 						else
 							$temp = $fs->get_node((int)$node[0], $options);
+						/*print_r(str_replace('\\', '/', $node[0]));
+						var_dump($temp);*/
 						try {
 							$rslt = $viewer->html($temp);
 						}

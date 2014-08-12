@@ -20,7 +20,9 @@
  *
  * For details please refer to: http://www.datatables.net
  */
-
+/* ED 140811 
+ * Changes for function can return jquery object
+ */
 /*jslint evil: true, undef: true, browser: true */
 /*globals $,require,jQuery,define,_selector_run,_selector_opts,_selector_first,_selector_row_indexes,_ext,_Api,_api_register,_api_registerPlural,_re_new_lines,_re_html,_re_formatted_numeric,_re_escape_regex,_empty,_intVal,_numToDecimal,_isNumber,_isHtml,_htmlNumeric,_pluck,_pluck_order,_range,_stripHtml,_unique,_fnBuildAjax,_fnAjaxUpdate,_fnAjaxParameters,_fnAjaxUpdateDraw,_fnAjaxDataSrc,_fnAddColumn,_fnColumnOptions,_fnAdjustColumnSizing,_fnVisibleToColumnIndex,_fnColumnIndexToVisible,_fnVisbleColumns,_fnGetColumns,_fnColumnTypes,_fnApplyColumnDefs,_fnHungarianMap,_fnCamelToHungarian,_fnLanguageCompat,_fnBrowserDetect,_fnAddData,_fnAddTr,_fnNodeToDataIndex,_fnNodeToColumnIndex,_fnGetCellData,_fnSetCellData,_fnSplitObjNotation,_fnGetObjectDataFn,_fnSetObjectDataFn,_fnGetDataMaster,_fnClearTable,_fnDeleteIndex,_fnInvalidateRow,_fnGetRowElements,_fnCreateTr,_fnBuildHead,_fnDrawHead,_fnDraw,_fnReDraw,_fnAddOptionsHtml,_fnDetectHeader,_fnGetUniqueThs,_fnFeatureHtmlFilter,_fnFilterComplete,_fnFilterCustom,_fnFilterColumn,_fnFilter,_fnFilterCreateSearch,_fnEscapeRegex,_fnFilterData,_fnFeatureHtmlInfo,_fnUpdateInfo,_fnInfoMacros,_fnInitialise,_fnInitComplete,_fnLengthChange,_fnFeatureHtmlLength,_fnFeatureHtmlPaginate,_fnPageChange,_fnFeatureHtmlProcessing,_fnProcessingDisplay,_fnFeatureHtmlTable,_fnScrollDraw,_fnApplyToChildren,_fnCalculateColumnWidths,_fnThrottle,_fnConvertToWidth,_fnScrollingWidthAdjust,_fnGetWidestNode,_fnGetMaxLenString,_fnStringToCss,_fnScrollBarWidth,_fnSortFlatten,_fnSort,_fnSortAria,_fnSortListener,_fnSortAttachListener,_fnSortingClasses,_fnSortData,_fnSaveState,_fnLoadState,_fnSettingsFromNode,_fnLog,_fnMap,_fnBindAction,_fnCallbackReg,_fnCallbackFire,_fnLengthOverflow,_fnRenderer,_fnDataSource,_fnRowAttributes*/
 
@@ -1428,7 +1430,14 @@
 	
 			if ( cells ) {
 				for ( i=0, ien=cells.length ; i<ien ; i++ ) {
-					cells[i].innerHTML = _fnGetCellData( settings, rowIdx, i, 'display' );
+					/* ED 140811 
+					 * makes function can return jquery object
+					 */
+					var html = _fnGetCellData( settings, rowIdx, i, 'display' );
+					if(html && (html !== null) && html.jquery)
+						$(cells[i]).html( html );
+					else
+						cells[i].innerHTML = html;
 				}
 			}
 		}
@@ -1580,7 +1589,14 @@
 				// Need to create the HTML if new, or if a rendering function is defined
 				if ( !nTrIn || oCol.mRender || oCol.mData !== i )
 				{
-					nTd.innerHTML = _fnGetCellData( oSettings, iRow, i, 'display' );
+					/* ED 140811 
+					 * makes function can return jquery object
+					 */
+					var html = _fnGetCellData( oSettings, iRow, i, 'display' );
+					if(html && (html !== null) && html.jquery)
+						$(nTd).html( html );
+					else
+						nTd.innerHTML = html;
 				}
 	
 				/* Add user defined class */
@@ -4178,8 +4194,14 @@
 	{
 		var s, max=-1, maxIdx = -1;
 	
-		for ( var i=0, ien=settings.aoData.length ; i<ien ; i++ ) {
-			s = _fnGetCellData( settings, i, colIdx, 'display' )+'';
+		for ( var i=0, ien=settings.aoData.length ; i < ien ; i++ ) {
+			s = _fnGetCellData( settings, i, colIdx, 'display' ); //ED140811 +'';
+			/* ED140811
+				s may be a jquery object
+			*/
+			if(typeof s !== "string")
+				continue;
+				
 			s = s.replace( __re_html_remove, '' );
 	
 			if ( s.length > max ) {
