@@ -132,8 +132,6 @@ $uid = uniqid('nodes');
 ?><table id="<?=$uid?>" cellpadding="0" cellspacing="0" border="0" 
 		 class="display"></table>
 <script>
-	// les valeurs de type string et de la forme "function(...}" sont évaluées.
-	// cf la propriété render des colonnes.
 	function eval_functions(obj){
 		for(item = 0; item < obj.length; item++)
 			for(prop in obj[item]){
@@ -188,7 +186,7 @@ $(document).ready(function() {
 		, "iDisplayLength": 100
 		/*, "order": [[ 0, "asc" ]]*/
 		, "data" : <?= json_encode($files) ?>
-		, "columns" : eval_functions( <?= json_encode($columns) ?> )
+		, "columns" : edQ.eval_functions( <?= json_encode($columns) ?> )
     } );
 } );
 </script>

@@ -6,10 +6,12 @@ Simple ajax live login script by http://www.asif18.com/19/jquery/ajax-login-form
 $loginError = '';
 session_start();
 $loginUser = isset($_SESSION['edq-user'])
-	? isset($_SESSION['edq-user']['ShortName']) && $_SESSION['edq-user']['ShortName'] != null
+	? (isset($_SESSION['edq-user']['ShortName']) && $_SESSION['edq-user']['ShortName'] != null
 		? $_SESSION['edq-user']['ShortName']
-		: $_SESSION['edq-user']['Name']
-	: '';
+		: $_SESSION['edq-user']['Name'])
+	: (isset($_SERVER['REDIRECT_REMOTE_USER'])
+		? $_SERVER['REDIRECT_REMOTE_USER']
+		: '');
 
 // Check
 if(isset($_POST['action']) && $_POST['action'] == 'login'){ 

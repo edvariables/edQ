@@ -8,6 +8,7 @@
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 		<title>edQ</title>
+		<link rel="icon" href="favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="stylesheet" href="tree/themes/default/style.css" />
 		<link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.4.custom.min.css" />
@@ -29,7 +30,7 @@
 		
 		<script type="text/javascript" src="js/jquery.layout-latest.js"></script>
 		
-		<script type="text/javascript" src="jquery/dataTables/js/jquery.dataTables<?php echo '.min';?>.js"></script>
+		<script type="text/javascript" src="jquery/dataTables/js/jquery.dataTables<?php //echo '.min';?>.js"></script>
 
 		<script src="jquery/jqGrid/js/grid.locale-fr.js" type="text/javascript"></script>
 		<script src="jquery/jqGrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
@@ -42,6 +43,8 @@
 		<script type="text/javascript" src="jquery/markitup/jquery.markitup.js"></script>
 		<script type="text/javascript" src="jquery/markitup/sets/dataSource/set.js"></script>
 
+		<script src="js/edQ.js"></script>
+		
 		<?php
 		if(is_design()) {?>
 		<link rel="stylesheet" href="jquery/codemirror/lib/codemirror.css">

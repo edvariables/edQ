@@ -17,47 +17,44 @@
 	);
 
 	$uid = uniqid('form-');
-?><form id="<?=$uid?>" method="POST" action="<?=page::url( $node )?>" autocomplete="off">
-<input type="hidden" name="q--limit" value="9999"/>
-<table class="edq" style="overflow: scroll;">
-	<caption><?=$node["nm"]?></caption>
-	<tbody><?php
-	if(count($rows) > 0)
-		foreach($rows[0] as $col => $value){
-			?><tr>
-			<th><?=$col?>
-			<td><?=$value?>
-			</tr><?php
-		}
-	?></tbody>
-	<tfoot><tr><td colspan="99"><?= count($rows) == 0 ? ' <small>' . $search . ' <i> introuvable</i></small>' : ''?><?php
-		/* submit */
-		?><input type="submit" value="Enregistrer"/></tr>
-	</tfoot>
-</table>
+
+$columns = array(
+	'IdContact' => array(
+			'input' => false
+	)
+	, 'IdContactRef' => array(
+			'visible' => false
+	)
+	, 'Name' => array(
+			'text' => 'Nom'
+	)
+	, 'ShortName' => array(
+			'text' => 'Initiales'
+	)
+);
+if(count($rows) > 0){
+	$row = $rows[0];
+?><form id="<?=$uid?>" method="POST" action="<?=page::url( ":submit", $node )?>" autocomplete="off">
+<input type="hidden" name="operation" value="<?=$row['IdContact'] ? 'update' : 'insert'?>"/>
+<input type="hidden" name="d--IdContact" value="<?=$row['IdContact']?>"/>
+<fieldset class="q-fields">	<legend><?=$row["Name"]?> #<?=$row["IdContact"]?></legend>
+<div>
+	<div><label class="ui-state-default ui-corner-all">Nom</label>
+	<input size="40" name="d--Name" value="<?= htmlentities($row['Name']) ?>"/></div>
+
+	<div><label class="ui-state-default ui-corner-all">Mot de passe</label>
+	<input type="password" size="40" name="d--user-Password" value=""/>
+	<br><input type="password" size="40" name="d--user-Password-confirm" value="" title="Confirmation du mot de passe"/></div>
+</div></fieldset>
+<fieldset>
+	<input type="submit" value="Enregistrer"/>'
+</fieldset>
 </form>
 <style>
-#<?=$uid?> table {
-	border-spacing: 0px;
-	 border-collapse: collapse; 
-	 border: 1px outset #333333;
-}
-#<?=$uid?> tbody {
-	 background-color: white;
-}
-#<?=$uid?> tbody > tr > *{
-	padding: 1px 4px 1px 6px;
-	border: 1px solid #DDDDDD;
-	white-space: pre;
-}
-#<?=$uid?> tbody th {
-	text-align: left;
-	/*border: 2px solid #333333;*/
-}
-#<?=$uid?> tfoot td {
-	text-align: left;
-	/*border: 2px solid #333333;*/
-}
 </style>
-
-<?= isset($view) ? $view->searchScript($uid) : '$view no set'?>
+<?php
+	echo $view->formScript($uid, null);
+}
+else {
+	echo $search . ' <i> introuvable</i>';
+}?>

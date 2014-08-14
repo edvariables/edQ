@@ -6,5 +6,8 @@ $DBUSER = "ED";
 $DBPASSWORD = "";
 $DBTYPE = "mysqli";
 $DBPORT = "";
-$db = db::get($DBTYPE . '://' . $DBUSER . ':' . $DBPASSWORD . '@' . $DBSERVER . '/' . $DBNAME);
+if(!isset($arguments))
+	echo($DBTYPE . '://' . $DBUSER . ':' . $DBPASSWORD . '@' . $DBSERVER . '/' . $DBNAME);
+else
+	$db = db::get($DBTYPE . '://' . $DBUSER . ':' . $DBPASSWORD . '@' . $DBSERVER . '/' . $DBNAME);
 ?>
