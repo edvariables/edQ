@@ -195,13 +195,18 @@ class nodeViewer {
 		'<script>  
 			$(document).ready(function() { 
 				// bind form and provide a simple callback function 
-				$("#' . $uid . '").submit(function() { ' . $beforeSubmit . '
+				$("#' . $uid . '").submit(function() {
+					' . $beforeSubmit . ';
 					$(this).ajaxSubmit({
-						beforeSubmit: function(){ 	}
+						beforeSubmit: function(){ 
+							document.body.style.cursor = "wait";
+						}
 						, success: function(data){
 							$("#' . $uid . '").parents(".ui-widget-content:first").html(data);
+							$("body").css("cursor", "default");
 						}
 						, error: function(jq, textStatus, errorThrown, more ) { 
+							document.body.style.cursor = "auto";
 							alert(textStatus + " : " + errorThrown); 
 						}
 					});

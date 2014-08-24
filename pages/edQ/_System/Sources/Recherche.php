@@ -7,7 +7,11 @@ $args = array(
 
 $defaults = array(
 	'root' => '/',
+	'root_from_pages' => true,
 	'extensions' => 'php|js|css|html?',
+	'exclude_paths' => null, 
+	'exclude_paths_pages' => 'pages|logs|cache|tmp|sessions', 
+	'exclude_paths_system' => 'test|pkg|logs|cache|tmp|sessions', 
 	'content' => false
 );
 $arguments = array_merge($_REQUEST, isset($arguments) ? $arguments : array());
@@ -24,8 +28,10 @@ if(!isset($arguments['f--submit'])){
 else {
 	$prefs = array(
 		'root' => $arguments['f--root'] ? $arguments['f--root'] : $defaults['root'],
+		'root_from_pages' => isset($arguments['f--root_from_pages']) ? filter_var($arguments['f--root_from_pages'], FILTER_VALIDATE_BOOLEAN) : $defaults['root_from_pages'],
 		'content' => isset($arguments['f--content']) ? $arguments['f--content'] : $defaults['content'],
-		'extensions' => isset($arguments['f--extensions']) ? $arguments['f--extensions'] : $defaults['extensions']
+		'extensions' => isset($arguments['f--extensions']) ? $arguments['f--extensions'] : $defaults['extensions'],
+		'exclude_paths' => isset($arguments['f--exclude_paths']) ? $arguments['f--exclude_paths'] : $defaults['exclude_paths'],
 	);
 	$args['value'] = $prefs;
 	page::call('/_System/Utilisateur/Preferences/set', $args);
@@ -33,19 +39,35 @@ else {
 
 
 $root = $prefs['root'];
+if(substr($root, -1) != '/'
+&& substr($root, -1) != '\\')
+	$root .= DIRECTORY_SEPARATOR;
+$root_from_pages = $prefs['root_from_pages'];
 $extensions = $prefs['extensions'];
+$exclude_paths = $prefs['exclude_paths'];
+if($exclude_paths === null)
+	$exclude_paths = $root_from_pages ? $defaults['exclude_paths_pages'] : $defaults['exclude_paths_system'];
 
 $content = $prefs['content'];
 
-$dir = dirname(helpers::get_pages_path()) . $root; //TODO do better than dirname
+if($root_from_pages)
+	$dir = dirname(helpers::get_pages_path()) . $root; //TODO do better than dirname
+else
+	$dir = $root;
+
 $dir_len = strlen($dir);
 
 $uidform = uniqid('form');
 ?>
 <form id="<?=$uidform?>" method="POST" action="<?=page::url( $node )?>&f--submit=1" autocomplete="off" style="margin-bottom: 2em;">
 	<fieldset><legend>Recherche dans les fichiers Sources</legend>
-	racine : <input size="32" value="<?=$root?>" name="f--root"/>
-	extensions : <input size="32" value="<?=$extensions?>" name="f--extensions"/> exple : <code>php|js|css|html?</code>
+	racine : <select name="f--root_from_pages">
+		<option value="true" <?=$root_from_pages ? ' selected=selected"' : ''?>>pages edQ</option>
+		<option value="false" <?=!$root_from_pages ? ' selected=selected"' : ''?>>système</option>
+		</select>
+		<input size="48" value="<?=$root?>" name="f--root"/>
+<br/>extensions : <input size="48" value="<?=$extensions?>" name="f--extensions"/> exple : <code>php|js|css|html?</code>
+<br/>exclure : <input size="48" value="<?=$exclude_paths?>" name="f--exclude_paths"/> exple : <code>tmp|sessions|cache</code>
 <br/>contient : <input size="48" value="<?=$content?>" name="f--content"/>
 <input type="submit" value="Chercher (dans) les fichiers" style="margin-left: 2em;"/>
 </fieldset></form>
@@ -54,7 +76,7 @@ $uidform = uniqid('form');
 $files = array();
 if($extensions)
 	$extensions = '/\.(' . $extensions . ')$/';
-$root_dir_exclude_preg = '/(\..*|pages|tmp|sessions)$/';
+$root_dir_exclude_preg = '/(\..*|' . $exclude_paths . ')$/'; //TODO chemins racines
 
 if(!isset($_REQUEST['f--content'])){
 	echo("Cliquer sur Chercher");
@@ -111,8 +133,8 @@ $columns = array(
 			, 'type' => 'num' )
 	, array( 'title' => 'path' )
 	, array( 'title' => 'name'
-			, 'render' => 'function ( data, type, full, meta ) {
-				 return tree_select_node_alink( data );
+			, 'render' => 'function ( data, type, row, meta ) {
+				 return tree_select_node_alink( data, row[1] + "/" + data );
 			}'
 	)
 	, array( 'title' => 'date'
@@ -128,9 +150,19 @@ $uid = uniqid('nodes');
 		 class="display"></table>
 <script>
 		
-	function tree_select_node_alink( data ){
-		$a = $('<a href="#' + data + '"/>').html( data );
-		return $a.click( tree_select_node_click );
+	function tree_select_node_alink( data, file ){
+		$a = $('<a href="#' + data + '"/>')
+			.html( data )
+			.click( tree_select_node_click )
+		;
+		return $('<div></div>')
+			.append($('<a href="file://' + file + '" style="padding-left: 1.3em; position: relative;"/>')
+				.html( '<span title="' + file + '" class="ui-icon ui-icon-script"'
+					 	+ ' style="position: absolute; margin-left: 1px;"> </span>' )
+				.append( data )
+			)
+			//.append( $a )
+		;
 	}
 	function tree_select_node_click(){
 		var $dom = $(this);
