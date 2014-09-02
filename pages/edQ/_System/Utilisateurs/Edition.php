@@ -18,20 +18,6 @@
 
 	$uid = uniqid('form-');
 
-$columns = array(
-	'IdContact' => array(
-			'input' => false
-	)
-	, 'IdContactRef' => array(
-			'visible' => false
-	)
-	, 'Name' => array(
-			'text' => 'Nom'
-	)
-	, 'ShortName' => array(
-			'text' => 'Initiales'
-	)
-);
 if(count($rows) > 0){
 	$row = $rows[0];
 ?><form id="<?=$uid?>" method="POST" action="<?=page::url( ":submit", $node )?>" autocomplete="off">

@@ -18,6 +18,13 @@
 				CodingGuidelines #DevelopingModule</a></li>
 			<li><a href="http://forge.vtiger.com/frs/" target="_blank">
 				forge.vtiger.com</a></li>
+			<li><a href="ftp://ftp.psu.ac.th/pub/vtiger/vtiger5.x-developer-manual.pdf" target="_blank">
+				vtiger5.x-developer-manual.pdf</a></li>
+			<li><a href="http://www.aissabelaid.fr/optimiser-mysql-pour-vtiger-crm/" target="_blank">
+				optimiser-mysql-pour-vtiger-crm</a></li>
+			<li><a href="http://www.crmevolutivo.com/doku.php/es:vtigeroptimizations" target="_blank">
+				vtigeroptimizations</a></li>
+			
 			
 		</ul>
 	</li>
