@@ -59,9 +59,13 @@ class page {
 			//Fichiers de référence multiples
 			else if(is_array($refers_to)){ //$node
 				$node = $refers_to;
+				if($node['path'] == null){
+					global $tree;
+					$node = $tree->get_node($node, array( 'with_path' => true ));
+				}
 				$refers_to = helpers::combine(
 					page::get_root_path()
-					, implode('/',array_map(function ($v) { return $v['nm']; }, $node['path'])). '/'.$node['nm']  . '.php'
+					, implode('/', array_map(function ($v) { return $v['nm']; }, $node['path'])). '/'.$node['nm']  . '.php'
 				);
 				//require('nodeType/__class.php');
 			}
