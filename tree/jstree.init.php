@@ -13,7 +13,7 @@ $().ready(function () {
 		.jstree({
 			'core' : {
 				'data' : {
-					'url' : 'tree/db.php?operation=get_node<?= $design ? '&design=1' : '' ?>',
+					'url' : 'tree/db.php?op=get_node<?= $design ? '&design=1' : '' ?>',
 					'data' : function (node) {
 						return { 'id' : node.id };
 					}
@@ -21,6 +21,7 @@ $().ready(function () {
 				'check_callback' : true,
 				'themes' : {
 					'responsive' : false
+					, 'dir' : '../resources/tree/' /* ED140926 changed folder location */
 				}
 			},
 			"design" : <?= $design ? '1' : '0' ?>,
@@ -35,9 +36,9 @@ $().ready(function () {
 					"selector" : ".jstree-favpanel"
 				}
 			},
-			"types" : <?= json_encode(node::get_types()) ?>,
-			"icons" : <?= json_encode(node::get_icons()) ?>,
-			"ulvls" : <?= json_encode(node::get_ulvls()) ?>,
+			"types" : <?= json_encode(Node::get_types()) ?>,
+			"icons" : <?= json_encode(Node::get_icons()) ?>,
+			"ulvls" : <?= json_encode(Node::get_ulvls()) ?>,
 			'plugins' : ['state','dnd','contextmenu','wholerow', 'types', 'edQ', 'favpanel']
 		})
 		.on('delete_node.jstree', function (e, data) {
@@ -45,13 +46,13 @@ $().ready(function () {
 				data.instance.refresh();
 				return false;
 			}
-			$.get('tree/db.php?operation=delete_node', { 'id' : data.node.id })
+			$.get('tree/db.php?op=delete_node', { 'id' : data.node.id })
 				.fail(function () {
 					data.instance.refresh();
 				});
 		})
 		.on('create_node.jstree', function (e, data) {
-			$.get('tree/db.php?operation=create_node', { 'id' : data.node.parent, 'position' : data.position, 'text' : data.node.text, 'icon' : data.node.icon, 'type' : data.node.type })
+			$.get('tree/db.php?op=create_node', { 'id' : data.node.parent, 'position' : data.position, 'text' : data.node.text, 'icon' : data.node.icon, 'type' : data.node.type })
 				.done(function (d) {
 					data.instance.set_id(data.node, d.id);
 					if(data.node.original.text != d.nm){
@@ -65,7 +66,7 @@ $().ready(function () {
 		})
 		.on('rename_node.jstree', function (e, data) {
 			if(data.toServer || data.toServer === undefined) {
-				$.get('tree/db.php?operation=rename_node', { 'id' : data.node.id, 'text' : data.text })
+				$.get('tree/db.php?op=rename_node', { 'id' : data.node.id, 'text' : data.text })
 					.done(function (d) {
 					//mise a jour du noeud
 					if(d.nm
@@ -80,7 +81,7 @@ $().ready(function () {
 			}
 		})
 		.on('update_node.jstree', function (e, data) {
-			$.get('tree/db.php?operation=update_node', jQuery.extend( { 'id' : data.node.id }, data.properties ))
+			$.get('tree/db.php?op=update_node', jQuery.extend( { 'id' : data.node.id }, data.properties ))
 				.done(function () {
 					data.instance.trigger('changed', { 'action' : 'select_node', 'node' : data.node, 'selected' : [data.node.id], 'event' : null });
 				})
@@ -93,7 +94,7 @@ $().ready(function () {
 		.on('edit_node.jstree', function (e, data) {
 			jQuery
 				.ajax({
-					url: 'tree/db.php?operation=edit_node'
+					url: 'tree/db.php?op=edit_node'
 					, data: { 'id' : data.node.id }
 					, async: false
 				})
@@ -111,7 +112,7 @@ $().ready(function () {
 		})
 		
 		.on('move_node.jstree', function (e, data) {
-			$.get('tree/db.php?operation=move_node', { 'id' : data.node.id, 'parent' : data.parent, 'position' : data.position })
+			$.get('tree/db.php?op=move_node', { 'id' : data.node.id, 'parent' : data.parent, 'position' : data.position })
 				.done(function (d) {
 					//mise a jour du noeud
 					if(d.nm
@@ -125,14 +126,14 @@ $().ready(function () {
 				});
 		})
 		.on('copy_node.jstree', function (e, data) {
-			$.get('tree/db.php?operation=copy_node', { 'id' : data.original.id, 'parent' : data.parent, 'position' : data.position })
+			$.get('tree/db.php?op=copy_node', { 'id' : data.original.id, 'parent' : data.parent, 'position' : data.position })
 				.always(function () {
 					data.instance.refresh();
 				});
 		})
 		.on('changed.jstree', function (e, data) {
 			if(data && data.selected && data.selected.length) {
-				$.get('tree/db.php?operation=get_view'
+				$.get('tree/db.php?op=get_view'
 					+ '&id=' + data.selected.join(':')
 					+ '&vw=viewers<?=
 						$design ? '&design=true' : '' ?>'

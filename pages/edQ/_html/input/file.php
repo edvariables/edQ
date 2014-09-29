@@ -10,4 +10,4 @@ $uid = uniqid('form');
 	<br/>
 	<input type="submit" value="Envoyer"/>
 </form>
-<?= isset($view) ? $view->searchScript($uid) : '$view no set'?>
+<?= page::form_submit_script($uid) ?>

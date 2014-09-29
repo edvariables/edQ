@@ -1,4 +1,6 @@
-<?php
+<?php /*
+Affiche le contenu d'une section de stat
+*/
 include(dirname(__FILE__) . '/../conf.php');
 
 $dir = $logs_path;
@@ -6,7 +8,7 @@ $dir = $logs_path;
 if(!isset($_REQUEST['q--file'])){
 	die('Fichier (q--file) non fourni');
 }
-$file = $dir . '/' . $_REQUEST['q--file'] . '.pflogsumm';
+$file = $dir . '/' . $_REQUEST['q--file'] . LOG_PARSER_EXTENSION;
 
 if(!file_exists($file)){
 	die('Fichier ' . $file . ' inconnu');
@@ -30,7 +32,7 @@ if ($handle) {
 		if(($nLine > $nFirstLine + 1)
 		&& $line[0] != ' '
 		&& preg_match($section_preg, $line)){
-			break;
+			break; //section suivante
 		}
 		?><li><?= $line ?></li><?php
 		

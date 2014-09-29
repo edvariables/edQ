@@ -5,7 +5,7 @@ class nodeViewer_children extends nodeViewer {
 	public $text = 'Descendants';
 	public $needChildren = true;
 	
-	public function html($node){
+	public function html($node, $options = false){
 		$ulId = uniqid('nw-children-');
 		$html = '<div class="edq-nodes" id="' . $ulId . '"><ul>';
 		global $tree;
@@ -16,7 +16,7 @@ class nodeViewer_children extends nodeViewer {
 			if($design || !$child['design']){
 				$href = $nChild == 0
 					? '#' . $ulId . $child['id']
-					: 'tree/db.php?operation=get_view'
+					: 'tree/db.php?op=get_view'
 						. '&id=' . $child['id']
 						. '&vw=' . 'viewers'
 						. '&get=content'
@@ -40,7 +40,7 @@ class nodeViewer_children extends nodeViewer {
 				
 				$html .= '<div id="' . $ulId . $child['id'] . '">';
 				
-				$r = $viewer->html($child);
+				$r = $viewer->html($child, $options);
 				$html .= $r["content"];
 				$html .= '</div>';
 				//first only

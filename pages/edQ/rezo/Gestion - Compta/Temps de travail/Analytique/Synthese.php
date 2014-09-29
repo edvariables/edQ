@@ -6,7 +6,7 @@ $arguments = array_merge($_REQUEST, isset($arguments) ? $arguments : array());
 
 $dateDebut = isset($arguments['q--date-debut'])
 	? $arguments['q--date-debut']
-	: '01/09/' . ((int)date('m') > 8 ? date('Y') : (int)date('Y') - 1);
+	: '01/' . date('m/Y');//'01/09/' . ((int)date('m') > 8 ? date('Y') : (int)date('Y') - 1);
 $dateTimeDebut = is_string($dateDebut) ? DateTime::createFromFormat('d/m/Y H:i:s', $dateDebut. '00:00:00') : $dateDebut;
 $params[] = $dateTimeDebut->format('Y-m-d H:i:s');
 
@@ -24,12 +24,10 @@ $args = array(
 	, 'q--limit' => 99999
 );
 
-page::call('..', $args, __FILE__);
+$rows = page::call('..', $args, __FILE__);
 
-if(!isset($args['rows']))
-	die('Aucune donnée analytique');
-
-$rows = $args['rows'];
+if(!is_array($rows ))
+	return 'Aucune donnée analytique';
 
 define('COL_TOTAL', '(total)');
 
@@ -69,7 +67,7 @@ if($arguments['node--get'] == 'rows'){
 }
 ?>
 <div><?php //lien de téléchargement
-$viewer = tree::get_id_by_name('/_Exemples/Convertisseurs/table/csv');
+$viewer = tree::get_id_by_name('/_format/csv/from rows');
 $viewer_options = "&node=" . $node['id']
 	. "&file--name=" . urlencode($node['nm'])
 	. "&node--get=html";

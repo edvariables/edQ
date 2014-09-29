@@ -13,4 +13,4 @@ $uid_form = uniqid('form');
 	test : <input size="32" value="<?= htmlspecialchars($test, ENT_QUOTES) ?>" name="f--test"/>
 	<input type="submit" value="Valider" style="margin-left: 2em;"/>
 </fieldset></form>
-<?= isset($view) ? $view->searchScript($uid_form) : '$view no set'?>
+<?= page::form_submit_script($uid_form) ?>

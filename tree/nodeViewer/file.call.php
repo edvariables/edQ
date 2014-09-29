@@ -7,7 +7,7 @@ class nodeViewer_file_call extends nodeViewer_file {
 	public $name = 'file.call';
 	public $text = 'Affichage';
 	
-	public function html($node){
+	public function html($node, $options = false){
 		global $tree;
 		if(!isset($node["path"])){
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => false));
@@ -20,14 +20,25 @@ class nodeViewer_file_call extends nodeViewer_file {
 		}
 		
 		$href = page::url($node);//$_SERVER["REQUEST_URI"];
-		$head = '<div class="edq-toolbar">'
-			. '<a class="edq-refresh" href="' . $href . '"'
-			. ' onclick="var $parent = $(this).parents(\'.ui-widget-content:first\'); '
-				. ' $.ajax(this.getAttribute(\'href\')).done(function(html){ $parent.html(html); }).fail(function(o,err){ alert(err) });'
-				. ' return false;'
-			. '">rafraîchir</a>'
-			. '</div>';
-			
+		if(is_array($options) && isset($options['vw--toolbar'])){
+			$toolbar = $options['vw--toolbar'];
+		}
+		elseif (isset($_REQUEST['vw--toolbar'])){
+			$toolbar = $_REQUEST['vw--toolbar'];
+			unset($_REQUEST['vw--toolbar']);
+		}
+		else
+			$toolbar = false;
+		if($toolbar){
+			$head = '<div class="edq-toolbar">'
+				. '<a class="edq-refresh" href="' . $href . '&vw--toolbar=1"'
+				. ' onclick="var $parent = $(this).parents(\'.ui-widget-content:first\'); '
+					. ' $.ajax(this.getAttribute(\'href\')).done(function(html){ $parent.html(html); }).fail(function(o,err){ alert(err) });'
+					. ' return false;'
+				. '">rafraîchir</a>'
+				. '</div>';
+		} else $head = '';
+		
 		if($exists){
 			$view = $this;
 			ob_start();
@@ -36,7 +47,7 @@ class nodeViewer_file_call extends nodeViewer_file {
 			//var_dump($content);
 		}
 		else {
-			$content = '<i>fichier absent</i>';
+			$content = '<i class="edq-error">fichier absent</i>';
 		}
 			
 		return array(

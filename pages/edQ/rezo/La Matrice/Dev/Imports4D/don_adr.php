@@ -1,4 +1,6 @@
 <?php
+//die (__FILE__ . " : procédure verrouillée");
+
 if(!isset($arguments)) $arguments = array();
 
 $arguments['file'] = 'D:\\Softs\\140908 - La Matrice\\4D\\don_adr.csv';
@@ -9,7 +11,7 @@ $arguments['truncate_table'] = true;
 $arguments['skip_rows'] = 0;
 $arguments['max_rows'] = INF;//1000;
 $arguments['columns'] = array(
-		'RefFiche' => array(
+	'RefFiche' => array(
 		'datatype' => 'integer',
 	),
 	'DateDuDon' => array(
@@ -23,5 +25,5 @@ $arguments['columns'] = array(
 	),
 );
 
-page::call('csv', $arguments, page::node($node));
+page::call('csv', $arguments, node($node));
 ?>

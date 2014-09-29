@@ -1,8 +1,8 @@
 <?php /* Gestion des propriétés d'un noeud
 UTF8 é
 */
-if(isset($_POST['operation'])
-&& $_POST['operation'] == 'submit') {
+if(isset($_POST['op'])
+&& $_POST['op'] == 'submit') {
 
 	require_once(dirname(__FILE__) . '/../db.php');	 //TODO load tree only
 	global $tree;
@@ -41,19 +41,19 @@ class nodeViewer_node extends nodeViewer {
 	public $name = 'node';
 	public $text = 'Noeud';
 	
-	public function html($node){
+	public function html($node, $options = false){
 		if(!isset($node["typ"])){
 			global $tree;
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => true));
 		}
 		
 		// instance de node
-		$node = node::fromClass($this->domain, $node);
+		$node = Node::fromClass($this->domain, $node);
 		
 		$uid = uniqid('form-');
 		
 		// Type
-		$types = node::get_types();
+		$types = Node::get_types();
 		$select_type = '<select name="type" value="' . ifNull($node->type, '') . '">';
 		foreach($types as $type => $typeObj)
 			$select_type .= '<option value="' . $type . '"'
@@ -64,7 +64,7 @@ class nodeViewer_node extends nodeViewer {
 		$select_type .= '</select>';
 		
 		// icon 
-		$icons = node::get_icons();
+		$icons = Node::get_icons();
 		$select_icon = '<select name="icon" value="' . ifNull($node->icon, '') . '">';
 		foreach($icons as $icon)
 			$select_icon .= '<option value="' . $icon . '"'
@@ -76,7 +76,7 @@ class nodeViewer_node extends nodeViewer {
 		$select_icon .= '</select>';
 		
 		// ulvl
-		$ulvls = node::get_ulvls();
+		$ulvls = Node::get_ulvls();
 		$select_ulvl = '<select name="ulvl" value="' . ifNull($node->ulvl, '') . '">';
 		foreach($ulvls as $ulvl => $text)
 			$select_ulvl .= '<option value="' . $ulvl . '"'
@@ -113,7 +113,7 @@ class nodeViewer_node extends nodeViewer {
 			. '<fieldset class="q-fields">'
 			. '<input type="hidden" name="id" value="' . $node->id . '"/>'
 			. '<input type="hidden" name="vw" value="' . __CLASS__ . '"/>'
-			. '<input type="hidden" name="operation" value="submit"/>'
+			. '<input type="hidden" name="op" value="submit"/>'
 			. '<div>'
 			. '<div><label class="ui-state-default ui-corner-all">Nom</label>'
 				. '<input size="40" name="name" value="' . $node->name . '"/></div>'

@@ -6,12 +6,12 @@ class nodeViewer_edit extends nodeViewer {
 	public $name = 'edit';
 	public $text = 'Edition';
 	
-	public function html($node){
+	public function html($node, $options = false){
 		if(!isset($node["typ"])){
 			global $tree;
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => true));
 		}
-		$html = '<form action="?operation=update_node&id=' . $node['id'] . '">'
+		$html = '<form action="?op=update_node&id=' . $node['id'] . '">'
 			. '<fieldset class="q-fields"><div>'
 			. '<div><label class="ui-state-default ui-corner-all">Nom</label>'
 				. '<input size="40" value="' . $node["nm"] . '"/></div>'

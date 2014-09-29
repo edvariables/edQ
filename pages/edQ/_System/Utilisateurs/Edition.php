@@ -18,10 +18,12 @@
 
 	$uid = uniqid('form-');
 
+$node = node($node);
+
 if(count($rows) > 0){
 	$row = $rows[0];
 ?><form id="<?=$uid?>" method="POST" action="<?=page::url( ":submit", $node )?>" autocomplete="off">
-<input type="hidden" name="operation" value="<?=$row['IdContact'] ? 'update' : 'insert'?>"/>
+<input type="hidden" name="op" value="<?=$row['IdContact'] ? 'update' : 'insert'?>"/>
 <input type="hidden" name="d--IdContact" value="<?=$row['IdContact']?>"/>
 <fieldset class="q-fields">	<legend><?=$row["Name"]?> #<?=$row["IdContact"]?></legend>
 <div>
@@ -39,7 +41,7 @@ if(count($rows) > 0){
 <style>
 </style>
 <?php
-	echo $view->formScript($uid, null);
+	echo page::form_submit_script($uid);
 }
 else {
 	echo $search . ' <i> introuvable</i>';

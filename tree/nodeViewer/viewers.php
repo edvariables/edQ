@@ -1,7 +1,7 @@
 <?php
 
-if(isset($_POST['operation'])
-&& $_POST['operation'] == 'submit') {
+if(isset($_REQUEST['op'])
+&& $_REQUEST['op'] == 'submit') {
 	require_once(dirname(__FILE__) . '/param.operation.php');
 	die();
 }
@@ -11,13 +11,13 @@ class nodeViewer_viewers extends nodeViewer {
 	public $text = 'Affichages';
 	public $needChildren = true;
 	
-	public function html($node){
+	public function html($node, $options = false){
 		$ulId = uniqid('nw-viewers-');
 		$children = array();
 		$isDesign = is_design();
 		
 		// instance de node
-		$node_obj = node::fromClass($this->domain, $node);
+		$node_obj = Node::fromClass($this->domain, $node);
 		$preferSort = $node_obj->param_value('sort', false, 'viewers');
 		if($preferSort)
 			$preferSort = json_decode($preferSort, true);
@@ -139,6 +139,7 @@ class nodeViewer_viewers extends nodeViewer {
 					. '?id=' . $node['id']
 					. '&vw=' . $type
 					. ($isDesign ? '&design=1' : '')
+					. '&vw--toolbar=1'
 			;
 			
 			$class = ' class="edq-viewer-' . str_replace('.', '-', $type);
@@ -164,9 +165,9 @@ class nodeViewer_viewers extends nodeViewer {
 				$class .= ' ' . $view["class"]; //onclick-load
 			$class = strtolower( $class . '"' );
 			$html .= '<div id="' . $ulId . $type . '"' . $class . '>';
-			try{
+			try {
 				$viewer = nodeViewer::fromClass($type);
-				$r = $viewer->html($node);
+				$r = $viewer->html($node, array('vw--toolbar' => true));
 				$html .= $r["content"];
 			}
 			catch(Exception $ex){
@@ -183,19 +184,26 @@ $().ready(function(){
 	  .tabs({
 		active: ' . $defaultViewIndex . ',
 		beforeLoad: function( event, ui ) {
+			
 			if ( ui.tab.filter(":not(.onclick-load)").data( "loaded" ) ) {
 				event.preventDefault();
 				return;
 			}
 		
+			ui.tab.addClass("loading");
+
 			ui.jqXHR.success(function(data) {
 				var className = ui.tab.attr("class").replace(/^.*(\\bedq-viewer-[^\\s]*)(\\s.*)?$/, "$1");
 				ui.panel.addClass(className);
 				ui.tab.filter(":not(.onclick-load)").data( "loaded", true );
+				
+				ui.tab.removeClass("loading");
 			});
 			
 			ui.jqXHR.error(function(jqXHR, textStatus, errorThrown) {
 				ui.panel.html("Impossible de charger le contenu.<br>" + errorThrown );
+
+				ui.tab.removeClass("loading");
 			});
 		}
 	  })'
@@ -214,7 +222,7 @@ $().ready(function(){
 				data = { 
 					"id": ' . $node['id'] . '
 					, "vw": "nodeViewer_viewers"
-					, "operation": "submit"
+					, "op": "submit"
 				};
 				data["viewers-sort|"] = JSON.stringify(value);
 				//alert(JSON.stringify(data));

@@ -36,6 +36,9 @@ html, body {
 .ui-layout-pane {
 	border-radius: 4px;
 }
+.ui-dialog {
+	max-width: 100%;
+}
 .ui-dialog.ui-widget .ui-widget {
 	font-size: 1.2em;
 }
@@ -126,6 +129,12 @@ html, body { background:#ebebeb; font-size:10px; font-family:Verdana; margin:0; 
 	background-color: white;
 }
 
+/* titre des editions de .php */
+.edq-viewer-file-content legend.ui-state-default {
+	color: #1c5474;
+	padding: 2px 8px;
+}
+
 table.edq {
 	padding	: 0px;
 	border	: 1px outset;
@@ -154,6 +163,10 @@ table > thead > tr > th.pk {
     height: 16px;
 }
 
+.ui-tabs-nav .loading .jstree-default .jstree-icon:empty {
+   background: url(../images/loading.gif) no-repeat; 
+}
+
 .edq-toolbar {
 	font-size: smaller;
 	padding: 0 0 6px 0;
@@ -167,6 +180,10 @@ table > thead > tr > th.pk {
   /* Set height, width, borders, and global font properties here */
   height: 400px;
 }
+.CodeMirror pre { /* Fix initial cursor position bug */
+    height:13px;
+}
+
 
 /* boutons de barres d'outils */
 .ui-border-none
@@ -176,13 +193,19 @@ table > thead > tr > th.pk {
 
 ul.edq-doc, .edq-doc  ul {
 	list-style: none;
+	color: #000000;
 }
 .edq-doc  code {
 	white-space: pre;
 }
+.edq-doc var {
+	font-family: courier;
+	/*font-style: normal;*/
+	font-weight: bolder;
+}
 #data .edq-doc  pre, .edq-doc  pre {
 	font-family: inherit;
-	line-height : 1.3em;
+	line-height : 1.5em;
 }
 
 .edq-buttons.ul { list-style: none; }

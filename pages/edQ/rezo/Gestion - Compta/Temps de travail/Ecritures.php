@@ -1,11 +1,11 @@
 <?php
-ini_set( "display_errors", 1);
-error_reporting (E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+if(!isset($node))
+	$node = page::node(null);
 
 $arguments_isset = isset($arguments);
 $arguments = array_merge($_REQUEST, $arguments_isset ? $arguments : array());
 
-if(userRight())
+if(user_right())
 	$file = preg_replace('/\.php$/', '', __FILE__) . "/csv.php";
 
 /* réception d'un nouveau fichier */
@@ -16,32 +16,16 @@ if(isset($_FILES) && isset($_FILES['q--filename'])){
 		die('Erreur de copie !');
 }
 
-/* formulaire de réception d'un nouveau fichier */
-$uid = uniqid('form');
 ?>
-<form id="<?=$uid?>" method="POST" enctype="multipart/form-data"
-	  action="<?=page::url( $node )?>"
-	  autocomplete="off" style="margin-bottom: 1em;">
-	<fieldset><legend>Chargement du fichier mensuel en provenance de l'expert-comptable</legend>
-	<input type="file" name="q--filename"/>
-	<input type="submit" value="Envoyer" style="margin-left: 4em;"/>
-	</fieldset>
-</form>
-<?= isset($view) ? $view->searchScript($uid) : '$view no set'?>
-
-<?php /* affichage des données */
-$rows = file_get_contents($file);
-
-$row_separ = '/\r?\n/';
-$column_separ = ';';
-$rows = preg_split($row_separ, $rows);
-$nRow = 0;
-foreach($rows as $row)
-	if($row != null)
-		$rows[$nRow++] = explode($column_separ, $row); 
-
+<form><fieldset><legend>Transformation des écritures de l'expert-comptable pour Cogilog</legend>
+<pre>- Etape 1 : Importer ici le fichier de l'expert-comptable (Parcourir... puis Envoyer)
+- Etape 2 : Contrôler que les données calculées sont cohérentes
+- Etape 3 : Télécharger le fichier pour Cogilog
+- Etape 4 : Copier le fichier depuis les Téléchargements vers le dossier partagé de Soleil
+- Etape 5 : Importer dans Cogilog Compta</pre></fieldset></form>
+<?php
+	
 // $columns
-$columns = array();
 $columns[] = array(
 	'id' => 'Journal'
 );
@@ -51,14 +35,14 @@ $columns[] = array(
 );
 $nDate = count($columns) - 1;
 $columns[] = array(
-	'id' => '_1'
+	'id' => '(vide)'
 );
 $columns[] = array(
 	'id' => 'Compte'
 );
 $nCompte = count($columns) - 1;
 $columns[] = array(
-	'id' => 'Analityque'
+	'id' => 'Analytique'
 );
 $nAnalytique = count($columns) - 1;
 $columns[] = array(
@@ -75,7 +59,58 @@ $columns[] = array(
 	, 'type' => 'double'
 );
 $nCredit = count($columns) - 1;
+	
+/* formulaire de réception d'un nouveau fichier */
+$uid = uniqid('form');
+?>
+<form id="<?=$uid?>" method="POST" enctype="multipart/form-data"
+	  action="<?=page::url( $node )?>"
+	  autocomplete="off" style="margin-bottom: 1em;">
+	<fieldset><legend>Etape 1 : Chargement du fichier mensuel en provenance de l'expert-comptable</legend>
+		- le fichier devrait se trouver dans <i>/docCompta/AnnieBate/Administration - Compta/Paies Rezo/Payes et cotisations/[année]/Ecritures et Journaux de payes</i>
+		<br/>
+		- colonnes : <?php
+		$nCol = 0;
+		foreach($columns as $column){
+			if($nCol++ > 0) echo ', ';
+			echo($column['id']);
+		}
+	?>
+		<br/>
+		- séparateur : {tab} ou ; (point-virgule)
+		<br/><br/>
+	<input type="file" name="q--filename"/>
+	<input type="submit" value="Envoyer" style="margin-left: 4em;"/>
+	</fieldset>
+</form>
+<?= isset($view) ? $view->searchScript($uid) : '$view no set'?>
 
+<?php 
+	
+/* chargement des données csv */
+$rows = file_get_contents($file);
+
+$row_separ = '/\r?\n/';
+$column_separ = '/[\t;]/';
+$rows = preg_split($row_separ, $rows);
+$nRow = 0;
+foreach($rows as $row)
+	if(($row != null)
+	   && (substr($row, 0, 2) != '**')) {
+		$row = preg_split($column_separ, $row); 
+		if($row[$nDebit] == '0')
+			$row[$nDebit] = '';
+		else if($row[$nDebit])
+			$row[$nDebit] = floatval (str_replace(' ', '', str_replace(',', '.', $row[$nDebit])));
+		if($row[$nCredit] == '0')
+			$row[$nCredit] = '';
+		else if($row[$nCredit])
+			$row[$nCredit] = floatval (str_replace(' ', '', str_replace(',', '.', $row[$nCredit])));
+		$rows[$nRow++] = $row;
+	}
+
+/*var_dump($columns);
+var_dump($rows);*/
 
 $salairesPayes = 0;
 $datePayes = null;
@@ -85,6 +120,8 @@ foreach($rows as $row)
 	if($row[$nCompte] == CPTE_SALAIRES){
 		$salairesPayes = floatval (str_replace(' ', '', str_replace(',', '.', $row[$nDebit])));
 		$datePayes = DateTime::createFromFormat('d/m/Y H:i:s', $row[$nDate] . ' 00:00:00');
+		if(intval($datePayes->format('Y')) < 2000)
+			$datePayes->add(new DateInterval('P2000Y'));
 		$datePayes->sub(new DateInterval('P' . ((int)$datePayes->format('d') - 1) . 'D'));
 		$datePayesFin = clone $datePayes;
 		$datePayesFin->add(new DateInterval('P1M'));
@@ -105,7 +142,8 @@ $salaries = $args['rows'];
 /*$args = array(
 	'rows' => $salaries
 );
-call_page('/_html/table/rows', $args, __FILE__);*/
+page::call('/_html/table/rows', $args, __FILE__);*/
+
 
 //Comparaison des totaux des salaires
 /*$salairesDeclares = 0;
@@ -129,6 +167,8 @@ for($nRow = 0; $nRow < count($salaries); $nRow++){
 	'rows' => $salaries
 );
 page::call('/_html/table/rows', $args, __FILE__);*/
+
+$merge_comptes = isset($arguments['f--merge_comptes']) ? $arguments['f--merge_comptes'] : false;
 
 $nbRows = count($rows);
 $rowsCptes = array();
@@ -171,30 +211,51 @@ for($nRow = 0; $nRow < $nbRows; $nRow++){
 		
 		//Par compte
 		if(!isset($rowsCptes[$row[$nCompte]])){
-			$rowsCptes[$row[$nCompte]] = array_slice ( $row, 0);
+			$rowsCptes[$row[$nCompte]] = $row;
 			if(!$row[$nDebit])
-				$rowsCptes[$row[$nCompte]][$columns[$nDebit]['id']] = 0.0;
+				$rowsCptes[$row[$nCompte]][$nDebit] = 0.0;
 			if(!$row[$nCredit])
-				$rowsCptes[$row[$nCompte]][$columns[$nCredit]['id']] = 0.0;
+				$rowsCptes[$row[$nCompte]][$nCredit] = 0.0;
 		}
 		else if($row[$nDebit])
-				$rowsCptes[$row[$nCompte]][$columns[$nDebit]['id']] += $totalLigne;
-		else if(!$row[$nCredit])
-				$rowsCptes[$row[$nCompte]][$columns[$nCredit]['id']] += $totalLigne;
+			$rowsCptes[$row[$nCompte]][$nDebit] += $totalLigne;
+		else if($row[$nCredit])
+			$rowsCptes[$row[$nCompte]][$nCredit] += $totalLigne;
 	}
 }
+
+//echo '<pre>'; var_dump($rowsCptes); echo '</pre>'; 
+//echo '<pre>'; var_dump($salaries); echo '</pre>'; 
 
 $nbRows = count($rows);
 $rowsCSV = array();
 for($nRow = 0; $nRow < $nbRows; $nRow++){
 	$row = $rows[$nRow];
-	if(is_array($row)){
+	if(is_array($row)
+	  && isset($rowsCptes[$row[$nCompte]])){
+		
+		/* une seule ecriture par compte */
+		if($merge_comptes){
+			$row[$nLibelle] = $rowsCptes[$row[$nCompte]][$nLibelle];
+			$row[$nCredit] = $rowsCptes[$row[$nCompte]][$nCredit];
+			$row[$nDebit] = $rowsCptes[$row[$nCompte]][$nDebit];
+			if($row[$nCredit] > $row[$nDebit]){
+				$row[$nCredit] -= $row[$nDebit];
+				$row[$nDebit] = '';
+			}
+			else {
+				$row[$nDebit] -= $row[$nCredit];
+				$row[$nCredit] = '';
+			}
+			unset($rowsCptes[$row[$nCompte]]);
+		}
+		
 		$nCol = 0;
 		foreach($row as $cell){
 			switch(@$columns[$nCol]['type']){
 			case 'double':
 			case 'float':
-				if($cell){
+				if($cell && is_string($cell)){
 					//echo ">>";var_dump($cell);
 					$cell = $row[$nCol] = $rows[$nRow][$nCol] 
 						= floatval( str_replace(',', '.', str_replace(' ', '', $cell) ));
@@ -220,12 +281,11 @@ for($nRow = 0; $nRow < $nbRows; $nRow++){
 			$totalLigne = floatval (str_replace(' ', '', str_replace(',', '.', $row[$nDebit])));
 		else if($row[$nCredit])
 			$totalLigne = floatval (str_replace(' ', '', str_replace(',', '.', $row[$nCredit])));
-		// cumuls par compte
-		$analytic[$row[$nCompte]] += $totalLigne;
 		
 		// Comptes en 6 : crée autant de lignes que de codes analytiques + 1 ligne négative
 		if(substr($row[$nCompte], 0, 1) == '6'){
 			$sum = 0.0;
+			$sum2dec = 0.0; // sum sur la base de deux décimales
 			foreach($salaries as $salarie){
 				//1 ligne négative
 				if($salarie['CodeAnalytique'] == COL_TOTAL){
@@ -251,10 +311,12 @@ for($nRow = 0; $nRow < $nbRows; $nRow++){
 					$nCol = 0;
 					foreach($row as $cell){
 						if(($nCol == $nDebit) || ($nCol == $nCredit)){
-							if($row[$nCol]){
+							if(is_numeric($row[$nCol]) && $row[$nCol] != 0){
 								$fract = $totalLigne * $salarie['Fraction'] / 100;
 								$newRow[] = $fract;
-								$sum += $fract;
+								$sum += $fract;// * ($nCol == $nDebit ? -1 : 1); 
+								$sum2dec += round($fract, 2);
+								//echo '<br>' . $row[$nCompte] . ", col " . $nCol . ' = ' . $fract . ' = ' . $sum2dec;
 							}
 							else
 								$newRow[] = '';
@@ -273,10 +335,18 @@ for($nRow = 0; $nRow < $nbRows; $nRow++){
 					$rowsCSV[] = $newRow;
 				}
 			}
-			if(abs($sum - $totalLigne) > 0.004){
-				echo('<pre>');
-				echo "Attention : Ecart entre la ligne d'origine et la répartition par code analytique : " . number_format($sum - $totalLigne, 3, ',', '');
-				echo('</pre>');
+			if($sum2dec && (abs($sum2dec - $totalLigne) >= 0.001)){
+				// écart d'arrondi : ajouté à la dernière ligne histoire de solder à 0
+				if(is_numeric($newRow[$nDebit]) && ($newRow[$nDebit] != 0))
+					$nCol = $nDebit;
+				else
+					$nCol = $nCredit;
+				$rows[ count($rows) - 1 ][$nCol] -= ($sum2dec - $totalLigne);
+				$rowsCSV[ count($rowsCSV) - 1 ][$nCol] -= round(($sum2dec - $totalLigne) * 100) / 100;
+				/*echo('<pre>');
+				echo "Attention, compte " . $row[$nCompte] . " : Ecart entre la ligne d'origine (" . $totalLigne . ") et la répartition par code analytique (" . $sum2dec . ") : "
+						. number_format($sum2dec - $totalLigne, 3, ',', '');
+				echo('</pre>');*/
 			}
 		}
 		else
@@ -287,22 +357,75 @@ for($nRow = 0; $nRow < $nbRows; $nRow++){
 
 if($arguments_isset && $arguments['node--get'] == 'rows'){
 	$arguments['rows'] = $rowsCSV;
+	$arguments['columns'] = $columns;
 	return;
 }
-?>
 
-<form>
-	<fieldset><legend>Données en provenance de l'expert-comptable</legend>
-<?php
-$args = array(
-	'rows' => $rowsCSV
-	,'columns' => $columns
-	, 'csv--node' => $node['id']
-	, 'csv--file' => $node['nm']
-	, 'csv--rows' => 'rows'
+/* résultat */
+$uid = uniqid('form');
+?>
+<form id="<?=$uid?>" method="POST" action="<?=page::url( $node )?>"
+	  autocomplete="off" style="margin-bottom: 1em;">
+<?= isset($view) ? $view->searchScript($uid) : '$view no set'?>
+	<fieldset><legend>Etapes 2 et 3 : Comptes en 6 éclatés par code analytique.</legend>
+		<label>fusionner les comptes identiques</label>
+		<label><input type="radio" name="f--merge_comptes"<?= $merge_comptes ? ' checked="checked"' : ''?> value="1"/>oui</label>
+		<lablel><input type="radio" name="f--merge_comptes"<?= !$merge_comptes ? ' checked="checked"' : ''?> value=""/>non</label>
 		
-);
-page::call('/_html/table/rows', $args, __FILE__);?>
-</fieldset></form>
-<pre><?php var_dump($analytic)?></pre>
+		<input type="submit" value="Recharger" style="margin-left: 2em;"/><?php 
+	$viewer = tree::get_id_by_name('/_Exemples/Convertisseurs/table/csv');
+		$viewer_options = "&node=" . $node['id']
+		. "&file--name=" . $node['nm']
+		. "&node--get=" . 'rows';
+		?><a class="file-download" href="view.php?id=<?=$viewer?><?=$viewer_options?>&vw=file.call" style="margin-left: 2em;">télécharger le .csv</a>
+	<?php
+		$cogilog = page::node(':Cogilog', $node);
+		$file_cogilog = 'EA_' . $datePayes->format('m_Y') . '.csv';
+		$viewer_options = "&node=" . $cogilog['id']
+		. "&file--name=" . $file_cogilog
+		. "&node--get=" . 'rows';
+		?><a class="file-download" href="view.php?id=<?=$viewer?><?=$viewer_options?>&vw=file.call" style="margin-left: 2em;"
+			 title="Le format est : colonne Point-virgule, UTF8, pas de guillemet autour des champs"
+											   >Etape 3 : télécharger <?=$file_cogilog?></a>
+	<?php
+	$args = array(
+		'rows' => $rowsCSV
+		,'columns' => $columns
+		, 'csv--node' => false
+
+	);
+	page::call('/_html/table/rows', $args, __FILE__);?>
+
+		<?=count($args['rows'])?> ligne(s)
+	</fieldset></form>
+
+<script>
+	$().ready(function(){
+		//au début du click sur le téléchargement, on ajoute f--merge_comptes au href
+		$('#<?=$uid?> .file-download').mousedown(function(){
+			$this = $(this);
+			$form = $this.parents('form:first');
+			var href = $this.attr('href');
+			var params = ['f--merge_comptes'];
+			for(var param in params){
+				param = params[param];
+				var pos = href.indexOf('&' + param + '=');
+				var $input = $form.find(':input[name="' + param + '"]');
+				if($input.length > 1 && $input.attr('type') == 'radio') $input = $input.filter(':checked'); 
+				var value = $input.val();
+				if(pos > 0){
+					var posNext = href.indexOf('&', pos + 2);
+					href = href.substr(0, pos)
+						+ '&' + param + '=' + value
+						+ (posNext > 0 ? href.substr(posNext) : '')
+					;
+				}
+				else
+					href += '&' + param + '=' + value;
+			}
+			$this.attr('href', href);
+		});
+	});
+</script>
+<pre><?php echo str_replace(',', ',<br>', json_encode($analytic))?></pre>
 	

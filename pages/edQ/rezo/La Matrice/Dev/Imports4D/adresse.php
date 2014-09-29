@@ -1,11 +1,13 @@
 <?php
+die (__FILE__ . " : procédure verrouillée");
+
 if(!isset($arguments)) $arguments = array();
 
-$arguments['file'] = 'D:\\Softs\\140908 - La Matrice\\4D\\189000 adresses.csv';
+$arguments['file'] = 'D:\\Softs\\140908 - La Matrice\\4D\\189000 adresses.2.2.csv';
 $arguments['charset'] = 'UTF-8';//'ISO-8859-15';//'UTF-8';
 $arguments['table'] = 'adresse';
 $arguments['create_table'] = false;
-$arguments['truncate_table'] = true;
+$arguments['truncate_table'] = false;
 $arguments['skip_rows'] = 0;
 $arguments['max_rows'] = INF;//1000;
 $arguments['columns'] = array(
@@ -192,7 +194,10 @@ $arguments['columns'] = array(
 	'PasDeRelanceFinancièreWeb' => array(
 		'datatype' => 'boolean',
 	),
+	'vTiger' => array(
+		'datatype' => 'integer',
+	),
 );
 
-page::call('csv', $arguments, page::node($node));
+page::call('csv', $arguments, node($node));
 ?>

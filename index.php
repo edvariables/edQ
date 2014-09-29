@@ -1,5 +1,5 @@
 <?php
-	include('bin/session.php');
+	include('inc/session.php');
 	require('tree/helpers.php');
 	require('tree/page.php');
 ?><!DOCTYPE html>
@@ -10,52 +10,52 @@
 		<title>edQ</title>
 		<link rel="icon" href="favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
-		<link rel="stylesheet" href="tree/themes/default/style.css" />
-		<link rel="stylesheet" href="css/ui-lightness/jquery-ui-1.10.4.custom.min.css" />
+		<link rel="stylesheet" href="res/tree/themes/default/style.css" />
+		<link rel="stylesheet" href="res/css/ui-lightness/jquery-ui-1.10.4.custom.min.css" />
 
-		<link rel="stylesheet" type="text/css" href="css/layout-default-latest.css" />
+		<link rel="stylesheet" type="text/css" href="res/css/layout-default-latest.css" />
 		
-		<link rel="stylesheet" type="text/css" href="jquery/dataTables/css/jquery.dataTables.min.css" />
+		<link rel="stylesheet" type="text/css" href="res/jquery/dataTables/css/jquery.dataTables.min.css" />
 		
-		<link rel="stylesheet" type="text/css" media="screen" href="jquery/jqGrid/css/ui.jqgrid.css" />
+		<link rel="stylesheet" type="text/css" media="screen" href="res/jquery/jqGrid/css/ui.jqgrid.css" />
 		
-		<link rel="stylesheet" href="jquery/colorpicker/css/colorpicker.css" type="text/css" />
-		<link rel="stylesheet" type="text/css" href="jquery/colorpicker/css/layout.css" />
+		<link rel="stylesheet" href="res/jquery/colorpicker/css/colorpicker.css" type="text/css" />
+		<link rel="stylesheet" type="text/css" href="res/jquery/colorpicker/css/layout.css" />
 
 		<link rel="stylesheet" type="text/css" href="css/edq.css" />
 
-		<script src="js/jquery-1.10.2.js"></script>
-		<script src="js/jquery.form.min.js"></script>
-		<script src="js/jquery-ui-1.10.4.custom.min.js"></script>
+		<script src="res/js/jquery-1.10.2.js"></script>
+		<script src="res/js/jquery.form.min.js"></script>
+		<script src="res/js/jquery-ui-1.10.4.custom.min.js"></script>
 		
-		<script type="text/javascript" src="js/jquery.layout-latest.js"></script>
+		<script type="text/javascript" src="res/js/jquery.layout-latest.js"></script>
 		
-		<script type="text/javascript" src="jquery/dataTables/js/jquery.dataTables<?php //echo '.min';?>.js"></script>
+		<script type="text/javascript" src="res/jquery/dataTables/js/jquery.dataTables<?php //echo '.min';?>.js"></script>
 
-		<script src="jquery/jqGrid/js/grid.locale-fr.js" type="text/javascript"></script>
-		<script src="jquery/jqGrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="res/jquery/jqGrid/js/grid.locale-fr.js" type="text/javascript"></script>
+		<script src="res/jquery/jqGrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
 	
-		<script type="text/javascript" src="jquery/colorpicker/js/colorpicker.js"></script>
+		<script type="text/javascript" src="res/jquery/colorpicker/js/colorpicker.js"></script>
 		
 		<script src="tree/jstree.js"></script>
-		<script src="tree/jstree.plugins.js"></script>
+		<script src="res/tree/jstree.plugins.js"></script>
 
-		<script type="text/javascript" src="jquery/markitup/jquery.markitup.js"></script>
-		<script type="text/javascript" src="jquery/markitup/sets/dataSource/set.js"></script>
+		<script type="text/javascript" src="res/jquery/markitup/jquery.markitup.js"></script>
+		<script type="text/javascript" src="res/jquery/markitup/sets/dataSource/set.js"></script>
 
 		<script src="js/edQ.js"></script>
 		
 		<?php
 		if(is_design()) {?>
-		<link rel="stylesheet" href="jquery/codemirror/lib/codemirror.css">
-		<script src="jquery/codemirror/lib/codemirror.js"></script>
-		<script src="jquery/codemirror/addon/edit/matchbrackets.js"></script>
-		<script src="jquery/codemirror/mode/php/php.js"></script>
-		<script src="jquery/codemirror/mode/htmlmixed/htmlmixed.js"></script>
-		<script src="jquery/codemirror/mode/xml/xml.js"></script>
-		<script src="jquery/codemirror/mode/javascript/javascript.js"></script>
-		<script src="jquery/codemirror/mode/css/css.js"></script>
-		<script src="jquery/codemirror/mode/clike/clike.js"></script>
+		<link rel="stylesheet" href="res/jquery/codemirror/lib/codemirror.css">
+		<script src="res/jquery/codemirror/lib/codemirror.js"></script>
+		<script src="res/jquery/codemirror/addon/edit/matchbrackets.js"></script>
+		<script src="res/jquery/codemirror/mode/php/php.js"></script>
+		<script src="res/jquery/codemirror/mode/htmlmixed/htmlmixed.js"></script>
+		<script src="res/jquery/codemirror/mode/xml/xml.js"></script>
+		<script src="res/jquery/codemirror/mode/javascript/javascript.js"></script>
+		<script src="res/jquery/codemirror/mode/css/css.js"></script>
+		<script src="res/jquery/codemirror/mode/clike/clike.js"></script>
 		<?php }?>
 
 		<script type="text/javascript">

@@ -1,10 +1,12 @@
 <?php
+die (__FILE__ . " : procédure verrouillée");
+
 if(!isset($arguments)) {
-	page::call('critere', $arguments, $node);//adresse //critere_adr
+	//page::call('critere', $arguments, $node);//adresse //critere_adr
 	return;
 }
 
-$node = page::node($node);
+$node = node($node);
 include_once(page::file('helpers', $node));
 
 $file = $arguments['file'];
@@ -15,7 +17,6 @@ $truncate_table = isset($arguments['truncate_table']) ? $arguments['truncate_tab
 $columns = $arguments['columns'];
 $max_rows = isset($arguments['max_rows']) && $arguments['max_rows'] != 0 ? $arguments['max_rows'] : INF;
 $skip_rows = isset($arguments['skip_rows']) ? $arguments['skip_rows'] : 0;
-$create_table = isset($arguments['create_table']) ? $arguments['create_table'] : FALSE;
 $separator = false;
 
 $handle = fopen($file, "r");
@@ -28,6 +29,7 @@ $columns = get_columns($columns, $handle, $separator, $charset);
 
 $db = get_db();
 if($create_table){
+	echo "table $table create<br/>";
 	$db->query(get_sql_drop_table($table));
 	$db->query(get_sql_create_table($columns, $table));
 }
@@ -44,15 +46,17 @@ $sql_insert = get_sql_insert_into($columns, $table, $rows_counter_max);
 
 if($skip_rows > 0)
 	skip_file_rows($handle, $skip_rows);
-else if(( $max_rows === INF ) || ($truncate_table === TRUE)
+else if(( $max_rows === INF || $truncate_table === TRUE)
   && !$create_table
   && $truncate_table !== FALSE) {
+	echo "table $table truncated<br/>";
 	$db->query(get_sql_truncate($table));
 }
 
 $total_counter = 0;
 $counter = 0;
 while(($row = read_file_row($handle, $columns, $separator, $data)) !== FALSE){
+	//if($counter ==0 )	var_dump( $data);
 	if((++$counter) == $rows_counter_max){
 		$db->query($sql_insert, $data);
 		$total_counter += $counter;
@@ -68,7 +72,7 @@ while(($row = read_file_row($handle, $columns, $separator, $data)) !== FALSE){
 if($counter > 0){
 	$sql_insert = get_sql_insert_into($columns, $table, $counter);
 	$db->query($sql_insert, $data);
-	
+		
 	$total_counter += $counter;
 
 	$data = false;

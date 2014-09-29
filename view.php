@@ -1,6 +1,6 @@
 <?php
-	$_REQUEST['operation'] = 'get_view';
-	$_GET['operation'] = $_REQUEST['operation'];
+	$_REQUEST['op'] = 'get_view';
+	$_GET['op'] = $_REQUEST['op'];
 	if(!isset($_REQUEST['get']))
 		$_REQUEST['get'] = 'content';
 	if(!isset($_GET['vw'])){

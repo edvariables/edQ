@@ -1,10 +1,15 @@
 <?php
+die (__FILE__ . " : procédure verrouillée");
+
 if(!isset($arguments)) $arguments = array();
 
 $arguments['file'] = 'D:\\Softs\\140908 - La Matrice\\4D\\Criteres.csv';
 $arguments['charset'] = 'UTF-8';
 $arguments['table'] = 'critere';
 $arguments['create_table'] = true;
+$arguments['truncate_table'] = true;
+$arguments['skip_rows'] = 0;
+$arguments['max_rows'] = INF;//1000;
 $arguments['columns'] = array(
 	'critere4did' => array(
 		'datatype' => 'integer',
@@ -31,8 +36,6 @@ $arguments['columns'] = array(
 		'datatype' => 'text',
 	),
 );
-$arguments['skip_rows'] = 0;
-$arguments['max_rows'] = INF;//1000;
 
-page::call('csv', $arguments, page::node($node));
+page::call('csv', $arguments, node($node));
 ?>

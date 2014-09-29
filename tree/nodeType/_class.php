@@ -1,7 +1,11 @@
 <?php
-
-class node {
+/* class Node
+ *
+ */
+class Node {
 	public $domain = null;
+	
+	/* STATIC */
 	
 	/* static get_types
 	*/
@@ -68,8 +72,8 @@ class node {
 			, "file file-query"
 		);
 	}
-	
-	/* static get_icons
+	/* static get_ulvls
+	 * returns user levels
 	*/
 	public static function get_ulvls(){
 		return array(
@@ -80,6 +84,8 @@ class node {
 		);
 	}
 	
+	
+	
 	/* static fromClass
 		retourne une instance d'après la classe spécifiée.
 		charge le fichier $class . ".php"
@@ -88,14 +94,18 @@ class node {
 	*/
 	public static function fromClass($class, $properties){
 		if($class == null || $class == '')
-			return new node($properties);
+			return new Node($properties);
 		$php = dirname(__FILE__) . '/' . $class . ".php";
 		if(!file_exists($php))
-			return new node($properties);
+			return new Node($properties);
 		include_once( $php );
 		$fullClass = __CLASS__ . "_" . $class;
 		return new $fullClass($properties);
 	}
+	
+	
+	
+	/* INSTANCE */
 	
 	/* constructeur
 		initialise l'objet avec les propriétés issues de la table tree_data.
@@ -110,6 +120,7 @@ class node {
 		}
 		$this->properties = $propertiesOrId;
 	}
+	
 	
 	/* properties
 	*/
@@ -129,6 +140,7 @@ class node {
 			return $this->$funcName($value);
 		}
 	}
+	
 	/* generic getter
 		pour un appel du type $x = $myNode->myProperty
 		cherche dans properties le nom de la propriété donnée
@@ -172,17 +184,12 @@ class node {
 		if(!isset($this->properties["path"])){
 			$this->properties = $tree->get_node((int)$this->properties['id'], array('with_path' => true, 'full' => false));
 		}
-		/*$path = $_SERVER['DOCUMENT_ROOT'];
-		if(substr($path, -strlen($path)) != '/')
-			$path .= '/';
-		$path = $path
-			. preg_replace('/(\/?(.+)\/\w+\.php$)?/', '$2', $_SERVER['PHP_SELF']);
-		//var_dump(($path . '/../pages'));*/
-		$path = helpers::get_pages_path() //str_replace('\\', '/', realpath($path . '/../pages'))
+		$path = helpers::get_pages_path() 
 			. '/' . implode('/',array_map(function ($v) { return $v['nm']; }, $this->properties['path']))
 		;
 		return $path;
 	}
+	
 	/* findFile
 	*/
 	function findFile($shortName){
@@ -198,6 +205,7 @@ class node {
 		}
 		return $shortName;
 	}
+
 	/* get_url()
 		returns /edQ/tree/nodeViewer/fileContent.php
 	*/
@@ -206,6 +214,7 @@ class node {
 		return ( $path[0] == '/' ? '' : '/' ) . $path . $this->properties['nm'] . ($sub == null ? '' : '.' . $sub) . '.php';
 	}
 	
+
 	/* loadParameters
 		charge les paramètres depuis la table node_param
 	*/
@@ -247,6 +256,7 @@ class node {
 		return $rows;
 	}
 	
+
 	/* parameters
 		retourne les paramètres depuis la table node_param
 	*/
@@ -257,6 +267,7 @@ class node {
 		return $this->properties[ $domain ];
 	}
 	
+
 	/* parameter value
 		valeur du paramètre issu de la table node_param
 	*/
@@ -268,6 +279,7 @@ class node {
 	}
 	
 	
+
 	/* icon
 	*/
 	public function icon($icon = null){
@@ -284,6 +296,7 @@ class node {
 		;
 	}
 	
+
 	/* label = icon + text
 	*/
 	public function label($name = null, $icon = null){

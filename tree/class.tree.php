@@ -1,7 +1,10 @@
 <?php
+/***
+ * class tree
+ * 	gestion des noeuds en base de données
+ */
 // TODO: better exceptions, use params
-class tree
-{
+class tree {
 	protected $db = null;
 	protected $options = null;
 	protected $default = array(
@@ -46,6 +49,8 @@ class tree
 
 	/* get_node
 		recherche le noeud dans la table tree_data
+		
+		$id : integer
 	*/
 	public function get_node($id, $options = array(), $errorIfNotExists = true) {
 		// $id est un noeud
@@ -59,6 +64,7 @@ class tree
 				$id['children'] = $this->get_children($id['id'], isset($options['deep_children']) && $options['deep_children']);
 			return $id;
 		}
+		
 		$notDesign_only = isset($options['design']) && !$options['design'];
 		
 		$node = $this->db->one("
@@ -90,6 +96,7 @@ class tree
 		}
 		return $node;
 	}
+
 	/* get_children
 		$options : {
 			$recursive : boolean = false
@@ -100,8 +107,10 @@ class tree
 	*/
 	public function get_parent($id, $options = false) {
 		//echo('get_parent entree $id = '); var_dump($id);
-		if(!$id)
+		if(!$id){
+			node('/_System/debug/callstack', null, 'call');
 			throw new Exception('tree::get_parent : $id est incorrect');
+		}
 		
 		// $id est un noeud
 		//echo('get_parent is_array($id) = '); var_dump(is_array($id));
@@ -130,6 +139,30 @@ class tree
 		$options as boolean : $recursive = $options;
 	*/
 	public function get_children($id, $options = false) {
+		
+		if(is_array($id) && $id['id'])
+			$node = $id;
+		else
+			$node = $this->get_node($id);
+		
+		// recherche d'un enfant nommé
+		// si contient /, boucle sur chacune des parties de la recherche
+		if(is_array($options)
+		&& isset($options['f--name'])
+		&& strpos($options['f--name'], '/') !== FALSE){
+			$parent_node = $node;
+			$path = explode( '/', $options['f--name'] );
+			foreach($path as $short_name){
+				//var_dump($short_name);
+				$options['f--name'] = $short_name;
+				$child = $this->get_children($parent_node, $options);
+				if(!$child || count($child) == 0)
+					return $child;
+				$parent_node = $child[0];
+			}
+			return $child;
+		}
+		
 		if(is_bool($options)){
 			$recursive = $options;
 			$options = array();
@@ -138,10 +171,6 @@ class tree
 			$recursive = isset($options['recursive']) && $options['recursive'];
 		$notDesign_only = isset($options['design']) && ($options['design'] == false);
 		$sql = false;
-		if(is_array($id) && $id['id'])
-			$node = $id;
-		else
-			$node = $this->get_node($id);
 		
 		if($recursive) {
 			$sql = "
@@ -224,7 +253,7 @@ class tree
 	*/
 	public static function get_node_by_name($name, $refersTo = false, $options = false) {
 		global $tree;
-		if(is_bool($options))
+		if(is_bool($options) || $options == null)
 			$options = array();
 		
 		global $tree;

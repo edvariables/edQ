@@ -25,7 +25,7 @@ $uid = uniqid('form');
 	<input type="submit" value="Envoyer" style="margin-left: 4em;"/>
 	</fieldset>
 </form>
-<?= isset($view) ? $view->searchScript($uid) : '$view no set'?>
+<?= page::form_submit_script($uidform) ?>
 
 <?php /* affichage des données */
 if(file_exists($file))

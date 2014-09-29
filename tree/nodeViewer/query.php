@@ -35,14 +35,14 @@ class nodeViewer_query extends nodeViewer {
 		
 	/* html
 	*/
-	public function html($node){
+	public function html($node, $options = false){
 		$tabs = '';
 		$html = '';
 		$textareas = array();
 		$uid = uniqid('form-');
 		$valueTypes = array();
 		// instance de node
-		$node = node::fromClass($this->domain, $node);
+		$node = Node::fromClass($this->domain, $node);
 		
 		foreach($node->parameters($this->domain) as $row){
 			/* name */
@@ -173,7 +173,7 @@ $().ready(function() {
 						paramText = param.replace(/query-(.+)\|$/, "$1");
 						if(!confirm("Supprimer le paramètre \'" + $tab.text() + "\' [" + paramText + "] ?")) return false;
 						var $form = $(this).parents("form");
-						var data = { "operation" : "delete" };
+						var data = { "op" : "delete" };
 						var $inputs = $form.find(\'input[name="id"], input[name="vw"], \' + selector + \' :input[name]:first\'); //3 inputs a transmettre
 						$inputs.each(function(){ data[this.getAttribute("name")] = this.value; });
 						$.ajax({
@@ -223,10 +223,10 @@ $().ready(function() {
 		return array(
 			"title" => $node->name
 			, "content" => $head
-				. '<form id="' . $uid . '" method="post" action="' . $this->get_url($node, 'operation') . '">'
+				. '<form id="' . $uid . '" method="post" action="' . $this->get_url($node, 'op') . '">'
 					. '<input type="hidden" name="id" value="' . $node->id . '"/>'
 					. '<input type="hidden" name="vw" value="' . __CLASS__ . '"/>'
-					. '<input type="hidden" name="operation" value="submit"/>'
+					. '<input type="hidden" name="op" value="submit"/>'
 					. '<fieldset class="q-fields">'
 					. '<legend>' . $node->label()
 						. ($exists ? '' : ' <small><i>(nouvelle requête)</i></small>')

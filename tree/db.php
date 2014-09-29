@@ -3,14 +3,15 @@ Fait le lien entre l'arborescence dans le navigateur et dans la base de données.
 L'opératon get_view transfert le traitement à une classe dans /tree/viewers/
 */
 $this_dir = dirname(__FILE__);
-include_once($this_dir . '/../bin/session.php');
+include_once($this_dir . '/../inc/session.php');
 include_once($this_dir . '/helpers.php');
 include_once($this_dir . '/page.php');
 // opération demandée
-if(isset($_REQUEST['operation'])) {
+if(isset($_REQUEST['op'])) {
 	require_once($this_dir . '/../conf/edQ.conf.php');
-	require_once($this_dir . '/../bin/class.db.php');
+	require_once($this_dir . '/../inc/class.db.php');
 	require_once($this_dir . '/class.tree.php');
+	require_once($this_dir . '/node.php');
 				
 	$fs = new tree(db::get(DBTYPE . '://' . DBUSER . ':' . DBPASSWORD . '@' . DBSERVER . ':' . DBPORT . '/' . DBNAME)
 		, array(
@@ -22,7 +23,7 @@ if(isset($_REQUEST['operation'])) {
 	global $tree;
 	$tree = $fs;
 	
-	if(isset($_GET['operation'])) { //dans l'URL
+	if(isset($_GET['op'])) { //dans l'URL
 		$contentType = 'application/json';
 		try {
 			/* 
@@ -54,7 +55,7 @@ if(isset($_REQUEST['operation'])) {
 			}/* helper request_to_node() */
 			
 			$rslt = null;
-			switch($_REQUEST['operation']) {
+			switch($_REQUEST['op']) {
 				case 'get_node':
 					$node = isset($_REQUEST['id']) && $_REQUEST['id'] !== '#' ? (int)$_REQUEST['id'] : TREE_ROOT;
 					$isDesign = is_design();
@@ -197,7 +198,7 @@ if(isset($_REQUEST['operation'])) {
 					$rslt = $fs->cp($node, $parn, isset($_REQUEST['position']) ? (int)$_REQUEST['position'] : 0);
 					break;
 				default:
-					throw new Exception('[tree/db] operation inconnue : ' . $_REQUEST['operation']);
+					throw new Exception('[tree/db] operation inconnue : ' . $_REQUEST['op']);
 					break;
 			}
 			header('Content-Type: ' . $contentType . '; charset=utf8');

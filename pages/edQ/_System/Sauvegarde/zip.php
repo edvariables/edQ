@@ -8,7 +8,7 @@ ini_set( "display_errors", 1);
 error_reporting (E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
 
 if(!isset($node)){
-	$node = page::node('.', __FILE__);
+	$node = node('.', __FILE__);
 	if(!$node) throw new Exception('Noeud introuvable');
 }
 if(isset($arguments) && isset($arguments['backup']))

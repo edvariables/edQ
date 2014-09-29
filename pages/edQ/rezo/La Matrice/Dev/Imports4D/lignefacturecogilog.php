@@ -1,4 +1,6 @@
 <?php
+die (__FILE__ . " : procédure verrouillée");
+
 if(!isset($arguments)) $arguments = array();
 
 $arguments['file'] = 'D:\\Softs\\140908 - La Matrice\\4D\\LigneFactureCogilog.csv';
@@ -99,5 +101,5 @@ $arguments['columns'] = array(
 
 );
 
-page::call('csv', $arguments, page::node($node));
+page::call('csv', $arguments, node($node));
 ?>

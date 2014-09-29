@@ -1,6 +1,10 @@
 <?php
 
 if(isset($arguments) && isset($arguments['rows']))
+	$uid = $arguments['uid'];
+else
+	$uid = uniqid('table');
+if(isset($arguments) && isset($arguments['rows']))
 	$rows = $arguments['rows'];
 else if(isset($_REQUEST['rows']))
 	$rows = $_REQUEST['rows'];
@@ -58,7 +62,7 @@ for($nCol = 0; $nCol < count($columns); $nCol++){
 $is_associative = count($rows) > 0 && is_associative($rows[0]);
 //var_dump($rows);
 ?>
-<table class="edq">
+<table id="<?=$uid?>" class="edq">
 <caption><?php
 	//bouton de recherche
 	/*?><input type="submit" value="Rechercher" style="margin-left: 2em;"/><?php*/
@@ -79,7 +83,7 @@ $is_associative = count($rows) > 0 && is_associative($rows[0]);
 		else if(isset($_REQUEST['csv--rows']))
 			$csv_rows = $_REQUEST['csv--rows'];
 		else 
-			$csv_rows = 'html';
+			$csv_rows = 'rows';
 		//nom du fichier
 		if(isset($arguments) && isset($arguments['csv--file']))
 			$csv_file = $arguments['csv--file'];
@@ -90,7 +94,7 @@ $is_associative = count($rows) > 0 && is_associative($rows[0]);
 		else
 			$csv_file = "donnees";
 
-		$viewer = tree::get_id_by_name('/_Exemples/Convertisseurs/table/csv');
+		$viewer = tree::get_id_by_name('/_format/csv/from rows');
 		$viewer_options = "&node=" . $csv_node
 		. "&file--name=" . urlencode($csv_file)
 		. "&node--get=" . $csv_rows;

@@ -1,6 +1,8 @@
 <?php
 
-/* static page class */
+/***
+ * static page class
+ */
 class page {
 	
 	/* root_path
@@ -132,21 +134,19 @@ class page {
 			:dataSource : dans la descendance
 			/_System/dataSource : à partir de la racine
 	*/
-	public static function execute($search, $refers_to = null, $extension = ".php", &$arguments = null){
+	public static function execute($search, $refers_to = null, $extension = ".php", $arguments = null){
 		$file = page::file($search, $refers_to, $extension);
 		
 		// include
 		if(file_exists($file)){
 			if($arguments == null)
 				$arguments = array();
-			include($file);
-			return $file;
+			return include($file);
 		}
 		else if(file_exists(utf8_decode($file))){
 			if($arguments == null)
 				$arguments = array();
-			include(utf8_decode($file));
-			return utf8_decode($file);
+			return include(utf8_decode($file));
 		}
 		// fichier inconnu
 		echo('<pre class="edq-error">');
@@ -163,13 +163,13 @@ class page {
 		
 		echo('</small>');
 		echo('</pre>');
-		return $file;
+		return FALSE;
 	}
 	/* call with $arguments defined
 		include rel($refers_to, $search, '.php')
 		exécute une page relative en définissant la variables $arguments
 	*/
-	public static function call($search, &$arguments = null, $refers_to = null, $extension = ".php"){
+	public static function call($search, $arguments = null, $refers_to = null, $extension = ".php"){
 		return page::execute($search, $refers_to, $extension, $arguments);
 	}
 	/* file_url
@@ -249,20 +249,12 @@ class page {
 			return $search;
 		if(is_array($search))
 			return $search['id'];
-		$node = page::node($search, $refers_to);
+		$node = node($search, $refers_to);
 		if(is_array($node))
 			return $node['id'];
 		return $node;
 	}
 	
-	/* page::view_url
-	
-	*/
-	/*public static function view_url($search, $refers_to = null, $arguments = null, $view_name = 'file.call'){
-		if($search == null && $refers_to == null)
-			return null;
-		return self::url($search, $refers_to, $arguments, $view_name);
-	}*/
 	/* page::url
 	
 	*/
@@ -290,7 +282,8 @@ class page {
 		if($search == null && $refers_to == null)
 			return null;
 		$viewer = nodeViewer::fromClass($view_name);
-		$node = page::id($search, $refers_to);
+		//$node = page::id($search, $refers_to); //TODO pourquoi pas ?
+		$node = page::node($search, $refers_to); 
 		
 		$html = $viewer->html($node);
 		print_r( $html['content'] );
@@ -309,5 +302,53 @@ class page {
 		print_r( $html['content'] );
 		return true;
 	}
+	
+	
+	/* form_submit_script
+	 * Script js de soumission d'un formulaire et refresh du contenu
+	 * options :
+	 * 	beforeSubmit : javascript script executed before data are sent
+	 * 	success : javascript function when answer is back
+	 * 	error : javascript function when 
+	 */
+	public static function form_submit_script($form_uid, $options = null){
+		//TODO use js script
+		$beforeSubmit = is_array($options) && isset($options['beforeSubmit']) ? $options['beforeSubmit'] : '';
+		$success = is_array($options) && isset($options['success']) ? $options['success'] : false;
+		$error = is_array($options) && isset($options['error']) ? $options['error'] : false;
+		return
+			'<script>  
+$(document).ready(function() { 
+	$("#' . $form_uid . '").submit(function() {
+		var $form_uid = "' . $form_uid . '";
+		' . $beforeSubmit . ';
+		$(this).ajaxSubmit({
+			beforeSubmit: function(){ 
+				document.body.style.cursor = "wait";
+			}
+			, success: function(data){
+				' . ( $success
+				     ? '(' . $success . ')();'
+				     : '//reload with answer
+					$("#' . $form_uid . '").parents(".ui-widget-content:first").html(data);
+				').'
+				$("body").css("cursor", "default");
+			}
+			, error: function(jq, textStatus, errorThrown, more ) { 
+				' . ( $error
+				     ? '(' . $error . ')();'
+				     : '
+					alert(textStatus + " : " + errorThrown); 
+				').'
+				document.body.style.cursor = "auto";
+			}
+		});
+		return false;
+	})
+}); 
+</script>'
+		;
+	}
+
 }
 ?>

@@ -11,6 +11,7 @@ else {//demo
 	);
 	$columns = array('Id', 'Name', 'Enabled');
 }
+
 if(isset($arguments) && isset($arguments['columns']))
 	$columns = $arguments['columns'];
 else if(isset($_REQUEST['columns']))
@@ -41,8 +42,11 @@ else if(is_associative($columns)){
 	$columns = array();
 	if(isset($rows[0])){
 		foreach($rows[0] as $id => $value){
-			if(isset($columnsBase[$id]))
+			if(isset($columnsBase[$id])){
+				if(!is_array($columnsBase[$id]))
+					$columnsBase[$id] = array( 'visible' => $columnsBase[$id] );
 				$columnsBase[$id] = array_merge(array('title' => $id), $columnsBase['*'], $columnsBase[$id]);
+			}
 			else
 				$columnsBase[$id] = array_merge(array('title' => $id), $columnsBase['*']);
 			
@@ -58,8 +62,11 @@ else {
 	$columnsBase = $columns;
 	$columns = array();
 	foreach($columnsBase as $value){
-		if(is_array($value))
+		if(is_array($value)){
+			if(!isset($value['title']) && isset($value['id']))
+				$value['title'] = utf8_encode($value['id']);
 			$columns[] = $value;
+		}
 		else
 			$columns[] = array('title' => $value);
 	}
@@ -67,7 +74,12 @@ else {
 //var_dump($columns);
 //var_dump($rows);
 //die();
-
+if(isset($rows[0]) && is_associative($rows[0])){
+	$rows_ass = $rows;
+	$rows = array();
+	foreach($rows_ass as $row)
+		$rows[] = array_values($row);
+}
 $uid = uniqid('nodes');
 ?><table id="<?=$uid?>" cellpadding="0" cellspacing="0" border="0" 
 		 class="display"></table>

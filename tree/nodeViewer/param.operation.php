@@ -7,16 +7,16 @@ Les paramètres sont dans la table node_param.
 /***************
 	action
 ****************/
-if(isset($_POST['operation'])) {
+if(isset($_REQUEST['op'])) {
 	require_once(dirname(__FILE__) . '/../../conf/edQ.conf.php');
-	require_once(dirname(__FILE__) . '/../../bin/class.db.php');
+	require_once(dirname(__FILE__) . '/../../inc/class.db.php');
 					
 	$db = db::get(DBTYPE . '://' . DBUSER . ':' . DBPASSWORD . '@' . DBSERVER . ':' . DBPORT . '/' . DBNAME);
 	
-	switch($_POST['operation']){
+	switch($_REQUEST['op']){
 	case 'submit' :
 		//cherche les arguments de paramètres
-		foreach($_POST as $arg => $value){
+		foreach($_REQUEST as $arg => $value){
 			$matches = array();
 			if(preg_match('/^([^|]+-)?([^|]+)\|(.*)?$/', $arg, $matches) > 0){
 				$domain = $matches[1];
@@ -35,7 +35,7 @@ if(isset($_POST['operation'])) {
 					. " domain = ?"
 					. ", param = ?"
 					. ", value = ?"
-					, array($_POST['id'], $domain, $param, $value, $domain, $param, $value)
+					, array($_REQUEST['id'], $domain, $param, $value, $domain, $param, $value)
 				);
 			}
 		}
@@ -50,7 +50,7 @@ if(isset($_POST['operation'])) {
 	case 'delete' :
 		//die("refusé");
 		//cherche les arguments de paramètres
-		foreach($_POST as $arg => $value){
+		foreach($_REQUEST as $arg => $value){
 			$matches = array();
 			if(preg_match('/^([^|]+-)?([^|]+)\|(.*)?$/', $arg, $matches) > 0){
 				$domain = $matches[1];
@@ -67,7 +67,7 @@ if(isset($_POST['operation'])) {
 					WHERE id = ?
 					AND param = ?
 					AND domain = ?"
-					, array($_POST['id'], $param, $domain)
+					, array($_REQUEST['id'], $param, $domain)
 				);
 			}
 		}

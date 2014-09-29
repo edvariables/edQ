@@ -16,7 +16,7 @@ class nodeViewer_file extends nodeViewer {
 	/* html
 		overridable
 	*/
-	public function html($node){
+	public function html($node, $options = false){
 		global $tree;
 		if(!isset($node["path"])){
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => false));

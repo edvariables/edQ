@@ -121,7 +121,7 @@ class nodeViewer {
 		Détails du noeud.
 		Fonction destinée à être surchargée
 	*/
-	public function html($node){
+	public function html($node, $options = false){
 		if(!isset($node["typ"])){
 			global $tree;
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => true));
@@ -156,66 +156,27 @@ class nodeViewer {
 	}
 	
 	/* formScript
-		Script js de soumission d'un formulaire
+		Script js de soumission d'un formulaire de view
 	*/
-	public function formScript($uid, $options = null, $beforeSubmit = null, $callback = null){
-		return
-		'<script>  
-			$(document).ready(function() { 
-				// bind form and provide a simple callback function 
-				$("#' . $uid . '").submit(function() { ' . $beforeSubmit . '
-					$(this).ajaxSubmit({
-						beforeSubmit: function(){ 	}
-						, success: function(data){
-							if(isNaN(data))
-								$("<pre>" + data + "</pre>").dialog();
-							else {
-								$("#' . $uid . ' legend small i:last").remove();'/*efface un eventuel flag "n'existe pas"*/
-								. ($callback === null || $callback === '' 
-									? ''
-									: '' . $callback . ';') . '
-							}
-						}
-						, error: function(jq, textStatus, errorThrown, more ) { 
-							alert(textStatus + " : " + errorThrown); 
-						}
-					});
-					return false;
-				})
-		   }); 
-		</script> '
-		;
+	public function formScript($form_uid, $options = null, $beforeSubmit = null, $callback = null){
+		if(!is_array($options))
+			$options = array();
+		if($beforeSubmit != null)
+			$options['beforeSubmit'] = $beforeSubmit;
+		if(is_string($callback))
+			$options['success'] = $options['callback'] = $callback;
+		else
+			$options['success'] = 'function(){
+	if(isNaN(data))	$("<pre>" + data + "</pre>").dialog();
+}';
+	return page::form_submit_script($form_uid, $options);
 	}
 	/* searchScript
 		Script js de soumission d'un formulaire et refresh du contenu
+		OBSOLETE : use page::form_submit_script($form_uid, $options)
 	*/
-	public function searchScript($uid, $options = null){
-		$beforeSubmit = @$options['beforeSubmit'];
-		return
-		'<script>  
-			$(document).ready(function() { 
-				// bind form and provide a simple callback function 
-				$("#' . $uid . '").submit(function() {
-					' . $beforeSubmit . ';
-					$(this).ajaxSubmit({
-						beforeSubmit: function(){ 
-							document.body.style.cursor = "wait";
-						}
-						, success: function(data){
-							$("#' . $uid . '").parents(".ui-widget-content:first").html(data);
-							$("body").css("cursor", "default");
-						}
-						, error: function(jq, textStatus, errorThrown, more ) { 
-							document.body.style.cursor = "auto";
-							alert(textStatus + " : " + errorThrown); 
-						}
-					});
-					return false;
-				})
-		   }); 
-		</script> '
-		;
+	public function searchScript($form_uid, $options = null){
+		return page::form_submit_script($form_uid, $options);
 	}
 }
-
 ?>

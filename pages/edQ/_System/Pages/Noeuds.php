@@ -16,8 +16,8 @@ $uidform = uniqid('form');
 <form id="<?=$uidform?>" method="POST" action="<?=page::url( $node )?>" autocomplete="off">
 racine : <input size="32" value="<?=$root?>" name="f--root"/>		
 <input type="submit" value="Recharger" style="margin-left: 2em;"/>
-	</form>
-<?= isset($view) ? $view->searchScript($uidform) : '$view no set'?>
+</form>
+<?= page::form_submit_script($uidform) ?>
 <table id="<?=$uid?>" class="stripe"><caption>Arborescence des noeuds en base de données</caption>
 <thead><tr>
 	<th></th>

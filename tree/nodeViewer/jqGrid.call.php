@@ -14,13 +14,13 @@ class nodeViewer_jqGrid.call extends nodeViewer_query {
 	public $rowIndex;
 	public $columnIndex;
 	
-	public function html($node){
+	public function html($node, $options = false){
 		global $tree;
 		if(!isset($node["path"])){
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => false));
 		}
 		// instance de node
-		$node = node::fromClass($this->domain, $node);
+		$node = Node::fromClass($this->domain, $node);
 		
 		$href = $_SERVER["REQUEST_URI"];
 		$head = '<div class="edq-toolbar">'

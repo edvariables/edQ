@@ -1,10 +1,10 @@
 <?php /* Gestion du champ 'comment' d'un noeud via la table node_comment
 UTF8 é
 */
-if(isset($_POST['operation'])
-&& $_POST['operation'] == 'submit') {
+if(isset($_POST['op'])
+&& $_POST['op'] == 'submit') {
 	require_once(dirname(__FILE__) . '/../../conf/edQ.conf.php');
-	require_once(dirname(__FILE__) . '/../../bin/class.db.php');
+	require_once(dirname(__FILE__) . '/../../inc/class.db.php');
 					
 	$db = db::get(DBTYPE . '://' . DBUSER . ':' . DBPASSWORD . '@' . DBSERVER . ':' . DBPORT . '/' . DBNAME);
 	if($_POST['value'] === '')
@@ -27,9 +27,9 @@ class nodeViewer_comment extends nodeViewer {
 	public $name = 'comment';
 	public $text = 'Commentaires';
 	
-	public function html($node){
+	public function html($node, $options = false){
 		// instance de node
-		$node = node::fromClass($this->domain, $node);
+		$node = Node::fromClass($this->domain, $node);
 	
 		$db = db::get(DBTYPE . '://' . DBUSER . ':' . DBPASSWORD . '@' . DBSERVER . '/' . DBNAME);
 		$comments = $db->one("
@@ -50,7 +50,7 @@ class nodeViewer_comment extends nodeViewer {
 			, "content" => '<form id="' . $uid . '" method="post" action="' . $this->get_url($node) . '">'
 					. '<input type="hidden" name="id" value="' . $node->id . '"/>'
 					. '<input type="hidden" name="vw" value="' . __CLASS__ . '"/>'
-					. '<input type="hidden" name="operation" value="submit"/>'
+					. '<input type="hidden" name="op" value="submit"/>'
 					. '<fieldset>'
 					. ($exists ? '' : '<legend><small><i>(le commentaire n\'existe pas)</i></small></legend>')
 					. '<textarea name="value" style="width:100%;" rows="14">' . htmlspecialchars( $comments ) . '</textarea>'

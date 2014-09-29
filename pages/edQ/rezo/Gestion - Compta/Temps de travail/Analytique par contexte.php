@@ -4,74 +4,101 @@ Les paramètres de filtres commencent par f-- suivi du nom du champ
 */
 
 $db = get_db();
-$sql = " SELECT * FROM (
-	SELECT `ou`.id AS IdSalarie
+/* sélection des timeslots et de leur membre le plus profond */
+$sql = "SELECT ts.*, tsm.id AS member_id, tsm.name AS member_name
+FROM `fo_timeslots` `ts`
+JOIN `fo_objects` `tso`
+	ON `tso`.`id` = ts.`object_id`
+JOIN (
+	/* profondeur maxi des membres de l'objet timeslot */
+	SELECT tsom.object_id, MAX(mo.depth) AS depth
+	FROM `fo_object_members` `tsom` /* membres des timeslot */
+	JOIN `fo_members` `mo` /* membres auxquels les timeslot sont rattachés */
+		ON `tsom`.`member_id` = `mo`.`id`
+	GROUP BY tsom.object_id
+) `tsomax`
+	ON `tso`.`id` = tsomax.`object_id`
+	AND tso.object_type_id = 17
+JOIN `fo_object_members` `tsom`
+	ON `tsom`.`object_id` = `tsomax`.`object_id`
+JOIN `fo_members` `tsm`
+	ON `tsom`.`member_id` = tsm.`id`
+	AND tsomax.depth = tsm.depth
+	AND tsm.dimension_id = 1 /* workspace */
+/*JOIN `fo_objects` `tsmo`
+	ON `tsmo`.`id` = tsm.`object_id`
+	AND tsmo.object_type_id = 1*/
+";
+
+/*	$rows = $db->all( $sql . ' LIMIT 0, 200' );
+
+	$args = array('rows' => $rows);
+echo count($rows);
+	page::call('/_html/table/rows', $args);*/
+
+
+$sql = "SELECT * FROM (
+
+	SELECT `ou`.object_id AS IdSalarie
 	, DATE_FORMAT((`ts`.`start_time`),'%Y-%m') AS `Mois`
-	, `ou`.`display_name` AS `Salarié`
+	, `ou`.`first_name` AS `Salarié`
 	, SUM(TIMESTAMPDIFF(SECOND, `ts`.`start_time`, `ts`.`end_time`))/3600 AS `Heures`
 	, SUM(TIMESTAMPDIFF(SECOND, `ts`.`start_time`, `ts`.`end_time`))/3600 * CAST(uv.value AS DECIMAL(9,3)) AS `Valorisation`
-	, CONCAT(p2.name, '/', IFNULL(p3.name,''), '/', IFNULL(p4.name,''), '/', IFNULL(p5.name,'')
-		, '/', IFNULL(p6.name,''), '/', IFNULL(p7.name,''), '/', IFNULL(p8.name,''), '/', IFNULL(p9.name,''), '/', IFNULL(p10.name,''))
-		AS Contexte
+	, pr.name AS Contexte
 	, IF(pv.value IS NULL OR pv.value = '', 'ERR', pv.value) AS CodeAnalytique
-	FROM `og_timeslots` `ts`
-	JOIN `og_users` `ou`
-		ON `ou`.`id` = `ts`.`user_id`
-	JOIN `og_projects` `pr`
-		ON `ts`.`object_id` = `pr`.`id`
-	LEFT JOIN `og_projects` `p2` ON p2.id = `pr`.`p2`
-	LEFT JOIN `og_projects` `p3` ON p3.id = `pr`.`p3`
-	LEFT JOIN `og_projects` `p4` ON p4.id = `pr`.`p4`
-	LEFT JOIN `og_projects` `p5` ON p5.id = `pr`.`p5`
-	LEFT JOIN `og_projects` `p6` ON p6.id = `pr`.`p6`
-	LEFT JOIN `og_projects` `p7` ON p7.id = `pr`.`p7`
-	LEFT JOIN `og_projects` `p8` ON p8.id = `pr`.`p8`
-	LEFT JOIN `og_projects` `p9` ON p9.id = `pr`.`p9`
-	LEFT JOIN `og_projects` `p10` ON p10.id = `pr`.`p10`
-	LEFT JOIN og_custom_property_values pv
-		ON pv.object_id = pr.id
+	FROM (" . $sql . ") `ts`
+	JOIN `fo_contacts` `ou`
+		ON `ou`.`object_id` = `ts`.`contact_id`
+	JOIN `fo_members` `pr`
+		ON `ts`.`member_id` = `pr`.`id`
+	LEFT JOIN fo_member_custom_property_values pv
+		ON pv.member_id = pr.id
 		AND pv.custom_property_id = ?
-	LEFT JOIN og_custom_property_values uv
-		ON uv.object_id = ou.id
+	LEFT JOIN fo_object_properties uv
+		ON uv.rel_object_id = ou.object_id
+		AND uv.name = ?
 		
-	WHERE `pr`.`p1` = 17
-	AND uv.custom_property_id = ?
+	WHERE (`ts`.`start_time` BETWEEN ? AND ?)
+	AND (`ts`.`end_time` <> 0)
 	
-	AND `ts`.`object_manager` = 'Projects'
-	AND (`ts`.`start_time` BETWEEN ? AND ?)
-	AND ((`ts`.`paused_on` <> 0) OR (`ts`.`end_time` <> 0))
-	
-	GROUP BY `ou`.id, date_format((`ts`.`start_time` + interval 1 hour),'%Y-%m')
-		, `ou`.`display_name`
+	GROUP BY `ou`.object_id, date_format((`ts`.`start_time` + interval 1 hour),'%Y-%m')
+		, `ou`.`first_name`
 		, pr.name, pv.value
 	ORDER BY Mois DESC, `Salarié`, CodeAnalytique, Contexte
 ) a";
 
+
+//die ('<pre>' . $sql . '</pre>');
+
+	$arguments = array_merge($_REQUEST, isset($arguments) ? $arguments : array());
+	
 	$where = 0;
 	$params = array();
 
 	$custom_property_id = 1; //Id de la propriété CodeAnalytique ajoutée
 	$params[] = $custom_property_id;
 
-	$custom_property_id = 2; //Id de la propriété TauxHoraire ajoutée
+	$custom_property_id = 'Taux horaire'; //Id de la propriété TauxHoraire ajoutée
 	$params[] = $custom_property_id;
 
-	$dateDebut = isset($_REQUEST['q--date-debut'])
-		? $_REQUEST['q--date-debut']
-		: '01/09/' . ((int)date('m') > 8 ? date('Y') : (int)date('Y') - 1);
-	$dateTimeDebut = DateTime::createFromFormat('d/m/Y H:i:s', $dateDebut. '00:00:00');
+	/*$root_id = 0; //Id du parent
+	$params[] = $root_id;*/
+
+	$dateDebut = isset($arguments['q--date-debut'])
+		? $arguments['q--date-debut']
+		: '01/' . date('m/Y');//'01/09/' . ((int)date('m') > 8 ? date('Y') : (int)date('Y') - 1);
+	$dateTimeDebut = is_string($dateDebut) ? DateTime::createFromFormat('d/m/Y H:i:s', $dateDebut. '00:00:00') : $dateDebut;
 	$params[] = $dateTimeDebut->format('Y-m-d H:i:s');
-	$dateFin = isset($_REQUEST['q--date-fin'])
-		? $_REQUEST['q--date-fin']
+
+	$dateFin = isset($arguments['q--date-fin'])
+		? $arguments['q--date-fin']
 		: '31/08/' . ((int)date('m') <= 8 ? date('Y') : (int)date('Y') + 1);
-	$dateTimeFin = DateTime::createFromFormat('d/m/Y H:i:s', $dateFin . ' 23:59:59');
-	$params[] = $dateTimeFin->format('Y-m-d H:i:s');
+	$dateTimeFin = is_string($dateFin) ? DateTime::createFromFormat('d/m/Y H:i:s', $dateFin . ' 23:59:59') : $dateFin;
+	$params[] = $dateTimeFin->format('Y-m-d H:i:s') ;
 	
-	$maxRows = isset($_REQUEST['q--limit'])
-		? ((int)$_REQUEST['q--limit'])
-		: (isset($arguments['q--limit'])
-		   ? (int)$arguments['q--limit']
-		   : 20 );
+	$maxRows = isset($arguments['q--limit'])
+			? ((int)$arguments['q--limit'])
+			: 20;
 	$params[] = 0;
 	$params[] = $maxRows;
 	//var_dump($params);
@@ -103,7 +130,7 @@ $uid = uniqid('form');
 			$month = (int)date('m', $date);
 			$value = date('Y|m', $date);
 			?><option value="<?= $value ?>" <?=$dateSel == $value ? 'selected="selected"' : ''?>><?php
-				echo utf8_encode(strftime('%B %Y', $date));
+				echo htmlspecialchars(strftime('%B %Y', $date));
 			?></option><?php
 			if( $month == $firstMonth ){
 				$value = date('Y|0', $date);
@@ -141,13 +168,13 @@ $uid = uniqid('form');
 	foreach($rows as $row){
 		?><tr>
 		<td><input type="checkbox" checked="checked"/></td>
-		<td class="hidden"><?=$row["IdSalarie"]?>
+		<td class="hidden"><?=$row["IdSalarie"]?></td>
 		<td><?=htmlspecialchars( $row["Salarié"] )?></td>
-		<td><?=$row["CodeAnalytique"]?>
-		<td><?=htmlspecialchars( preg_replace('/\\/*$/', '', $row["Contexte"]) )?>
-		<td><?=$row["Mois"]?>
-		<td><?=number_format($row["Heures"], 2, ',', '') ?>
-		<td><?=number_format($row["Valorisation"], 2, ',', '') ?>
+		<td><?=$row["CodeAnalytique"]?></td>
+		<td><?=htmlspecialchars( preg_replace('/\\/*$/', '', $row["Contexte"]) )?></td>
+		<td><?=$row["Mois"]?></td>
+		<td><?=number_format($row["Heures"], 2, ',', '') ?></td>
+		<td><?=number_format($row["Valorisation"], 2, ',', '') ?></td>
 		</tr><?php
 	}
 	?></tbody>

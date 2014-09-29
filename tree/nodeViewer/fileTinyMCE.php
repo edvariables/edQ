@@ -1,8 +1,8 @@
 <?php /* Gestion du contenu d'un fichier
 UTF8 é
 */
-if(isset($_POST['operation'])
-&& $_POST['operation'] == 'submit') {
+if(isset($_POST['op'])
+&& $_POST['op'] == 'submit') {
 	require_once('_class.php');
 	$file = $_SERVER['DOCUMENT_ROOT']
 			. $_POST['fl'];
@@ -25,7 +25,7 @@ class nodeViewer_fileTinyMCE extends nodeViewer_file {
 	public $name = 'fileTinyMCE';
 	public $text = 'Fichier';
 	
-	public function html($node){
+	public function html($node, $options = false){
 		global $tree;
 		if(!isset($node["path"])){
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => false));
@@ -90,7 +90,7 @@ $().ready(function() {
 				. '<input type="hidden" name="id" value="' . $node['id'] . '"/>'
 				. '<input type="hidden" name="vw" value="' . __CLASS__ . '"/>'
 				. '<input type="hidden" name="fl" value="' . substr( $file, strlen( $_SERVER['DOCUMENT_ROOT'] ) ) . '"/>'
-				. '<input type="hidden" name="operation" value="submit"/>'
+				. '<input type="hidden" name="op" value="submit"/>'
 				. '<fieldset>'
 				. '<textarea id="' . $uid . '-value" name="value" style="width:100%;" rows="12">' . htmlspecialchars($content) . '</textarea>'
 				. '</fieldset>'

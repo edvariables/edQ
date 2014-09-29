@@ -44,8 +44,7 @@ $uidform = uniqid('form');
 <input type="submit" value="Chercher dans la base et dans les fichiers" style="margin-left: 2em;"/>
 </fieldset></form>
 
-<?= isset($view) ? $view->searchScript($uidform) : '$view no set'?>
-<?php
+<?= page::form_submit_script($uidform) ?><?php
 $content = $prefs['content'];
 $files = array();
 $file = $dir;
@@ -166,7 +165,7 @@ $uid = uniqid('nodes');
 			if(self.select_node($node))
 				return;
 		}
-		$.get('tree/db.php?operation=get_view'
+		$.get('tree/db.php?op=get_view'
 			  + '&id=' + $dom.attr('node_id')
 			  + '&vw=viewers'
 			  + (self.settings.design ? '&design=true' : '')

@@ -11,7 +11,7 @@ function ifNull($null, $default = ''){
 function is_associative($array){
 	if(!is_array($array)) return false;
 	foreach($array as $k=>$v)
-		return $k != null;
+		return $k !== null && $k !== 0;
 	return false;
 }
 /* is_design
