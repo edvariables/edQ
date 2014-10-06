@@ -1,5 +1,5 @@
 <?php
-if(!user_right()) die('Access denied');
+if(!user_right()) die('Access denied ' .__FILE__);
 $db = get_db();
 $arguments_isset = isset($arguments);
 $domain = ($arguments_isset && isset($arguments['domain']))
@@ -45,10 +45,9 @@ if($arguments_isset){
 	else 
 		$arguments[ 'return' ]
 			= count($rows) > 0 ? $rows[0]['value'] : null;
-	return;
+	return $arguments;
 }
 
 echo ( json_encode($rows) );
-
 die();
 ?>

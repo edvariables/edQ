@@ -7,7 +7,7 @@
 	<head>
 		<meta charset="utf-8">
 		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-		<title>edQ</title>
+		<title>Le Moulin</title>
 		<link rel="icon" href="favicon.ico" />
 		<meta name="viewport" content="width=device-width" />
 		<link rel="stylesheet" href="res/tree/themes/default/style.css" />
@@ -56,11 +56,13 @@
 		<script src="res/jquery/codemirror/mode/javascript/javascript.js"></script>
 		<script src="res/jquery/codemirror/mode/css/css.js"></script>
 		<script src="res/jquery/codemirror/mode/clike/clike.js"></script>
-		<?php }?>
+		<?php }
+	
+		if (!isset($_REQUEST['inneronly'])) {
+		?>
 
 		<script type="text/javascript">
 		var myLayout;
-	
 		$(document).ready(function(){
 	
 			$(".header-footer").hover(
@@ -143,10 +145,19 @@
 			} );
 	
 		});
-	</script>
+		</script><?php
+		}?>
 	</head>
 	<body id="edQ">
-		<div id="container" role="main">
+		<div id="container" role="main"><?php
+		if (isset($_REQUEST['inneronly'])) {?>
+			<div id="data" class="inneronly ui-layout-pane">
+				<div class="edq-viewers ui-widget ui-widget-content content default">
+					<?php include('view.php');?>
+				</div>
+			</div><?php
+		} else {
+		?>
 			<div id="favpanel" class="ui-layout-north jstree-default jstree-favpanel" style="text-align: center;">
 				<?php include('north.php');?>
 			</div>
@@ -162,8 +173,8 @@
 					<div id="tree"></div>
 				</div>
 			</div>
-		</div>
-		
-		<?php include('tree/jstree.init.php');?>
+		<?php 	
+		include('tree/jstree.init.php');
+		}?></div>
 	</body>
 </html>

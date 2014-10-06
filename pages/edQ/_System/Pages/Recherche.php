@@ -10,7 +10,7 @@ $defaults = array(
 );
 $arguments = array_merge($_REQUEST, isset($arguments) ? $arguments : array());
 if(!isset($arguments['f--submit'])){
-	page::call('/_System/Utilisateur/Preferences/get', $args);
+	$args = page::call('/_System/Utilisateur/Preferences/get', $args);
 	if(isset($args['value'])){
 		$prefs = json_decode($args['value'], true);
 		if(!is_object($prefs) && !is_array($prefs))
@@ -40,7 +40,7 @@ $uidform = uniqid('form');
 <form id="<?=$uidform?>" method="POST" action="<?=page::url( $node )?>&f--submit=1" autocomplete="off" style="margin-bottom: 2em;">
 <fieldset><legend>Recherche dans les noeuds et leur fichier de page</legend>
 	racine : <input size="32" value="<?=$prefs['root']?>" name="f--root"/>
-<br/>contient : <input size="48" value="<?=$prefs['content']?>" name="f--content"/>
+<br/>contient : <input size="48" value="<?=htmlentities($prefs['content'])?>" name="f--content"/>
 <input type="submit" value="Chercher dans la base et dans les fichiers" style="margin-left: 2em;"/>
 </fieldset></form>
 <?= page::form_submit_script($uidform) ?>
@@ -164,7 +164,7 @@ $uid = uniqid('nodes');
 $(document).ready(function() {
 	$('#<?=$uid?>').dataTable( {
 		"language": {
-			"url": "jquery/dataTables/lang/dataTables.french.json"
+			"url": "res/jquery/dataTables/lang/dataTables.french.json"
 		}
 		, "aLengthMenu": [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "tous"]]
 		, "iDisplayLength": 100

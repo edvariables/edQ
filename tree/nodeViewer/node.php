@@ -60,7 +60,7 @@ class nodeViewer_node extends nodeViewer {
 				. ($node->type == $type ? ' selected="selected"' : '')
 				. ' icon="' . $typeObj['icon'] . '"'
 			 	. '>' 
-					. htmlentities($type) . '</option>';
+					. htmlspecialchars($type) . '</option>';
 		$select_type .= '</select>';
 		
 		// icon 
@@ -82,7 +82,7 @@ class nodeViewer_node extends nodeViewer {
 			$select_ulvl .= '<option value="' . $ulvl . '"'
 					. ($node->ulvl == $ulvl ? ' selected="selected"' : '')
 			 	. '>'
-					. htmlentities($text)
+					. htmlspecialchars ($text)
 				. '</option>';
 		$select_ulvl .= '</select>';
 		

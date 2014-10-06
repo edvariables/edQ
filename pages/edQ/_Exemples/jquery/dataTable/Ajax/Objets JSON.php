@@ -7,7 +7,7 @@ page::call(':html', $args, $node);
 $(document).ready(function() {
     $('#<?=$uid?>').dataTable( {
             "language": {
-                "url": "jquery/dataTables/lang/dataTables.french.json"
+                "url": "res/jquery/dataTables/lang/dataTables.french.json"
             },
         "columns": [
             { "data": "name" },

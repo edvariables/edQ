@@ -55,6 +55,9 @@ class nodeViewer {
 		if(!isset($node["path"])){
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => false));
 		}
+		
+		Node::check_rights($node);
+		
 		/*$path = $_SERVER['DOCUMENT_ROOT'];
 		if(substr($path, -strlen($path)) != '/')
 			$path .= '/';
@@ -66,6 +69,8 @@ class nodeViewer {
 		;
 		return $path;
 	}
+	
+	
 	/* findFile
 	*/
 	function findFile($node, $shortName){

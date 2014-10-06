@@ -324,18 +324,8 @@ class tree {
 							return $refersTo;
 						$parent = $tree->get_parent($refersTo, array('with_path' => false, 'with_children' => false, 'full' => false));
 						if($parent['id'] == $refersTo['id']) {
-							function get_callstack() {
-							  $dt = debug_backtrace();
-							  $cs = '';
-							  foreach ($dt as $t) {
-								$cs .= $t['file'] . ' line ' . $t['line'] . ' function ' . $t['function'] . "()\n";
-							  }
-
-							  return $cs;
-							}
-							echo('<pre>');
-							print_r( get_callstack() );
-							echo('</pre>');
+						
+							helpers::callstack();
 
 							var_dump($refersTo);
 							var_dump($parent);
@@ -494,6 +484,8 @@ class tree {
 		if(!$parent['children']) { $position = 0; }
 		if($parent['children'] && $position >= count($parent['children'])) { $position = count($parent['children']); }
 
+		$data['ulvl'] = 256; //TODO GLOBAL CONST
+		
 		// CHECK NAME 
 		// unique name only
 		$data['nm'] = $this->get_unique_name($parent, $data['nm']);

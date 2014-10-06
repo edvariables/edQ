@@ -99,12 +99,8 @@ class helpers {
 		return D:\Wamp\www\edQ\pages
 	*/
 	public static function get_pages_path(){
-		$page = preg_replace('/^http.*\/([^\/\?]+)\/[^\/\?]+\.php(\?.*)?$/', '$1', $_SERVER['HTTP_REFERER']);
-		$path = preg_replace('/[\/\\\\]$/', '', $_SERVER['DOCUMENT_ROOT']) . '/';
-		$path = $path . $page;
-		//var_dump(($path . '/pages'));
-		$path = str_replace('\\', '/', realpath($path . '/pages'));
-		return $path;
+		$path = dirname(dirname(__FILE__));
+		return str_replace('\\', '/', $path) . '/pages';
 	}
 	// public static function get_pagesPath(){
 		// return self::get_pages_path();
@@ -216,7 +212,7 @@ class helpers {
 	}
 
 	// removes files and non-empty directories
-	function rrmdir($dir) {
+	public static function rrmdir($dir) {
 	  if (is_dir($dir)) {
 		$files = scandir($dir);
 		foreach ($files as $file)
@@ -228,7 +224,7 @@ class helpers {
 	}
 
 	// copies files and non-empty directories
-	function rcopy($src, $dst) {
+	public static function rcopy($src, $dst) {
 	  if (file_exists($dst)) self::rrmdir($dst);
 	  if (is_dir($src)) {
 		mkdir($dst);
@@ -243,7 +239,7 @@ class helpers {
 	/* aasort
 		tri un tableau associatif sur la propriété fournie
 	*/
-	function aasort (&$array, $key) {
+	public static function aasort (&$array, $key) {
 		$sorter=array();
 		$ret=array();
 		reset($array);
@@ -258,6 +254,23 @@ class helpers {
 	}
 
 	
+	/**
+	 * echo call stack
+	 * helpers::callstack()
+	 */
+	public static function callstack($skip = 1, $max = INF){
+		echo('<pre>');
+		$dt = debug_backtrace();
+		foreach ($dt as $t)
+			if($skip-- > 0)
+				continue;
+			elseif ($max-- < 1)
+				break;
+			else {
+				echo $t['file'] . ' line ' . $t['line'] . ' function ' . $t['function'] . "()\n";
+			}
+		echo('</pre>');
+	}
 }
 
 /*  url_viewNode

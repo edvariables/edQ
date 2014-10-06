@@ -40,7 +40,7 @@ class Node {
 				, "icon" => "file file-html"
 			  ),
 			  "query" => array(
-				"text" => "Requ√™te"
+				"text" => "Requ√É¬™te"
 				, "icon" => "file file-query"
 			  ),
 			  "dataSource" => array(
@@ -77,20 +77,23 @@ class Node {
 	*/
 	public static function get_ulvls(){
 		return array(
-			"0" => "Administrateur"
-			, "1" => "Gestionnaire"
-			, "2" => "Utilisateur"
-			, "999" => "Public"
+			"0" => "Interdit !"
+			, "1" => "Syst√®me"
+			, "4" => "Administrateur"
+			, "16" => "Gestionnaire"
+			, "64" => "Utilisateur"
+			, "256" => "Interne"
+			, "1024" => "Invit√©"
 		);
 	}
 	
 	
 	
 	/* static fromClass
-		retourne une instance d'aprËs la classe spÈcifiÈe.
+		retourne une instance d'apr√®s la classe sp√©cifi√©e.
 		charge le fichier $class . ".php"
 		et instancie un object de la classe "node_" . $class.
-		Par exemple, le fichier query.php dÈclare la classe node_query qui hÈrite de node.
+		Par exemple, le fichier query.php d√©clare la classe node_query qui h√©rite de node.
 	*/
 	public static function fromClass($class, $properties){
 		if($class == null || $class == '')
@@ -102,14 +105,26 @@ class Node {
 		$fullClass = __CLASS__ . "_" . $class;
 		return new $fullClass($properties);
 	}
-	
+		
+	/* Node::check_rights
+	 *
+	 */
+	public static function check_rights($node, $domain = null, $throw_error = true){
+		if(isset($node['ulvl'])
+		&& $node['ulvl'] < $_SESSION['edq-user']['UserType'] ){
+			if($throw_error)
+				throw new Exception(utf8_encode('Acc√®s reserv√© - ' . $node['ulvl'] . ' < ' . $_SESSION['edq-user']['UserType']), 200);
+			return false;
+		}
+		return true;
+	}
 	
 	
 	/* INSTANCE */
 	
 	/* constructeur
-		initialise l'objet avec les propriÈtÈs issues de la table tree_data.
-		$propertiesOrId peut Ítre un entier, auquel cas la requÍte sur la table est exÈcutÈe.
+		initialise l'objet avec les propri√©t√©s issues de la table tree_data.
+		$propertiesOrId peut √™tre un entier, auquel cas la requ√™te sur la table est ex√©cut√©e.
 	*/
 	public function __construct($propertiesOrId){
 		if(is_numeric($propertiesOrId)){
@@ -128,8 +143,8 @@ class Node {
 	
 	/* generic setter
 		pour un appel du type $myNode->myProperty = "x"
-		cherche dans properties le nom de la propriÈtÈ donnÈe
-		sinon cherche une mÈthode set_myProperty 
+		cherche dans properties le nom de la propri√©t√© donn√©e
+		sinon cherche une m√©thode set_myProperty 
 	*/
 	public function __set($name, $value) {
 		if($this->properties !== null
@@ -143,8 +158,8 @@ class Node {
 	
 	/* generic getter
 		pour un appel du type $x = $myNode->myProperty
-		cherche dans properties le nom de la propriÈtÈ donnÈe
-		sinon cherche une mÈthode get_myProperty 
+		cherche dans properties le nom de la propri√©t√© donn√©e
+		sinon cherche une m√©thode get_myProperty 
 	*/
 	public function __get($name) {
 		if($this->properties != null
@@ -178,7 +193,7 @@ class Node {
 	}
 	
 	/* get_page_path
-		rÈpertoire
+		r√©pertoire
 	*/
 	public function get_page_path(){
 		if(!isset($this->properties["path"])){
@@ -216,7 +231,7 @@ class Node {
 	
 
 	/* loadParameters
-		charge les paramËtres depuis la table node_param
+		charge les param√®tres depuis la table node_param
 	*/
 	public function loadParameters($domain = null, $allFields = false){
 		$db = db::get(DBTYPE . '://' . DBUSER . ':' . DBPASSWORD . '@' . DBSERVER . '/' . DBNAME);
@@ -258,7 +273,7 @@ class Node {
 	
 
 	/* parameters
-		retourne les paramËtres depuis la table node_param
+		retourne les param√®tres depuis la table node_param
 	*/
 	public function parameters($domain = null){
 		if( $domain === null ) $domain = $this->domain;
@@ -269,7 +284,7 @@ class Node {
 	
 
 	/* parameter value
-		valeur du paramËtre issu de la table node_param
+		valeur du param√®tre issu de la table node_param
 	*/
 	public function param_value($param, $defaultValue = '', $domain = null){
 		$params = $this->parameters($domain);

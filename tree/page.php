@@ -10,9 +10,10 @@ class page {
 		sous-entendu que la page appelée est à la racine (index.php, view.php)
 	*/
 	public static function get_root_path(){
-		$page = preg_replace('/^http.*\/([^\/\?]+)\/[^\/\?]+\.php(\?.*)?$/', '$1', $_SERVER['HTTP_REFERER']);
-		$path = helpers::combine($_SERVER['DOCUMENT_ROOT'], $page);
-		return str_replace('\\', '/', realpath($path . '/pages'));
+		
+		$path = dirname(dirname(__FILE__));
+		//var_dump(($path . '/pages'));
+		return str_replace('\\', '/', $path) . '/pages';
 	}
 	
 	/* file

@@ -16,7 +16,7 @@ $defaults = array(
 );
 $arguments = array_merge($_REQUEST, isset($arguments) ? $arguments : array());
 if(!isset($arguments['f--submit'])){
-	page::call('/_System/Utilisateur/Preferences/get', $args);
+	$args = page::call('/_System/Utilisateur/Preferences/get', $args);
 	if(isset($args['value'])){
 		$prefs = json_decode($args['value'], true);
 		if(!is_object($prefs) && !is_array($prefs))
@@ -192,7 +192,7 @@ $uid = uniqid('nodes');
 $(document).ready(function() {
 	$('#<?=$uid?>').dataTable( {
 		"language": {
-			"url": "jquery/dataTables/lang/dataTables.french.json"
+			"url": "res/jquery/dataTables/lang/dataTables.french.json"
 		}
 		, "aLengthMenu": [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "tous"]]
 		, "iDisplayLength": 100

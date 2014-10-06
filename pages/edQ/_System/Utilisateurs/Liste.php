@@ -1,6 +1,7 @@
 <?php /* é */
+	$node = node($node, __FILE__);
 	$db = get_db();
-	 $rows = $db->all("
+	$rows = $db->all("
 		SELECT
 			c.IdContact, c.Name,
 	 		`EMail`, `Phone1`, `Phone2`,
@@ -31,9 +32,10 @@
 	<th>Actif</th>
 	</thead>
 	<tbody><?php
+	$viewerid = node('Edition', $node, 'id');
 	foreach($rows as $row){
 		?><tr>
-	 	 <th><a href="view.php?id=<?=1231?>&f--IdContact=<?=$row["IdContact"]?>"
+	 	 <th><a href="view.php?id=<?=$viewerid?>&f--IdContact=<?=$row["IdContact"]?>"
 	 	 	 onclick="$.get(this.getAttribute('href'), function(html){
 	 	 	 	 $('<div></div>').appendTo('body').html(html).dialog({
 	 	 	 	 	 title: '<?=$row['IdContact']?>',

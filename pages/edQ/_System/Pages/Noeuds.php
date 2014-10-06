@@ -120,7 +120,7 @@ table#<?=$uid?> tbody td:nth-child(1){
 $(document).ready(function() {
     $('#<?=$uid?>').dataTable( {
 		"language": {
-			"url": "jquery/dataTables/lang/dataTables.french.json"
+			"url": "res/jquery/dataTables/lang/dataTables.french.json"
 		},
 		"aLengthMenu": [[10, 25, 50, 100, 500, -1], [10, 25, 50, 100, 500, "tous"]],
 		"iDisplayLength": 100

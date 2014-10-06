@@ -1,5 +1,5 @@
 <?php
-if(!user_right()) die('Access denied');
+if(!user_right()) die('Access denied ' .__FILE__);
 if(isset($arguments) && isset($arguments['domain']))
 	$domain = $arguments['domain'];
 else if((isset($_REQUEST) && isset($_REQUEST['domain'])))

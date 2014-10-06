@@ -18,7 +18,7 @@ function format ( d ) {
 $(document).ready(function() {
     var dt = $('#<?=$uid?>').DataTable( {
         "language": {
-            "url": "jquery/dataTables/lang/dataTables.french.json"
+            "url": "res/jquery/dataTables/lang/dataTables.french.json"
         },
 	"ajax" : {
 	 	 "url": "<?=$dataUrl?>"

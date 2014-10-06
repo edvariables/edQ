@@ -12,6 +12,9 @@ class nodeViewer_viewers extends nodeViewer {
 	public $needChildren = true;
 	
 	public function html($node, $options = false){
+		
+		Node::check_rights($node);
+		
 		$ulId = uniqid('nw-viewers-');
 		$children = array();
 		$isDesign = is_design();

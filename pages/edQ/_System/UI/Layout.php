@@ -10,8 +10,8 @@
 	supprimer le thême</a></li>
 </ul>
 <!-- theme switcher -->
-<script type="text/javascript" src="js/debug.js"></script>
-<script type="text/javascript" src="js/themeswitchertool.js"></script> 
+<script type="text/javascript" src="res/js/debug.js"></script>
+<script type="text/javascript" src="res/js/themeswitchertool.js"></script> 
 <script type="text/javascript">
 
 $(document).ready(function(){

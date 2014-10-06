@@ -30,7 +30,9 @@ if(isset($_REQUEST['op'])) {
 			 * helper request_to_node() */
 			function request_to_node($params = false){
 				if(is_bool($params))
-					$params = array();
+					$params = array(
+						'ulvl' => 256 /* TODO CONST */
+					);
 				if(isset($_REQUEST['text']))
 					$params["nm"] = $_REQUEST['text'];
 				if(isset($_REQUEST['type']))
@@ -201,7 +203,8 @@ if(isset($_REQUEST['op'])) {
 					throw new Exception('[tree/db] operation inconnue : ' . $_REQUEST['op']);
 					break;
 			}
-			header('Content-Type: ' . $contentType . '; charset=utf8');
+			if(substr( $_SERVER['SCRIPT_NAME'], -6) == 'db.php')
+				header('Content-Type: ' . $contentType . '; charset=utf8');
 			if($contentType == 'application/json')	
 				echo json_encode($rslt);
 			else
@@ -212,7 +215,8 @@ if(isset($_REQUEST['op'])) {
 			header('Status:  500 Server Error');
 			echo $e->getMessage();
 		}
-		die();
+		if($_SERVER['SCRIPT_NAME'] == 'db.php')
+			die();
 	}
 }
 ?>
