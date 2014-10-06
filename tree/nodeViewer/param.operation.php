@@ -8,8 +8,8 @@ Les paramètres sont dans la table node_param.
 	action
 ****************/
 if(isset($_REQUEST['op'])) {
-	require_once(dirname(__FILE__) . '/../../conf/edQ.conf.php');
-	require_once(dirname(__FILE__) . '/../../inc/class.db.php');
+	include_once(dirname(__FILE__) . '/../../conf/edQ.conf.php');
+	include_once(dirname(__FILE__) . '/../../inc/class.db.php');
 					
 	$db = db::get(DBTYPE . '://' . DBUSER . ':' . DBPASSWORD . '@' . DBSERVER . ':' . DBPORT . '/' . DBNAME);
 	

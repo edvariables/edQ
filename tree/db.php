@@ -17,8 +17,8 @@ if(isset($_REQUEST['op'])) {
 		, array(
 			'structure_table' => 'tree_struct'
 			, 'data_table' => 'tree_data'
-			, 'data' => array('nm', 'typ', 'icon', 'color', 'design')
-			, 'full' => array('ext', 'params', 'ulvl', 'user')
+			, 'data' => array('nm', 'typ', 'icon', 'color', 'design', 'ulvl')
+			, 'full' => array('ext', 'params', 'user')
 		));
 	global $tree;
 	$tree = $fs;

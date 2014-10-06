@@ -1292,6 +1292,7 @@
 				data = {
 					id			: false,
 					text		: false,
+					ulvl		: 256, /* TODO ulvl ED141006 */
 					icon		: true,
 					parent		: p,
 					parents		: ps,
@@ -1404,6 +1405,7 @@
 				tmp = {
 					id			: tid,
 					text		: d.text || '',
+					ulvl		: d.ulvl || 0,
 					icon		: d.icon !== undefined ? d.icon : true,
 					color		: d.color !== undefined && d.color != 'null' ? d.color : false,//ED140609
 					design		: d.design && d.design != '0' && d.design != 'false',//ED140614
@@ -1503,6 +1505,7 @@
 				id			: false,
 				text		: typeof d === 'string' ? d : '',
 				icon		: typeof d === 'object' && d.icon !== undefined ? d.icon : true,
+				ulvl		: typeof d === 'object' && d.ulvl !== undefined ? d.ulvl : 256, /* TODO constante */
 				color		: typeof d === 'object' && d.color !== undefined && d.color != 'null' ? d.color : false,//ED140609
 				design		: typeof d === 'object' && d.design && d.design != '0' && d.design != 'false',//ED140614
 				parent		: p,
@@ -1522,6 +1525,7 @@
 			}
 			if(d && d.id) { tmp.id = d.id.toString(); }
 			if(d && d.text) { tmp.text = d.text; }
+			if(d && d.ulvl) { tmp.ulvl = d.ulvl; }
 			if(d && d.data && d.data.jstree && d.data.jstree.icon) {
 				tmp.icon = d.data.jstree.icon;
 			}
@@ -2826,6 +2830,7 @@
 			var tmp = {
 				'id' : obj.id,
 				'text' : obj.text,
+				'ulvl' : obj.ulvl,
 				'icon' : this.get_icon(obj),
 				'li_attr' : obj.li_attr,
 				'a_attr' : obj.a_attr,
