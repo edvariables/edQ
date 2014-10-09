@@ -1,5 +1,10 @@
 <?php
 	include('inc/session.php');
+	if(!$_SESSION['edq-user'] || $_SESSION['edq-user']['UserType'] == 1024){
+		unset( $_SESSION['edq-user'] );
+		include('inc/session.php');
+	}
+	
 	require('tree/helpers.php');
 	require('tree/page.php');
 ?><!DOCTYPE html>

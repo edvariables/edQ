@@ -43,7 +43,7 @@ if(!$table){
 		return $rows;
 }
 
-require_once('resources/tree/simple_html_dom.php');
+require_once('res/tree/simple_html_dom.php');
 try{
 	$dom = str_get_html($table);//preg_replace('/[\\r\\n\\t]/', '', $table));
 }
