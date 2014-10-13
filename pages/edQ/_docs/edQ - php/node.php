@@ -17,7 +17,7 @@ function globale d'accès à un noeud de <var>$tree</var>
 	peut être un noeud : <code>node(':sub_page', $node);</code>
 	peut être l'identifiant numérique d'un noeud : <code>node(':sub_page', $node['id'] );</code>
 	peut être NULL si $search est un identifiant, un noeud ou un chemin commençant par /.
-	 	<code>node('/_System/Pages'); //<?=node('/_System/Pages')['nm']?></code>
+	 	<code>node('/_System/Pages'); //<?php $n=node('/_System/Pages'); echo $n['nm'];?></code>
 	sinon, si NULL, une recherche dans la trace Php (par debug_backtrace()) retrouve le fichier .php appelant.
 			laisser le système utilisé cette méthode est déconseillé car plus gourmand en ressource,
 			alors qu'il suffit d'ajouter l'argument <code>, __FILE__</code>. : 
@@ -38,7 +38,7 @@ node($node) //Préférable si on évalue que $node est le plus souvent défini.
 node($node, __FILE__) //Idéal, mais ethétiquement lourd.
 </code></pre>
 		
-	<li><code>echo node('/_System/Pages')['nm'];</code><pre><?=node('/_System/Pages')['nm']?></pre>
+	<li><code>echo node('/_System/Pages')['nm'];</code><pre><?php $n=node('/_System/Pages'); echo $n['nm'];?></pre>
 	</ul></li>
 	
 	<li><ul><h3>méthode 'call'</h3>

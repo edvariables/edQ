@@ -43,7 +43,7 @@
 		<script type="text/javascript" src="res/jquery/colorpicker/js/colorpicker.js"></script>
 		
 		<script src="tree/jstree.js"></script>
-		<script src="res/tree/jstree.plugins.js"></script>
+		<script src="tree/jstree.plugins.js"></script>
 
 		<script type="text/javascript" src="res/jquery/markitup/jquery.markitup.js"></script>
 		<script type="text/javascript" src="res/jquery/markitup/sets/dataSource/set.js"></script>

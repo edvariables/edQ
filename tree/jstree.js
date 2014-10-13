@@ -803,7 +803,9 @@
 					obj = obj.id === '#' ? this.element : $('#' + obj.id.replace($.jstree.idregex,'\\$&'), this.element);
 				}
 				return obj;
-			} catch (ex) { return false; }
+			} catch (ex) {
+				return false;
+			}
 		},
 		/**
 		 * get the path to a node, either consisting of node texts, or of node IDs, optionally glued together (otherwise an array)
@@ -3589,6 +3591,7 @@
 			//get full infos
 			node = this.get_node(obj);
 			this.trigger('edit_node', { 'node' : node });
+			var thisInstance = this;
 			
 			var rtl = this._data.core.rtl,
 				a  = obj.children('.jstree-anchor'),
@@ -3797,6 +3800,7 @@
 							return false;
 						}
 						if(this.update_node(obj, data) !== false) {
+							thisInstance.load_node(node.parent);
 							//this.set_text(obj, data.name, false); 
 						}
 						h1.dialog("close");
@@ -6134,6 +6138,25 @@
 			if(!!k && $.isFunction(this.settings.state.filter)) { k = this.settings.state.filter.call(this, k); }
 			if(!!k) {
 				this.element.one("set_state.jstree", function (e, data) { data.instance.trigger('restore_state', { 'state' : $.extend(true, {}, k) }); });
+				
+				/* ED141012
+				 * this.settings.defaults.node
+				 */
+				if (this.settings.state.node) {
+					var state_node = this.settings.state.node;
+					if (typeof state_node === "object") {
+						k.core.selected = [state_node['id']];
+						if (state_node['path']) {
+							for (var parent = 1; parent < state_node['path'].length; parent++)
+							{
+								k.core.open.push(state_node['path'][parent]);
+							}
+							//k.core.open = state_node['path'];
+						}
+					}
+					else
+						k.core.selected = [state_node];
+				}
 				this.set_state(k);
 				return true;
 			}

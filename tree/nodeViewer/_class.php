@@ -131,6 +131,7 @@ class nodeViewer {
 			global $tree;
 			$node = $tree->get_node((int)$node['id'], array('with_path' => true, 'full' => true));
 		}
+		$ulvls = Node::get_ulvls();
 		$html = '<fieldset class="q-fields"><div>'
 			 . '<div><label class="ui-state-default ui-corner-all">#' . $node['id'] . '</label>'
 				. '</div>'
@@ -149,9 +150,11 @@ class nodeViewer {
 				: '<div><label class="ui-state-default ui-corner-all">Paramètres</label>'
 				. '<pre>' . $node["params"] . '</pre></div>')
 			. '<div><label class="ui-state-default ui-corner-all">Sécurité</label>'
-				. '<span>' . $node["ulvl"] . '</span></div>'
-			. '<div><label class="ui-state-default ui-corner-all">Propriétaire</label>'
-				. '<span>' . $node["user"] . '</span></div>'
+				. '<span>' . $ulvls[$node["ulvl"]] . '</span></div>'
+			.( $node["user"]
+			 ? ('<div><label class="ui-state-default ui-corner-all">Propriétaire</label>'
+				. '<span>' . $node["user"] . '</span></div>' )
+			 : '')
 			. '</div></fieldset>'
 		;
 		return array(
@@ -174,7 +177,7 @@ class nodeViewer {
 			$options['success'] = 'function(){
 	if(isNaN(data))	$("<pre>" + data + "</pre>").dialog();
 }';
-	return page::form_submit_script($form_uid, $options);
+		return page::form_submit_script($form_uid, $options);
 	}
 	/* searchScript
 		Script js de soumission d'un formulaire et refresh du contenu

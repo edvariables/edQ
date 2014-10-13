@@ -1,7 +1,24 @@
 <?php
 $_SESSION['tree-root'] = isset($_REQUEST["tree-root"]) ? $_REQUEST["tree-root"] : "#";
-require('tree/nodeType/_class.php');
+include_once('tree/nodeType/_class.php');
 $design = is_design();
+if(isset($_REQUEST['id'])){
+	$_REQUEST['op'] = true;
+	include_once('tree/db.php');
+	if(!is_numeric($_REQUEST['id'])
+	   && $_REQUEST['id'][0] != '/')
+		$_REQUEST['id'] = '/' . $_REQUEST['id'];
+	try{
+		$node = node($_REQUEST['id'], null, array('with_path' => true));
+	}
+	catch(Exception $ex){
+		$node = false;
+		//$alert = $ex->xdebug_message;
+		$alert = '<h1 style="color: red">Le noeud "' . $_REQUEST['id'] . '" n\'existe pas.</h1>';
+	}
+}
+else
+	$node = false;
 ?><script>
 $().ready(function () {
 	// $(window).resize(function () {
@@ -36,6 +53,21 @@ $().ready(function () {
 					"selector" : ".jstree-favpanel"
 				}
 			},
+			<?php /* ED141012 */
+			if($node){
+			?>"state" : {
+				"node" : {
+					'id' : <?=$node['id']?>
+					, 'path' : <?=json_encode(node($node, null, 'path_ids'))?>
+				}
+			},
+			<?php } ?>
+			<?php /* ED141012 */
+			if(isset($alert) && $alert){
+			?>"edQ" : {
+				"alert" : <?=json_encode($alert)?>
+			},
+			<?php } ?>
 			"types" : <?= json_encode(Node::get_types()) ?>,
 			"icons" : <?= json_encode(Node::get_icons()) ?>,
 			"ulvls" : <?= json_encode(Node::get_ulvls()) ?>,
@@ -138,7 +170,31 @@ $().ready(function () {
 					+ '&vw=viewers<?=
 						$design ? '&design=true' : '' ?>'
 				, function (d) {
-					$('#data .default').html(d.content).show();
+					<?php /* ED141012
+					       * gestion des erreurs lorsque l'onglet Affichage est le 1er à gauche
+					       */
+					?>
+					if (typeof d === "string") {//error
+						<?php
+						if ($design) {//Add tab reset 
+							?>
+							d = '<a href="tree/nodeViewer/viewers.php?vw=nodeViewer_viewers&op=submit&viewers-sort|=[]&id=' + data.selected.join(':') + '"'
+							  + ' onclick="$.get(this.href);'
+							  + '  $(this).after(\'<div>Ok, vous pouvez rafraichir la page.</div>\');'
+							  + '  return false;">r&eacute;initialiser les onglets du noeud</a>'
+							  + '<br/>'
+							  + d;
+						<?php
+						}
+						else { ?>
+							d = "d&eacute;sol&eacute;, une erreur est survenue."
+							  + '<br/>'
+							  + d;
+						<?php }?>
+						$('#data .default').html(d).show(); 
+					}
+					else //json
+						$('#data .default').html(d.content).show();
 				});
 			}
 			else {

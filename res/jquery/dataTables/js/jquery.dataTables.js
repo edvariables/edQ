@@ -13861,11 +13861,16 @@
 		);
 	}
 	
-	
+	/* ED141010 */
+	var _parse_date_regex = /^\d{2}[-/]\d{2}[-/]\d{4}/;
 	// Default sort methods
 	$.extend( _ext.type.order, {
 		// Dates
 		"date-pre": function ( d ) {
+			/* ED141010 */
+			if (_parse_date_regex.test(d)) {
+				d = d.substr(6,4) + '-' + d.substr(3,2) + '-' + d.substr(0,2) + (d.length > 10 ? 'T' + d.substr(11) : '');
+			}
 			return Date.parse( d ) || 0;
 		},
 	

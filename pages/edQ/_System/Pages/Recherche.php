@@ -133,10 +133,18 @@ $uid = uniqid('nodes');
 <script>
 	
 	function tree_select_node_alink( id, path, name ){
-		$a = $('<a href="#' + path + '/' + name + '" node_id="' + id + '"/>').html( name );
+		var design = /[\?&]design=(1|true)/.test(window.location.href);
+		var url = 'index.php'
+				+ '?id=' + id
+				+ (design ? '&design=1' : '');
+			
+		$a = $('<a href="' + url + '#' + path + '/' + name + '" node_id="' + id + '"/>').html( name );
 		return $a.click( tree_select_node_click );
 	}
-	function tree_select_node_click(){
+	function tree_select_node_click(event){
+		if( event.ctrlKey ){
+			return;
+		}
 		var $dom = $(this);
 		if ($dom.hasClass('noclick')) {
 			$dom.removeClass('noclick');
@@ -150,7 +158,7 @@ $uid = uniqid('nodes');
 			if(self.select_node($node))
 				return;
 		}
-		$.get('tree/db.php?op=get_view'
+		$.get( 'tree/db.php?op=get_view'
 			  + '&id=' + $dom.attr('node_id')
 			  + '&vw=viewers'
 			  + (self.settings.design ? '&design=true' : '')

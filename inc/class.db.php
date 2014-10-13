@@ -46,7 +46,7 @@ namespace vakata\database
 		public $database	= null;
 		public $servername	= 'localhost';
 		public $serverport	= null;
-		public $persist		= false;
+		public $persist		= false;/* ED141011 initialement à false */
 		public $timezone	= null;
 		public $charset		= 'UTF8';
 
@@ -729,6 +729,7 @@ namespace vakata\database
 
 		public function real_query($sql) {
 			if(!$this->is_connected()) { $this->connect(); }
+			//var_dump($this->lnk);
 			$temp = mysql_query($sql, $this->lnk);
 			if(!$temp) {
 				throw new Exception('Could not execute query : ' . mysql_error($this->lnk) . ' <'.$sql.'>');

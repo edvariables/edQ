@@ -112,9 +112,12 @@ $add_file = function($file) use(&$files, &$extensions, &$content){
 
 	}
 };
+//var_dump($dir);
 foreach(scandir($dir) as $root_dir){
 	if($root_dir[0] != '.')
 		if(! preg_match($root_dir_exclude_preg, $root_dir)){
+		
+			//var_dump($root_dir);
 			foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir . $root_dir)
 												   , RecursiveIteratorIterator::SELF_FIRST) as $f){
 				$add_file((string)$f);

@@ -57,6 +57,11 @@ Classe statique <var>helpers</var>
 			<li>Exemple : <code>var_dump(get_temp_dir()); <?php
 				var_dump(get_temp_dir());?></code></li>
 		</ul></li>
+	<li><h3>echo_callstack($skip = 0, $max = INF)</h3>
+		<ul>
+			<li>Affiche la pile d'appel pour débogage</li>
+		</ul></li>
+
 	<li><h3>helpers::get_pages_path()</h3>
 		<ul>
 			<li>retourne le chemin des pages</li>

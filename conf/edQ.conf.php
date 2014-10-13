@@ -10,6 +10,8 @@ define ("DBUSER", "ED");
 define ("DBPASSWORD", "");
 define ("DBTYPE", "mysqli");
 define ("DBPORT", "");
+define ("DBCHARSET", "UTF8");
+define ("DBPERSIST", "FALSE"); /* FALSE|TRUE mysql only */
 
 define ("TREE_ROOT", 1);
 define ("TREE_ROOT_NAME", 'edQ'); 

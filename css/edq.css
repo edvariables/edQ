@@ -214,3 +214,9 @@ ul.edq-doc, .edq-doc  ul {
 .edq-buttons > li:hover { background-color: #F7F7F7; }
 .edq-buttons> li:hover:active { border-style: inset; }
 .edq-buttons> li a { padding: 1em 2em; }
+
+#data > .ui-widget-content {
+	background: none;
+	background-color: white;
+	border: none;
+}

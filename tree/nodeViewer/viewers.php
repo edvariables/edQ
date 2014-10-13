@@ -6,15 +6,15 @@ if(isset($_REQUEST['op'])
 	die();
 }
 
+include_once(dirname(__FILE__) . '/legend.php');
+	
 class nodeViewer_viewers extends nodeViewer {
 	public $name = 'viewers';
 	public $text = 'Affichages';
 	public $needChildren = true;
 	
 	public function html($node, $options = false){
-		
-		Node::check_rights($node);
-		
+				
 		$ulId = uniqid('nw-viewers-');
 		$children = array();
 		$isDesign = is_design();
@@ -98,24 +98,9 @@ class nodeViewer_viewers extends nodeViewer {
 			
 		}
 		
-		$toolbar = '<div class="header-footer ui-state-default ui-corner-all edq-viewers">'
-			. $this->label($node, preg_replace('/^\/edQ\//', '', $this->path($node))) . ' #' . $node['id']
-			. '<div class="toolbar">'
-				. '<button class="ui-button ui-state-default ui-border-none" onclick="$(this).children(\':first\').toggleClass(\'ui-icon-triangle-1-n\').toggleClass(\'ui-icon-triangle-1-s\')'
-					. '.parents(\'.header-footer:first\').next().toggle(function() { $(this).animate({ }, 200);}, function(){$(this).animate({}, 200);}); return false;">'
-					. '<span class="ui-icon ui-icon-triangle-1-n" title="masque/affiche"> </span></button>'
-				//. '<input type="checkbox" onchange="$(this).parents(\'.header-footer:first\').next().toggle();" checked="checked"/>'
-				// lien qui déplace les noeuds du viewer dans un autre div + dialog
-				//TODO mettre en plugin
-				//TODO intégrer le header du contenu dans le header du dialog
-				. '<button class="ui-button ui-state-default ui-border-none" onclick="var $tb = $(this).parents(\'.header-footer:first\');'
-					. '$(\'<div></div>\').append($tb.parent().children())'
-						.'.dialog({ title: $tb.children(\'label\').text(), width: \'auto\', height: \'auto\' })'
-						.'.css(\'min-height\', \'20px\');
-						$(this).remove(); return false;">'
-					. '<span class="ui-icon ui-icon-newwin" title="affiche dans fen&ecirc;tre"> </span></button>'
-			. '</div></div>';
-		$html .= $toolbar . '<div class="edq-viewers" id="' . $ulId . '"><ul>';
+		$legend = new nodeViewer_legend();
+		$toolbar = $legend->html($node, $options);
+		$html .= $toolbar['content'] . '<div class="edq-viewers" id="' . $ulId . '"><ul>';
 		//$html = '<div class="edq-viewers" id="' . $ulId . '">'.$toolbar.'<ul>';
 		$nChild = 0;
 		$defaultView = null;

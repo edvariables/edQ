@@ -66,9 +66,11 @@ function node($search = null, $refers_to = null, $options = null, $method = null
             case "file":
                 return page::file($node, $refers_to);
             case "file_url":
-                return page::file($node, $refers_to);
+                return page::file_url($node, $refers_to);
             case "folder":
                 return page::folder($node, $refers_to);
+            case "path_ids":
+                return array_map(function ($v) { return $v['id']; }, $node['path']);
             case "name":
                 $method = 'nm';
                 break;

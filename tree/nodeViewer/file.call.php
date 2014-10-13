@@ -19,7 +19,28 @@ class nodeViewer_file_call extends nodeViewer_file {
 			$exists = file_exists($file);
 		}
 		
-		$href = page::url($node);//$_SERVER["REQUEST_URI"];
+		$href = page::url($node);//$_SERVER["REQUEST_URI"];		
+		
+		/* legend
+		 * demandée par /page.php pour affichage seul
+		 */
+		if(is_array($options) && isset($options['vw--legend'])){
+			$legend = $options['vw--legend'];
+		}
+		elseif (isset($_REQUEST['vw--legend'])){
+			$legend = $_REQUEST['vw--legend'];
+			unset($_REQUEST['vw--legend']);
+		}
+		else
+			$legend = false;
+		if($legend){
+			include_once(dirname(__FILE__) . '/legend.php');
+			$legend = new nodeViewer_legend();
+			$legend = $legend->html($node, $options);
+			$head = $legend['content'];
+		} else $head = '';
+		
+		/* toolbar */
 		if(is_array($options) && isset($options['vw--toolbar'])){
 			$toolbar = $options['vw--toolbar'];
 		}
@@ -30,14 +51,14 @@ class nodeViewer_file_call extends nodeViewer_file {
 		else
 			$toolbar = false;
 		if($toolbar){
-			$head = '<div class="edq-toolbar">'
+			$head .= '<div class="edq-toolbar">'
 				. '<a class="edq-refresh" href="' . $href . '&vw--toolbar=1"'
 				. ' onclick="var $parent = $(this).parents(\'.ui-widget-content:first\'); '
 					. ' $.ajax(this.getAttribute(\'href\')).done(function(html){ $parent.html(html); }).fail(function(o,err){ alert(err) });'
 					. ' return false;'
 				. '">rafraîchir</a>'
 				. '</div>';
-		} else $head = '';
+		}
 		
 		if($exists){
 			$view = $this;

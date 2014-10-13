@@ -13,7 +13,9 @@ if(isset($_REQUEST['op'])) {
 	require_once($this_dir . '/class.tree.php');
 	require_once($this_dir . '/node.php');
 				
-	$fs = new tree(db::get(DBTYPE . '://' . DBUSER . ':' . DBPASSWORD . '@' . DBSERVER . ':' . DBPORT . '/' . DBNAME)
+	$fs = new tree(db::get(DBTYPE . '://' . DBUSER . ':' . DBPASSWORD . '@' . DBSERVER . ':' . DBPORT . '/' . DBNAME
+			       . '?charset='. (defined('DBCHARSET') ? DBCHARSET : 'UTF8')
+			       . '&persist='. (defined('DBPERSIST') ? DBPERSIST : (DBTYPE == 'mysql' ? 'TRUE' : 'FALSE')))
 		, array(
 			'structure_table' => 'tree_struct'
 			, 'data_table' => 'tree_data'
@@ -23,7 +25,7 @@ if(isset($_REQUEST['op'])) {
 	global $tree;
 	$tree = $fs;
 	
-	if(isset($_GET['op'])) { //dans l'URL
+	if(isset($_GET['op'])) { //dans l'URL 		TODO beurk
 		$contentType = 'application/json';
 		try {
 			/* 
@@ -80,7 +82,9 @@ if(isset($_REQUEST['op'])) {
 							$icon = $v['icon'];
 						$rslt[] = array('id' => $v['id'], 'text' => $v['nm'], 'icon' => $v['icon']
 							, 'design' => $v['design']
-							, 'color' => $v['color'], 'type' => $v['typ']
+							, 'color' => $v['color']
+							, 'type' => $v['typ']
+							, 'ulvl' => $v['ulvl']
 							, 'children' => ($v['has_children'] > 0));//($v['rgt'] - $v['lft'] > 1));
 					}
 					break;

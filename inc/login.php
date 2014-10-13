@@ -68,8 +68,17 @@ if(isset($_POST['action']) && $_POST['action'] == 'login'){
 	}
 }
 
+if(isset($_REQUEST['redir']))
+	$redir = $_REQUEST['redir'];
+else if(isset($_SERVER['HTTP_REFERER'])
+&& (strpos($_SERVER['HTTP_REFERER'], 'login.php') === FALSE
+    && strpos($_SERVER['HTTP_REFERER'], 'logout.php') === FALSE))
+	$redir = $_SERVER['HTTP_REFERER'];
+else
+	$redir = '../index.php';
+
 if(isset($_SESSION['edq-user']) && isset($_SESSION['edq-user']['id']) && $_SESSION['edq-user']['id'] != ''){ // Redirect to secured user page if user logged in
-	die( '<script type="text/javascript">window.location = "../index.php"; </script>' );
+	die( '<script type="text/javascript">window.location = "' . $redir . '"; </script>' );
 }
 ?>
 <!DOCTYPE html>
@@ -77,7 +86,7 @@ if(isset($_SESSION['edq-user']) && isset($_SESSION['edq-user']['id']) && $_SESSI
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 <title>edQ - Connexion</title>
-<script type="text/javascript" src="../js/jquery.js"></script>
+<script type="text/javascript" src="../res/js/jquery.js"></script>
 <script type="text/javascript">
 $(document).ready(function(){
 	// Focus to the username field on body loads
@@ -193,6 +202,9 @@ h1 a:hover{
 
 <form action="?" method="post">
 <input type="hidden" name="action" value="login"/>
+
+<input type="hidden" name="redir" value="<?=$redir?>"/>
+
 <table class="mytable">
 <tr>
 	<td colspan="2"><h3 class="as_login_heading">Connexion</h3></td>

@@ -1,5 +1,6 @@
 <?php
 global $tree;
+$node = node($node, __FILE__);
 ?>
 <h2><?=$node['nm']?></h2>
 Classe <var>tree</var>
@@ -53,13 +54,13 @@ Signifie qu'il n'existe effectivement pas dans la base ou bien qu'il est en desi
 	<li><h3>$tree->get_parent()</h3>
 		<ul>
 			<li>noeud parent</li>
-			<li>Exemple : <code>$tree->get_parent(<?= $node['id'] ?>)['nm'] //returns <?=var_dump($tree->get_parent($node['id'])['nm'])?></code></li>
+			<li>Exemple : <code>$tree->get_parent(<?= $node['id'] ?>)['nm'] //returns <?php $n=$tree->get_parent($node['id']); var_dump($n['nm'])?></code></li>
 		</ul></li>
 	
 	<li><h3>$tree->get_children()</h3>
 		<ul>
 			<li>noeuds enfants</li>
-			<li>Exemple : <code>$tree->get_children(<?= $node['id'] ?>) //returns <?=var_dump($tree->get_children($node['id']))?></code></li>
+			<li>Exemple : <code>$tree->get_children(<?= $node['id'] ?>) //returns <?php $n=$tree->get_parent($node['id']); var_dump($n['id'])?></code></li>
 		</ul></li>
 	
 	<li><h3>$tree->get_path_string()</h3>
