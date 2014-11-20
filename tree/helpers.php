@@ -57,7 +57,8 @@ function get_temp_dir(){
 	$_SERVER['DOCUMENT_ROOT'], 'edQ/tmp' si nécessaire.
 */
 function get_local_temp_dir(){
-	$dir = helpers::combine($_SERVER['DOCUMENT_ROOT'], 'edQ/tmp');
+	//$dir = helpers::combine($_SERVER['DOCUMENT_ROOT'], 'edQ/tmp');
+	$dir = helpers::combine(dirname(dirname(__FILE__)), 'tmp');
 	if(!file_exists($dir))
 		mkdir($dir);
 	return $dir;

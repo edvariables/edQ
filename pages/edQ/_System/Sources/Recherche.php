@@ -1,4 +1,5 @@
 <?php
+$node = node($node, __FILE__);
 $args = array(
 	"domain" => '_Sources/Recherche'
 	, "param" => 'form'

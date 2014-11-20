@@ -1,9 +1,9 @@
 <?php
 global $db;
 $DBSERVER = "localhost";
-$DBNAME = "rsdn_vtigercrm";
-$DBUSER = "rsdn_vtigercrm";
-$DBPASSWORD = "umHRd38ANsFfVM5s";
+$DBNAME = "rsn_4d";
+$DBUSER = "rsn_4d";
+$DBPASSWORD = "Zb8dvhrTrUY9Kvyw";
 $DBTYPE = "mysqli";
 $DBPORT = "";
 $db = db::get($DBTYPE . '://' . $DBUSER . ':' . $DBPASSWORD . '@' . $DBSERVER . '/' . $DBNAME);
