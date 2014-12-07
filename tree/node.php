@@ -72,8 +72,12 @@ function node($search = null, $refers_to = null, $options = null, $method = null
             case "path_ids":
                 return array_map(function ($v) { return $v['id']; }, $node['path']);
             case "page":
+                if(!isset($node['path'])){
+                    global $tree;
+                    $node = $tree->get_node($node, array('with_path' => true));
+                }
                 if(isset($node['path']))
-                    return '/' . implode('/', array_map(function ($v) { return $v['nm']; }, $node['path']));
+                    return '/' . implode('/', array_map(function ($v) { return $v['nm']; }, $node['path'])) . '/' . $node['nm'];
                 return false;
             case "name":
                 $method = 'nm';

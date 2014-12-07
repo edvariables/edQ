@@ -48,6 +48,11 @@
 		<script type="text/javascript" src="res/jquery/markitup/jquery.markitup.js"></script>
 		<script type="text/javascript" src="res/jquery/markitup/sets/dataSource/set.js"></script>
 
+		<!--[if IE]><script language="javascript" type="text/javascript" src="../excanvas.pack.js"></script><![endif]-->
+		<script language="javascript">if(!$.browser) $.browser = {};</script>
+		<!--[if IE]><script language="javascript">$.browser.msie = true;</script><![endif]-->
+		<script language="javascript" type="text/javascript" src="res/jquery/flot/jquery.flot.js"></script>
+    
 		<script src="js/edQ.js"></script>
 		
 		<?php

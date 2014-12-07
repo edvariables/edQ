@@ -175,6 +175,14 @@ table > thead > tr > th.pk {
 	background: url(../images/refresh.png) no-repeat; 
 	padding-left: 18px;
 }
+.edq-toolbar a.edq-add {
+	background: url(../images/add.png) no-repeat; 
+	padding-left: 18px;
+}
+.edq-toolbar a.edq-delete {
+	background: url(../images/delete.png) no-repeat; 
+	padding-left: 18px;
+}
 
 #edQ .CodeMirror {
   /* Set height, width, borders, and global font properties here */

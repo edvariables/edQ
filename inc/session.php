@@ -4,10 +4,10 @@ session_start();
 
 if(!isset($_SESSION['edq-user']) || !isset($_SESSION['edq-user']['id']) || $_SESSION['edq-user']['id'] === ''){ 
 
-	if($_REQUEST['edq-user']=='invite'){
+	if(isset($_SESSION['edq-user']) && $_REQUEST['edq-user'] == 'invite'){
 		$_SESSION['edq-user'] = array(
 			'id' => 0
-			, 'name'=> 'Invit'
+			, 'name'=> 'InvitÃ©'
 			, 'UserType'=> 1024
 			, 'rights' => array());
 	}

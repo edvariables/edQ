@@ -145,6 +145,8 @@ if(isset($_REQUEST['op'])) {
 						$options = array('with_path' => true, 'with_children' => $viewer->needChildren, 'full' => true);
 						if(!is_numeric($node[0])){
 							$path = preg_replace('/^\/' . TREE_ROOT_NAME . '/', '', str_replace('\\', '/', $node[0]));
+							if($path[0] != '/')
+								$path = '/' . $path;
 							$temp = tree::get_node_by_name($path, null, $options);
 						}
 						else

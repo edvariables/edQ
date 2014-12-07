@@ -3,9 +3,11 @@
 Simple ajax live login script by http://www.asif18.com/19/jquery/ajax-login-form-using-jquery-and-php/
 */
 
+
 $loginError = '';
 session_start();
-$loginUser = isset($_SESSION['edq-user'])
+//if(isset($_SESSION['edq-user'])) var_dump($_SESSION['edq-user']);
+$loginUser = (isset($_SESSION['edq-user']) && isset($_SESSION['edq-user']['id']) && $_SESSION['edq-user']['id'])
 	? (isset($_SESSION['edq-user']['ShortName']) && $_SESSION['edq-user']['ShortName'] != null
 		? $_SESSION['edq-user']['ShortName']
 		: $_SESSION['edq-user']['Name'])
@@ -15,7 +17,7 @@ $loginUser = isset($_SESSION['edq-user'])
 
 // Check
 if(isset($_POST['action']) && $_POST['action'] == 'login'){ 
-	require_once('../conf/edQ.conf.php');
+	require_once(dirname(__FILE__) . '/../conf/edQ.conf.php');
 	require_once('class.db.php');
 	function encrypt($string){
 		return base64_encode(base64_encode(base64_encode($string)));
@@ -77,6 +79,9 @@ else if(isset($_SERVER['HTTP_REFERER'])
 else
 	$redir = '../index.php';
 
+//var_dump($_REQUEST);
+	//die();
+// Login validé, on redirige
 if(isset($_SESSION['edq-user']) && isset($_SESSION['edq-user']['id']) && $_SESSION['edq-user']['id'] != ''){ // Redirect to secured user page if user logged in
 	die( '<script type="text/javascript">window.location = "' . $redir . '"; </script>' );
 }
@@ -197,36 +202,55 @@ h1 a:hover{
 </style>
 </head>
 
-<body>
+<body><?php
+if(isset($_REQUEST['edq--alert'])){
+	?><pre><code><?=$_REQUEST['edq--alert']?></code></pre><?php
+}
+if(isset($_REQUEST['redir'])){
+	?><pre>vous serez rediriger vers : <code><?=$redir?></code></pre><?php
+}
+function combine_path($root, $file, $extension = ''){
+	return utf8_encode(
+		$root
+		. (preg_match('/[\/\\\\]$/', $root) ? '' : DIRECTORY_SEPARATOR)
+		. (preg_match('/^[\/\\\\]/', $file) ? substr($file, 1) : $file)
+		. $extension
+	);
+}
+$login_path = str_replace('\\', '/', substr(__FILE__, strlen($_SERVER['DOCUMENT_ROOT'])));
+if($login_path[0] != '/')
+	$login_path = '/' . $login_path; 
+?>
 <div class="as_wrapper">
 
-<form action="?" method="post">
-<input type="hidden" name="action" value="login"/>
-
-<input type="hidden" name="redir" value="<?=$redir?>"/>
-
-<table class="mytable">
-<tr>
-	<td colspan="2"><h3 class="as_login_heading">Connexion</h3></td>
-</tr>
-<tr>
-	<td colspan="2"><div class="login_result" id="login_result"><?=$loginError?></div></td>
-</tr>
-<tr>
-	<td>Utilisateur</td>
-    <td><input type="text" name="username" id="username" class="as_input" value="<?=$loginUser?>" /></td>
-</tr>
-<tr>
-	<td>Mot de passe</td>
-    <td><input type="password" name="password" id="password" class="as_input" /></td>
-</tr>
-<tr>
-	<td></td>
-</tr>
-<tr>
-	<td colspan="2"><input type="submit" name="login" id="login" class="as_button" value="Login &raquo;" /></td>
-</tr>
-</table>
+<form action="<?=$login_path?>" method="post">
+	
+	<input type="hidden" name="action" value="login"/>
+	
+	<input type="hidden" name="redir" value="<?=$redir?>"/>
+	
+	<table class="mytable">
+	<tr>
+		<td colspan="2"><h3 class="as_login_heading">Connexion</h3></td>
+	</tr>
+	<tr>
+		<td colspan="2"><div class="login_result" id="login_result"><?=$loginError?></div></td>
+	</tr>
+	<tr>
+		<td>Utilisateur</td>
+	    <td><input type="text" name="username" id="username" class="as_input" value="<?=$loginUser?>" /></td>
+	</tr>
+	<tr>
+		<td>Mot de passe</td>
+	    <td><input type="password" name="password" id="password" class="as_input" /></td>
+	</tr>
+	<tr>
+		<td></td>
+	</tr>
+	<tr>
+		<td colspan="2"><input type="submit" name="login" id="login" class="as_button" value="Login &raquo;" /></td>
+	</tr>
+	</table>
 </form>
 </div>
 </body>

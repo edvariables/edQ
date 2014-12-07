@@ -20,10 +20,15 @@
 		LIMIT ?, ?"
 		, array(1, $_SESSION['edq-user']['UserType'], 0, 100)
 	);
+	$ulvls = Node::get_ulvls();
+	
 	$uid = uniqid('form-');
-?><table id="<?=$uid?>" class="edq" style="overflow: scroll;"><caption><?=$node["nm"]?></caption>
+?><table id="<?=$uid?>" class="display" cellspacing="0" width="100%">
+	<caption>Utilisateurs
+		<div class="edq-toolbar">
+			<a href="" class="add-user edq-add">créer un nouvel utilisateur</a>
+		</div></caption>
 	<thead><tr>
-	 <th/>
 	<th>#</th>
 	<th>Nom</th>
 	<th>Email</th>
@@ -31,58 +36,73 @@
 	<th>Type</th>
 	<th>Actif</th>
 	</thead>
+	<tfoot><tr>
+	<th>#</th>
+	<th>Nom</th>
+	<th>Email</th>
+	<th>Téléphone(s)</th>
+	<th>Type</th>
+	<th>Actif</th>
+	</tfoot>
 	<tbody><?php
-	$viewerid = node('Edition', $node, 'id');
 	foreach($rows as $row){
-		?><tr>
-	 	 <th><a href="view.php?id=<?=$viewerid?>&f--IdContact=<?=$row["IdContact"]?>"
-	 	 	 onclick="$.get(this.getAttribute('href'), function(html){
-	 	 	 	 $('<div></div>').appendTo('body').html(html).dialog({
-	 	 	 	 	 title: '<?=$row['IdContact']?>',
-	 	 	 	 	 width: 'auto',
-	 	 	 	 	 height: 'auto'
-	 	 	 	 });
-	 	 	 	});
-	 	 	 return false;">éditer</a>
-	 	 </th>
-		<td><?=$row["IdContact"]?>
+		?><tr iduser="<?=$row["IdContact"]?>">
+	 	 <td><?=$row["IdContact"]?></td>
 		<td><?=$row["Name"]?>
 		<td><?=$row["EMail"]?>
 		<td><?=$row["Phone1"]?><?=$row["Phone2"] == null || $row["Phone2"] == '' ? '' : '<br/>' . $row["Phone2"]?>
-		<td><?=$row["UserType"]?>
-		<td><input type="checkbox"<?=$row['Enabled'] ? ' checked="checked"' : ''?>/>
+		<td><?=@$ulvls[$row["UserType"]]?>
+		<td><?=$row['Enabled'] ? 'oui' : 'non'?>
 		</tr><?php
 	}
 	?></tbody>
-	<tfoot><tr><td/><td colspan="99"><?= count($rows) . ' utilisateur' . (count($rows) > 1 ? 's' : '')?></tr>
-	</tfoot>
 </table>
 <style>
-#<?=$uid?> {
-	border-spacing: 0px;
-	 border-collapse: collapse; 
-	 border: 1px outset #333333;
+#<?=$uid?> tbody tr {
+	cursor: pointer;
 }
-#<?=$uid?> tbody {
-	 background-color: white;
-}
-#<?=$uid?> tbody > tr:hover {
-	background-color: #FAFAFA;
-}
-#<?=$uid?> tbody > tr > th > a {
-	font-weight: normal;
-	font-size: smaller;
-	 color: darkblue;
-}
-#<?=$uid?> tbody > tr > td {
-	padding: 1px 4px 1px 6px;
-	 border: 1px solid #333333;
-}
-#<?=$uid?> tbody > tr > td:nth-of-type(1) {
-	text-align: right;
-}
-#<?=$uid?> thead > tr > th {
-	text-align: center;
-	 border: 1px solid #333333;
+#<?=$uid?> .edq-toolbar {
+	float: right;
 }
 </style>
+<script>
+$(document).ready(function() {
+    $('#<?=$uid?>').dataTable( {
+            "language": {
+                "url": "res/jquery/dataTables/lang/dataTables.french.json"
+            }
+			, "iDisplayLength": 50
+        } );
+	} );
+ 
+	<?php
+	/* click sur une ligne pour l'édition d'une fiche */
+	$viewerid = node('Edition', $node, 'id');
+	?>
+    $('#<?=$uid?> tbody').on( 'click', 'tr', function () {
+        var tr = $(this);
+ 		var href = 'view.php?id=<?=$viewerid?>&f--IdContact=' + tr.attr('iduser');
+        $.get(href, function(html){
+			$('<div></div>').appendTo('body').html(html).dialog({
+				title: 'Utilisateur #' + tr.attr('iduser'),
+				width: 'auto',
+				height: 'auto'
+			});
+		});
+    } );
+	<?php
+	/* click sur 'nouveau' */
+	?>
+    $('#<?=$uid?>').on( 'click', '.add-user', function () {
+        var button = $(this);
+ 		var href = 'view.php?id=<?=$viewerid?>&f--IdContact=0';
+        $.get(href, function(html){
+			$('<div></div>').appendTo('body').html(html).dialog({
+				title: 'Nouvel utilisateur',
+				width: 'auto',
+				height: 'auto'
+			});
+		});
+		return false;
+    } );
+</script>

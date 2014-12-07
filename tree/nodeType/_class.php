@@ -113,7 +113,8 @@ class Node {
 		if(isset($node['ulvl'])
 		&& $node['ulvl'] < $_SESSION['edq-user']['UserType'] ){
 			if($throw_error)
-				throw new Exception(utf8_encode('Accès reservé - ' . $node['ulvl'] . ' < ' . $_SESSION['edq-user']['UserType']), 200);
+				helpers::login_needed('Accès reservé - ' . $node['ulvl'] . ' < ' . $_SESSION['edq-user']['UserType']);
+				//throw new Exception(utf8_encode('Accès reservé - ' . $node['ulvl'] . ' < ' . $_SESSION['edq-user']['UserType']), 200);
 			return false;
 		}
 		return true;

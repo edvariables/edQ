@@ -189,7 +189,7 @@ class page {
 		// include
 		if(file_exists($file)){
 			$root = preg_replace('/\\$/', '', $_SERVER['DOCUMENT_ROOT']);
-			return '/' . str_replace('\\', '/', substr($file, strlen($root)));
+			return '/' . str_replace('\\', '/', substr($file, strlen($root) + ($root[strlen($root)-1] == '/' ? 0 : 1)));
 		}
 		// fichier inconnu
 		echo('<pre class="edq-error">');

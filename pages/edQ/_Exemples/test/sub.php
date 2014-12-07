@@ -1,9 +1,7 @@
-<ul>Sub
-<li><?php
-echo 'node : '; var_dump(isset($node));
+<pre>
 
-var_dump(node($node));
+<?= __FILE__ ?>
+<?php var_dump($node)?>
+<?php var_dump(node($node, __FILE__, 'page'))?>
 
-$arguments[':sub'] = date('now');
-print_r($arguments);
-?></ul>
+</pre>

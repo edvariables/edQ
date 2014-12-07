@@ -43,7 +43,7 @@ function user_right($domain = null, $minRight = 1){
 }
 
 /* get_temp_dir
-	equivalent a sys_get_temp_dir mais controle les droits d'acces et substitue par $_SERVER['DOCUMENT_ROOT'], 'edQ/tmp' si nÈcessaire.
+	equivalent a sys_get_temp_dir mais controle les droits d'acces et substitue par $_SERVER['DOCUMENT_ROOT'], 'edQ/tmp' si n√©cessaire.
 */
 function get_temp_dir(){
 	$dir = sys_get_temp_dir();
@@ -54,7 +54,7 @@ function get_temp_dir(){
 	return $dir;
 }
 /* get_local_temp_dir
-	$_SERVER['DOCUMENT_ROOT'], 'edQ/tmp' si nÈcessaire.
+	$_SERVER['DOCUMENT_ROOT'], 'edQ/tmp' si n√©cessaire.
 */
 function get_local_temp_dir(){
 	//$dir = helpers::combine($_SERVER['DOCUMENT_ROOT'], 'edQ/tmp');
@@ -107,13 +107,13 @@ class helpers {
 		// return self::get_pages_path();
 	// }
 	/* nodeFile_mv
-		dÈplace un fichier + rÈpertoire d'un noeud
+		d√©place un fichier + r√©pertoire d'un noeud
 	*/
 	public static function nodeFile_mv($oldPath, $oldName, $newPath, $newName, $override = false) {
 		
 		$root = helpers::get_pages_path();
 		
-		// RÈpertoire
+		// R√©pertoire
 		$src = $root . '/' . $oldPath . '/' . $oldName;
 		$dest = $root . '/' . $newPath . '/' . $newName;			
 		//var_dump($root);			
@@ -123,7 +123,7 @@ class helpers {
 		&& file_exists($src)){		
 			if(file_exists($dest)){
 				//copie recursive
-				throw new Exception("TODO : dÈplacement recursif du rÈpertoire");
+				throw new Exception("TODO : d√©placement recursif du r√©pertoire");
 			}
 			else {
 				rename($src, $dest);
@@ -150,19 +150,19 @@ class helpers {
 	}
 	
 	/* nodeFile_cp
-		copie un fichier + rÈpertoire d'un noeud
+		copie un fichier + r√©pertoire d'un noeud
 	*/
 	public static function nodeFile_cp($oldPath, $oldName, $newPath, $newName, $override = false) {
 		
 		$root = self::get_pages_path();
 		
-		// RÈpertoire
+		// R√©pertoire
 		$src = $root . '/' . $oldPath . '/' . $oldName;
 		$dest = $root . '/' . $newPath . '/' . $newName;
 		if(file_exists($src)){		
 			if(file_exists($dest)){
 				//copie recursive
-				throw new Exception("TODO : copie recursive du rÈpertoire");
+				throw new Exception("TODO : copie recursive du r√©pertoire");
 			}
 			else {
 				self::rcopy($src, $dest);
@@ -189,13 +189,13 @@ class helpers {
 	}
 	
 	/* nodeFile_rm
-		supprime un fichier + rÈpertoire d'un noeud
+		supprime un fichier + r√©pertoire d'un noeud
 	*/
 	public static function nodeFile_rm($oldPath, $oldName) {
 		
 		$root = helpers::get_pages_path();
 		
-		// RÈpertoire
+		// R√©pertoire
 		$src = $root . '/' . $oldPath . '/' . $oldName;
 		if(file_exists($src)){
 			self::rrmdir($src);
@@ -238,7 +238,7 @@ class helpers {
 		copy($src, $dst);
 	}
 	/* aasort
-		tri un tableau associatif sur la propriÈtÈ fournie
+		tri un tableau associatif sur la propri√©t√© fournie
 	*/
 	public static function aasort (&$array, $key) {
 		$sorter=array();
@@ -271,6 +271,19 @@ class helpers {
 				echo $t['file'] . ' line ' . $t['line'] . ' function ' . $t['function'] . "()\n";
 			}
 		echo('</pre>');
+	}
+	
+	/***
+	 * affiche le login, die() et retourne √† l'url apr√®s login
+	 */
+	public static function login_needed($msg = FALSE, $redirection = NULL){
+		if($redirection === NULL){
+			$redirection = $_SERVER['REQUEST_URI'];// . '?' . $_SERVER['QUERY_STRING'];
+		}
+		$_REQUEST['edq--alert'] = $msg;
+		$_REQUEST['redir'] = $redirection;
+		include('inc/login.php');
+		die();
 	}
 }
 
