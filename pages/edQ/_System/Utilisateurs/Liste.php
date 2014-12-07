@@ -95,7 +95,7 @@ $(document).ready(function() {
 	?>
     $('#<?=$uid?>').on( 'click', '.add-user', function () {
         var button = $(this);
- 		var href = 'view.php?id=<?=$viewerid?>&f--IdContact=0';
+ 		var href = 'view.php?id=<?=$viewerid?>&f--IdContact=new';
         $.get(href, function(html){
 			$('<div></div>').appendTo('body').html(html).dialog({
 				title: 'Nouvel utilisateur',

@@ -1,4 +1,5 @@
 <?php
+$node = node($node, __FILE__);
 $db = get_db();
 
 
@@ -94,7 +95,7 @@ if(count($rows) > 0){
 	<?php
 	if($search && !$isCurrentUser && $currentUserType < $row['UserType']){
 		?>
-		<a href="" class="edq-delete">supprimer</a><?php
+		<a class="edq-delete">supprimer</a><?php
 	}?></div>
 </fieldset>
 </form>
@@ -102,7 +103,63 @@ if(count($rows) > 0){
 	#<?=$uid?> .edq-toolbar {
 		float: right;
 	}
+	#<?=$uid?> .edq-toolbar .edq-delete {
+		cursor: pointer;
+	}
 </style>
+<script>
+	$().ready(function(){
+		<?php
+		/* click sur 'supprimer' */
+		$viewerid = node(':delete', $node, 'id');
+		?>
+		$("#<?=$uid?> .edq-delete").click(function(){
+			var html = '<h3>&Ecirc;tes sûr de vouloir supprimer cet utilisateur ?</h3>';
+			$('<div></div>').appendTo('body').html(html).dialog({
+				title: 'Suppression d\'un utilisateur',
+				width: 'auto',
+				height: 'auto',
+				buttons: [
+					{
+						text: "Supprimer",
+						icons: {
+							primary: "ui-icon-trash"
+						},
+						click: function() {
+							var href = 'view.php?id=<?=$viewerid?>&d--IdContact=<?=$row["IdContact"]?>';
+							var this_dialog = this;
+							$.get(href, function(html){
+								if(html == 'Ok'){
+									$( this_dialog ).dialog( "close" );
+									$("#<?=$uid?>").parents('.ui-dialog-content:first')
+										.dialog('close');
+								}
+								else
+									alert(html);
+							});
+								// Uncommenting the following line would hide the text,
+								// resulting in the label being used as a tooltip
+								//showText: false
+						}
+					}, 
+					{
+						text: "Annuler",
+						icons: {
+							primary: "ui-icon-close"
+						},
+						click: function() {
+							$( this ).dialog( "close" );
+						}
+						// Uncommenting the following line would hide the text,
+						// resulting in the label being used as a tooltip
+						//showText: false
+					}
+				]
+			});
+			return false;
+		});
+	});
+</script>
 <?php
 	echo page::form_submit_script($uid, array( 
 		'beforeSubmit' => '
