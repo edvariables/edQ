@@ -48,18 +48,18 @@ if(count($rows) > 0){
 ?><form id="<?=$uid?>" method="POST" action="<?=page::url( ":submit", $node )?>" autocomplete="off">
 <input type="hidden" name="op" value="<?=$row['IdContact'] ? 'update' : 'insert'?>"/>
 <input type="hidden" name="d--IdContact" value="<?=$row['IdContact']?>"/>
-<fieldset class="q-fields">	<legend><?=$search ? ($row["Name"] . '#' . $row["IdContact"]) : 'Nouvel utilisateur'?></legend>
+<fieldset class="q-fields">	<legend><?=$search ? htmlspecialchars($row["Name"] . '#' . $row["IdContact"]) : 'Nouvel utilisateur'?></legend>
 <div>
 	<div><label class="ui-state-default ui-corner-all">Nom</label>
-	<input size="40" name="d--Name" value="<?= htmlentities($row['Name']) ?>"/>
-	<input size="3" name="d--ShortName" value="<?= htmlentities($row['ShortName']) ?>"/>
+	<input size="40" name="d--Name" value="<?= htmlspecialchars($row['Name']) ?>"/>
+	<input size="3" name="d--ShortName" value="<?= htmlspecialchars($row['ShortName']) ?>"/>
 	</div>
 
 	<div><label class="ui-state-default ui-corner-all">Email</label>
-	<input size="40" name="d--EMail" value="<?= htmlentities($row['EMail']) ?>"/>
+	<input size="40" name="d--Email" value="<?= htmlspecialchars($row['Email']) ?>"/>
 	</div>
 	<div><label class="ui-state-default ui-corner-all">Téléphone</label>
-	<input size="40" name="d--Phone1" value="<?= htmlentities($row['Phone1']) ?>"/>
+	<input size="40" name="d--Phone1" value="<?= htmlspecialchars($row['Phone1']) ?>"/>
 	</div>
 
 	<div><label class="ui-state-default ui-corner-all">Utilisateur <?= $row['Enabled'] ? 'actif' : 'désactivé' ?></label>

@@ -48,7 +48,7 @@ if(isset($_REQUEST['op'])) {
 				if(isset($_REQUEST['ulvl']))
 					$params["ulvl"] = $_REQUEST['ulvl'];
 				if(isset($_REQUEST['design']))
-					$params["design"] = $_REQUEST['design'] && $_REQUEST['design'] != '0' ? 1 : 0;
+					$params["design"] = $_REQUEST['design'] && $_REQUEST['design'] != '0' && $_REQUEST['design'] != 'false' ? 1 : 0;
 				else
 					$params["design"] = 1;
 				if(isset($_REQUEST['color']))

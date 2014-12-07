@@ -6,7 +6,7 @@ try {
 catch(Exception $ex){
 	return "Erreur de droits : " . $ex;
 }
-if($_POST['d--user-UserType'] < $currentUserType)
+if(!$isCurrentUser && $_POST['d--user-UserType'] < $currentUserType)
 	throw new Exception('Impossible d\'affecter ce niveau d\'utilisateur.');
 
 //var_dump($_POST);
@@ -16,13 +16,13 @@ $db = get_db();
 $insertInto = $_POST['d--IdContact'] == '0' || $_POST['d--IdContact'] == 'new';
 if($insertInto){
 
-	$sql = "INSERT INTO contact (Name, ShortName, EMail, Phone1)
+	$sql = "INSERT INTO contact (Name, ShortName, Email, Phone1)
 		VALUES(?, ?, ?, ?)";
 
 	$params = array();
 	$params[] = $_POST['d--Name'];
 	$params[] = $_POST['d--ShortName'];
-	$params[] = $_POST['d--EMail'];
+	$params[] = $_POST['d--Email'];
 	$params[] = $_POST['d--Phone1'];
 
 	$result = $db->query($sql, $params);
@@ -35,14 +35,14 @@ else {
 	$sql = "UPDATE contact
 		SET Name = ?
 		, ShortName = ?
-		, EMail = ?
+		, Email = ?
 		, Phone1 = ?
 		WHERE IdContact = ?";
 
 	$params = array();
 	$params[] = $_POST['d--Name'];
 	$params[] = $_POST['d--ShortName'];
-	$params[] = $_POST['d--EMail'];
+	$params[] = $_POST['d--Email'];
 	$params[] = $_POST['d--Phone1'];
 	$params[] = $_POST['d--IdContact'];
 
@@ -71,28 +71,33 @@ if($insertInto){
 	$result = $db->query($sql, $params);
 }
 else {
-	$sql = "UPDATE user
-		SET UserType = ?
-		" . (isset($_POST['d--user-Enabled'])
-			? ", Enabled = ?"
-			  : ""
-		) . "
-		" . (($_POST['d--user-Password']
-			 && ($_POST['d--user-Password'] == $_POST['d--user-Password-confirm']))
-			 ? ', Password = PASSWORD(?)'
-			 : '') . "
-		WHERE IdUser = ?";
-
+	//$sql = "UPDATE user
+	$sql = "";
 	$params = array();
-	$params[] = $_POST['d--user-UserType'];
-	if(isset($_POST['d--user-Enabled']))
-		$params[] = $_POST['d--user-Enabled'];
-	if($_POST['d--user-Password']
-	&& ($_POST['d--user-Password'] == $_POST['d--user-Password-confirm']))
-		$params[] = $_POST['d--user-Password'];
-	$params[] = $_POST['d--IdContact'];
-
-	$result = $db->query($sql, $params);
+	foreach(array('UserType', 'Enabled', 'Password') as $column){
+		if(isset($_POST['d--user-' . $column])){
+			if($column == 'Password'
+			&& ($_POST['d--user-' . $column] == ''
+				|| $_POST['d--user-' . $column] != $_POST['d--user-' . $column . '-confirm']))
+					continue;
+			
+			if($sql) $sql .= ', ';
+			else $sql = 'SET ';
+			
+			if($column == 'Password'){
+				$sql .= $column . ' = PASSWORD(?)';
+			}
+			else {
+				$sql .= $column . ' = ?';
+			}
+			$params[] = $_POST['d--user-' . $column];
+		}
+	}
+	if($sql){
+		$sql = "UPDATE user " . $sql . " WHERE IdUser = ?";
+		$params[] = $_POST['d--IdContact'];
+		$result = $db->query($sql, $params);
+	}
 }
 //var_dump( $result, $params );
 
