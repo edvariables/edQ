@@ -7,6 +7,19 @@
 	
 	require('tree/helpers.php');
 	require('tree/page.php');
+	
+	$edq_plugins = helpers::init_plugins(
+	    array(
+		'jstree' => true,
+		'flot' => false,
+		'jqGrid' => false,
+		'colorpicker' => is_design(),
+		'dataTables' => false,
+		'markitup' => false,
+		'codemirror' => is_design(),
+	    )
+	);
+
 ?><!DOCTYPE html>
 <html>
 	<head>
@@ -20,12 +33,17 @@
 
 		<link rel="stylesheet" type="text/css" href="res/css/layout-default-latest.css" />
 		
+		<?php if($edq_plugins['dataTables']){?>
 		<link rel="stylesheet" type="text/css" href="res/jquery/dataTables/css/jquery.dataTables.min.css" />
-		
+		<?php }?>
+		<?php if($edq_plugins['jqGrid']){?>
 		<link rel="stylesheet" type="text/css" media="screen" href="res/jquery/jqGrid/css/ui.jqgrid.css" />
+		<?php }?>
 		
+		<?php if($edq_plugins['colorpicker']){?>
 		<link rel="stylesheet" href="res/jquery/colorpicker/css/colorpicker.css" type="text/css" />
 		<link rel="stylesheet" type="text/css" href="res/jquery/colorpicker/css/layout.css" />
+		<?php }?>
 
 		<link rel="stylesheet" type="text/css" href="css/edq.css" />
 
@@ -35,28 +53,40 @@
 		
 		<script type="text/javascript" src="res/js/jquery.layout-latest.js"></script>
 		
+		<?php if($edq_plugins['dataTables']){?>
 		<script type="text/javascript" src="res/jquery/dataTables/js/jquery.dataTables<?php //echo '.min';?>.js"></script>
+		<?php }?>
 
+		<?php if($edq_plugins['jqGrid']){?>
 		<script src="res/jquery/jqGrid/js/grid.locale-fr.js" type="text/javascript"></script>
 		<script src="res/jquery/jqGrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<?php }?>
 	
+		<?php if($edq_plugins['colorpicker']){?>
 		<script type="text/javascript" src="res/jquery/colorpicker/js/colorpicker.js"></script>
+		<?php }?>
 		
+		<?php if($edq_plugins['jstree']){?>
 		<script src="tree/jstree.js"></script>
 		<script src="tree/jstree.plugins.js"></script>
+		<?php }?>
 
+		<?php if($edq_plugins['markitup']){?>
 		<script type="text/javascript" src="res/jquery/markitup/jquery.markitup.js"></script>
 		<script type="text/javascript" src="res/jquery/markitup/sets/dataSource/set.js"></script>
+		<?php }?>
 
+		<?php if($edq_plugins['flot']){?>
 		<!--[if IE]><script language="javascript" type="text/javascript" src="../excanvas.pack.js"></script><![endif]-->
 		<script language="javascript">if(!$.browser) $.browser = {};</script>
 		<!--[if IE]><script language="javascript">$.browser.msie = true;</script><![endif]-->
 		<script language="javascript" type="text/javascript" src="res/jquery/flot/jquery.flot.js"></script>
+		<?php }?>
     
 		<script src="js/edQ.js"></script>
 		
 		<?php
-		if(is_design()) {?>
+		if($edq_plugins['codemirror']) {?>
 		<link rel="stylesheet" href="res/jquery/codemirror/lib/codemirror.css">
 		<script src="res/jquery/codemirror/lib/codemirror.js"></script>
 		<script src="res/jquery/codemirror/addon/edit/matchbrackets.js"></script>

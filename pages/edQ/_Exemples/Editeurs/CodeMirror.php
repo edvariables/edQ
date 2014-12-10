@@ -1,5 +1,5 @@
-<?php /* àé */
-
+<?php
+helpers::need_plugin('codemirror');
 $uid = uniqid('code');
 $file = helpers::get_pages_path() . '/edQ/TerraFact/Contacts/Liste.php';
 ?>

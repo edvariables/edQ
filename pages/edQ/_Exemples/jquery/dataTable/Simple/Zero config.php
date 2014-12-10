@@ -1,4 +1,6 @@
-<?php $uid = uniqid('datatable');?>
+<?php
+helpers::need_plugin('dataTables');
+$uid = uniqid('datatable');?>
 <?php include(substr(__FILE__, 0, strlen(__FILE__) - 4) . '/data.php');?>
 <script>
 $(document).ready(function() {

@@ -1,4 +1,5 @@
 <?php
+helpers::need_plugin('dataTables');
 $args = array(
 	"domain" => '_Pages/Recherche'
 	, "param" => 'form'

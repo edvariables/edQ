@@ -1,4 +1,5 @@
 <?php
+helpers::need_plugin('dataTables');
 $dataUrl = page::file_url(':data', __FILE__);
 $uid = uniqid('datatable');
 $args = array( 'uid' => $uid );

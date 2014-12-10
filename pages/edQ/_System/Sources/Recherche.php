@@ -1,4 +1,5 @@
 <?php
+helpers::need_plugin('dataTables');
 $node = node($node, __FILE__);
 $args = array(
 	"domain" => '_Sources/Recherche'

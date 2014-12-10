@@ -1,17 +1,19 @@
 <?php
+helpers::need_plugin('jqGrid');
 
+$node = node($node, __FILE__);
 $uid = uniqid('datatable');
 if(!isset($arguments))
 	$arguments = array();
 $arguments[ 'uid' ] = $uid;
-page::call(':html', $arguments);
+page::call(':html', $arguments, $node);
 ?><script>
 $(document).ready(function(){
 
 jQuery("#<?=$uid?>").jqGrid({
 	datatype: function(postdata) {
 		jQuery.ajax({
-	 	 url: '<?= page::url(':data', __FILE__) ?>',
+	 	 url: '<?= page::url(':data', $node) ?>',
 	 	 data: postdata,
 	 	 dataType:"text",
 	 	 success: function(response,stat){

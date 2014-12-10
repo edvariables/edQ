@@ -1,4 +1,5 @@
 <?php
+helpers::need_plugin('dataTables');
 $root = page::folder_url('', __FILE__);
 $dataUrl = $root . '/data.php';
 $cssUrl = $root . '/css.php';

@@ -1,5 +1,7 @@
 <?php
-$dataUrl = page::url(':data');
+helpers::need_plugin('jqGrid');
+$node = node($node, __FILE__);
+$dataUrl = page::url(':data', $node);
 
 $uid = uniqid('datatable');
 if(!isset($arguments))
