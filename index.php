@@ -69,7 +69,7 @@
 
 		<?php if($edq_plugins['jqGrid']){?>
 		<script src="res/jquery/jqGrid/js/grid.locale-fr.js" type="text/javascript"></script>
-		<script src="res/jquery/jqGrid/js/jquery.jqGrid.src.js" type="text/javascript"></script>
+		<script src="res/jquery/jqGrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
 		<?php }?>
 	
 		<?php if($edq_plugins['colorpicker']){?>

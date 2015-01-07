@@ -77,39 +77,50 @@ if(isset($arguments[ 'pivot' ])){
 			/* calculer la somme de cette colonne */
 			if(isset($column['sum']) && $column['sum']){
 				?> colNamesAggreg.push(<?=json_encode('Somme de ' . $columnLabel)?>);
-				pivotOptions.aggregates.push( { 
+				pivotOptions.aggregates.push( jQuery.extend({ 
 					member : '<?=$columnName?>', 
 					aggregator : 'sum', 
 					width:80, 
 					formatter:'number', 
 					align:'right',
 					summaryType: 'sum'
-				} );<?php
+				}, <?= json_encode($column)?>) );<?php
 			}
 			if(isset($column['count']) && $column['count']){
 				?> colNamesAggreg.push(<?=json_encode('Nbre de ' . $columnLabel)?>);
-				pivotOptions.aggregates.push( { 
+				pivotOptions.aggregates.push( jQuery.extend({ 
 					member : '<?=$columnName?>', 
 					aggregator : 'count', 
 					width:80, 
+					formatter:'string', 
 					align:'right',
 					summaryType: 'sum' /* ou count, dépend du nbre de groupes */
-				} );<?php
+				}, <?= json_encode($column)?>) );<?php
 			}
 			if(isset($column['avg']) && $column['avg']){
 				?> colNamesAggreg.push(<?=json_encode('Moy. de ' . $columnLabel)?>);
-				pivotOptions.aggregates.push( { 
+				pivotOptions.aggregates.push( jQuery.extend({ 
 					member : '<?=$columnName?>', 
 					aggregator : 'avg', 
 					width:80, 
 					formatter:'number', 
 					align:'right',
 					summaryType: 'avg'
-				} );<?php
+				}, <?= json_encode($column)?>) );<?php
 			}
 		}
 	}
 	?>
+	/* Les propriétés pivotOptions.aggregates[].formatter peuvent être des function.
+	 * Elles commencent par function(.
+	 * Evalue pivotOptions.aggregates[].formatter.
+	 */
+	for(var i = 0; i < pivotOptions.aggregates.length; i++)
+		if(typeof pivotOptions.aggregates[i].formatter === 'string'
+		&& /^function\s*\(/.test(pivotOptions.aggregates[i].formatter))
+			pivotOptions.aggregates[i].formatter = eval('(' + pivotOptions.aggregates[i].formatter + ')');
+	
+	/* Noms des colonnes */
 	colNames = colNamesCancel ? undefined : colNames.concat(colNamesAggreg);
 	/* gridOptions */
 	var gridOptions = {
@@ -135,7 +146,7 @@ if(isset($arguments[ 'pivot' ])){
 		//'<?= page::url(':data', $node) ?>',
 		<?= is_array($arguments['rows']) ? json_encode($arguments['rows']) : $arguments['rows'] ?>,
 		// pivot options
-		pivotOptions,
+		pivotOptions ,
 		// grid options
 		gridOptions
 	);
