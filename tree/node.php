@@ -48,6 +48,14 @@ function node($search = null, $refers_to = null, $options = null, $method = null
             case "call":
             case "execute":
                 return page::execute($node, $refers_to, '.php', $method_options);
+            case "return":                
+		ob_start();
+		page::execute($node, $refers_to, '.php', $method_options);
+		$return = ob_get_clean();
+                //var_dump($node, $return);
+                return $return;
+            case "content":
+                return file_get_contents( page::file($node, $refers_to) );
             
             case "url":
                 return page::url($node, $refers_to, $method_options);

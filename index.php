@@ -9,17 +9,27 @@
 	require('tree/page.php');
 	
 	$edq_plugins = helpers::init_plugins(
-	    array(
-		'jstree' => true,
+		array(
+		'jstree' => false,
 		'flot' => false,
 		'jqGrid' => false,
-		'colorpicker' => is_design(),
+		'colorpicker' => false,
 		'dataTables' => false,
 		'markitup' => false,
-		'codemirror' => is_design(),
-	    )
+		'codemirror' => false,
+		)
 	);
-
+	if( is_design() ){
+	    $edq_plugins = array_merge( $edq_plugins,
+		array(
+		    'colorpicker' => true,
+		    'codemirror' => true,
+		)
+	    );
+	}
+	if(strpos($_SERVER["PHP_SELF"], 'index.php') !== FALSE)
+		$edq_plugins['jstree'] = true;
+		
 ?><!DOCTYPE html>
 <html>
 	<head>
@@ -59,7 +69,7 @@
 
 		<?php if($edq_plugins['jqGrid']){?>
 		<script src="res/jquery/jqGrid/js/grid.locale-fr.js" type="text/javascript"></script>
-		<script src="res/jquery/jqGrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="res/jquery/jqGrid/js/jquery.jqGrid.src.js" type="text/javascript"></script>
 		<?php }?>
 	
 		<?php if($edq_plugins['colorpicker']){?>

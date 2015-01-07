@@ -20,4 +20,6 @@ define ("MYSQLDUMP", "D:\\Wamp\\bin\\mysql\\mysql5.6.17\\bin\\mysqldump.exe");
 
 define ("LOGROOT", "D:\\Wamp\\www\\edQ\\logs");
 
+global $PLUGINS;
+$PLUGINS = array('jstree');
 ?>

@@ -305,8 +305,14 @@ class helpers {
 	
 	/**
 	 * initialisation des plugins actifs
+	 * 	$plugins
+	 * 	+ $_REQUEST
+	 * 	+ $_SESSION['edq-user']['plugins'] (previous)
+	 * 	+ $_REQUEST['q--plugins']
+	 * 	+ $_COOKIE['q--plugins']
 	 * */
-	/* TODO : configurable dans edQ.conf et initialisable d'après variables de session */
+	/* TODO : configurable dans edQ.conf par $PLUGINS et initialisable d'après variables de session */
+	/* TODO : transposer dans class.plugins */
 	public static function init_plugins($plugins = FALSE){
 		$defaults = self::$plugins_defaults;
 		if(!is_array($plugins))
@@ -338,6 +344,32 @@ class helpers {
 				else
 					$plugins[trim($key)] = true;
 		}
+	
+		/* debug */
+		//$plugins['dataTables'] = false; //debug
+		//$plugins['jqGrid'] = false; //debug
+		
+		/* valeurs issues du cookie
+			q--plugins=dataTables,jqGrid
+		*/
+		if(isset($_COOKIE)
+		   && isset($_COOKIE['q--plugins'])
+		   && $_COOKIE['q--plugins']
+		){
+			$cookies = preg_split('/\s*,+\s*/', $_COOKIE['q--plugins']);
+			foreach($cookies as $key)
+				$plugins[trim($key)] = true;
+		}
+		
+		/* local settings $PLUGINS */
+		global $PLUGINS;
+		if(!isset($PLUGINS))
+			include_once('conf/edQ.conf.php');
+		if(isset($PLUGINS))
+			foreach($PLUGINS as $plugin)
+				$plugins[trim($plugin)] = true;
+		
+		/* debug */
 		//$plugins['dataTables'] = false; //debug
 		//$plugins['jqGrid'] = false; //debug
 		
@@ -351,11 +383,34 @@ class helpers {
 	}
 	
 	/* teste la nécessité d'un plugin parmi ceux chargés dans index.php */
+	/* TODO : transposer dans class.plugins */
 	public static function need_plugin($plugin){
 		if(!is_array(self::$plugins))
 			self::init_plugins();
+		//var_dump(self::$plugins);
 		if(!isset(self::$plugins[$plugin])
 		|| !self::$plugins[$plugin]){
+			/* plugin manquant !!! */
+			if(false && strpos($_SERVER["PHP_SELF"], 'index.php') !== FALSE
+			|| strpos($_SERVER["PHP_SELF"], 'page.php') !== FALSE){
+				/* Redirection vers la même page */
+				$query = $_SERVER['QUERY_STRING'] . "&q--plugins[]=$plugin";
+				header('Location:'.$_SERVER['PHP_SELF'].'?'.$query);
+				die;
+			}
+			
+			/* cookie des plugins utilisés */
+			if(isset($_COOKIE)
+			&& isset($_COOKIE['q--plugins'])
+			)
+				$cookie = preg_replace('/(\s*,\s*)+$/', '', $_COOKIE['q--plugins']) . ',' . $plugin;
+			else if(preg_match('/(^|,\s*)'.$plugin.'(\s*,|$)/', $_COOKIE['q--plugins']))
+				$cookie = $_COOKIE['q--plugins'];
+			else
+				$cookie = $plugin;
+			setcookie('q--plugins', $cookie, time()+ 3600 * 24 * 30, '/');
+			
+			/* alert */
 			die( '<script>
 			if(confirm("Le plugin ' . $plugin . ' est manquant !\r\nRecharger ?")){
 			    var search = document.location.search;
