@@ -213,7 +213,15 @@ pip-log.txt
 
 #ED
 logs/
-pages/edQ/!_*/
+
+pages/edQ/*
+!pages/edQ/_
+!pages/edQ/_*
+!pages/edQ/_*/
+
+
+#pages/edQ/!_*/
+
 #!pages/edQ/_*/
 #!pages/edQ/_*.php
 #!pages/edQ/_System/
@@ -221,8 +229,11 @@ pages/edQ/!_*/
 #!pages/edQ/_docs/
 #!pages/edQ/_format/
 #!pages/edQ/_Exemples/
-pages/edQ/_Exemples/test.php
-pages/edQ/rezo/
-pages/edQ/TerraFact/
-pages/edQ/sdn.org/
+
+#pages/edQ/_Exemples/test.php
+#pages/edQ/rezo/
+#pages/edQ/TerraFact/
+#pages/edQ/sdn.org/
+
+# config file. A template exists as edQ.conf.template.php
 conf/edQ.conf.php
