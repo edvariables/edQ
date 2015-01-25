@@ -1,0 +1,758 @@
+P {font-size:12px; font-weight:normal; margin-top: 0;text-decoration:none; margin-bottom: 0}
+
+A {
+	color:#18398c;
+	text-decoration:none;
+
+}
+
+A:hover {color:#0066CC;text-decoration:underline;}
+
+a.sansu:hover {text-decoration:none; color:#0066CC;}
+
+H1 {font-size:13px;font-weight:bold;}
+
+H2 {font-size:14px;font-weight:bold ;color:rgb(24,57,140);margin-top: 0; margin-bottom: 0}
+
+H3 {font-size:12px; font-weight:normal;margin-top: 0;text-decoration:none; margin-bottom: 0}
+
+H4 {font-size:15px;color:rgb(24,57,140);margin-top: 0; margin-bottom: 0}
+
+H5 {font-size:12px; text-align:center; color:#18398c; font-weight:bold; margin-top: 0;text-decoration:none; margin-bottom: 0}
+
+H6 {ffont-size:13px;font-weight:bold; margin-bottom:3; margin-top:3}
+
+h10 {font-size:11px; margin-bottom:0; margin-top:0; color:#18398c}
+
+.titre-noir {font-size:13px;font-weight:bold;}
+
+
+tr {
+	
+	font-size: 12px;
+}
+input {
+	
+	font-size: 11px;
+}
+.radio {
+	
+	font-size: 11px;
+	text-align: center;
+	color: #000033;
+}
+.cp {
+	
+	font-size: 11px;
+	margin-top: 3px;
+	margin-bottom: 5px;
+}
+
+ul.cp {
+		list-style-position: outside;
+	list-style-image: url(images/puce2.gif);
+	list-style-type: none;
+	padding:15px;
+}
+
+
+
+.menuune {
+	color: #FFFFFF;
+	font-weight: bold;
+}
+a.menuune {
+	color: #FFFFFF;
+	font-weight: bold;
+	text-decoration:none;
+}
+
+a.menuune:hover {
+	color: #D8EDF3;
+	text-decoration:underline;
+}
+
+a.menuune:visited {
+	color: #FFFFFF;
+}
+
+.titres {
+	font-weight: bold;
+	font-variant: normal;
+	color: #18398c;
+}
+
+ul {
+	list-style-position: outside;
+	list-style-image: url(images/puce.gif);
+	list-style-type: none;
+	
+}
+li {padding-bottom:3px;}
+
+
+ul.menu {
+	list-style-position: outside;
+	list-style-image: url(images/pucebleue.gif);
+	list-style-type: none;
+	margin:0px;
+	padding-left:20px;
+		
+}
+li.menu {
+padding-bottom:2px;
+line-height:13px;
+font-size:12px;
+font-weight:bold;
+}
+
+
+ol {
+	list-style-type: decimal;
+
+}
+
+.liste {
+	line-height: 18px;
+}
+
+.interligne {
+	line-height: 20px;
+}
+
+.fondjaune {
+	
+	color: #000000;
+	background-color: #ffcc00;
+}
+.surtitre {
+	
+	font-size: 11px;
+	margin-top: 3px;
+	margin-bottom: 5px;
+	color:#666666;
+}
+
+.code
+{
+	font-family: "Courier New", Courier, mono;
+	font-size: 10px;
+}
+
+
+.titre-menu
+{
+	
+	font-size: 14px;
+	font-weight: bold;
+	color:#18398c;
+	text-align:center;
+}
+
+.plan ul{ }
+
+.plan li{
+padding-left:10px;
+list-style:none;
+
+}
+.plan ul li{
+margin-left:10px;
+padding:2px;
+list-style:disc;
+
+}
+
+
+
+
+/*------------- STRUCTURE GENERALE ------------*/
+
+body{
+font-family:Arial, Helvetica, sans-serif;
+font-size:12px;
+text-align:center;  /*bug ie*/
+}
+
+#conteneur {
+width:930px;
+padding:0;
+margin:0 auto;
+text-align:left; /* bug ie*/
+}
+
+#entete {
+height:130px;
+
+}
+
+.cdf
+{
+font-size:11px;
+padding:3px 0 3px 15px;
+margin:10px 0;
+border-bottom: dotted 1px #006f9f;
+border-top: dotted 1px #006f9f;
+/*color:#18398c;*/
+}
+
+
+#gauche {
+display:inline; /* bug ie*/
+width:180px;
+float:left;
+
+}
+
+#main{
+display:inline; /* bug ie*/
+}
+
+
+#centre {
+display:inline; /* bug ie*/
+width:530px;
+float:left;
+margin-left:10px;
+text-align:left;
+
+}
+
+
+#droite {
+display:inline; /* bug ie*/
+width:180px;
+float:left;
+margin-left:10px;
+
+
+}
+
+#pied {
+font-size:11px;
+clear:both;
+height:20px;
+border-top: dotted 1px #006f9f;
+padding-top:10px;
+margin:10px;
+}
+/*------------- UNE --------------*/
+/*-----styles-------------*/
+
+
+h1.une {
+font-size:13px;
+font-weight: bold;
+margin:0 0 5px 0;
+padding:0px;
+}
+
+.une-encart
+{
+padding:0;
+margin:10px;
+font-size:11px;
+}
+
+a.une-encart
+{}
+
+.une-tout
+{
+padding: 0;
+font-weight:bold;
+text-align:right;
+margin: 5px 10px;
+font-size:11px;
+}
+
+.img-une {
+float: left;
+margin: 0px 10px 20px 5px;
+pading: 0;
+}
+
+.im2 {
+margin:5px 0;
+}
+
+
+/*-----blocs-------------*/
+
+#une-agir
+{
+margin:10px 5px;
+padding:0;
+
+}
+
+
+#une-video
+{
+/*background: url(images/une-fond-videos.gif) 0 bottom no-repeat;*/
+width:170px;
+margin:0 5px;
+padding:0;
+background:#eff2f3;
+}
+
+.une-titre-video {
+font-size:14px;
+font-weight:bold;
+color: #006f9f;
+margin: 15px 5px 0 5px;
+border-bottom:4px solid #006f9f;
+padding: 0;
+}
+
+
+#une-plus
+{
+background: url(images/une-fond-videos.gif) 0 bottom no-repeat;
+margin:20px 5px;
+padding:0;
+
+}
+.une-titre-plus {
+font-size:14px;
+font-weight:bold;
+color: #006f9f;
+background:#FFFFFF;
+border-bottom:4px solid #006f9f;
+margin:15px 0 0 0;
+padding: 5px;
+}
+
+
+#une-campagne
+{
+display:inline; /* bug ie*/
+background: #ffe3e8;
+/*height: 270px;*/
+width: 170px;
+float: left;
+margin: 0 10px 10px 10px;
+padding:0;
+
+}
+.une-titre-campagne {
+font-size:14px;
+font-weight:bold;
+color: #9f0038;
+border-bottom:4px solid #9f0038;
+margin: 0;
+padding: 5px;
+
+}
+
+#une-agenda
+{
+display:inline; /* bug ie*/
+background-color: #eee3ff;
+/*height: 270px;*/
+width: 350px;
+float: left;
+margin: 0 10px 10px 10px;
+padding:0;
+}
+
+.une-titre-agenda {
+font-size:14px;
+font-weight:bold;
+color: #622181;
+border-bottom:4px solid #622181;
+margin: 0;
+padding: 5px;
+
+}
+.news-agenda {
+font-size:11px;
+border-top:dashed 1px #006f9f;
+padding:3px 0;
+margin:0;
+}
+
+#une-actu
+{
+display:inline; /* bug ie*/
+background-color: #ffe3e8;
+height: 245px;
+width: 260px;
+float: left;
+margin: 10px;
+padding:0;
+}
+
+.une-titre-actu {
+font-size:14px;
+font-weight:bold;
+color: #9f0038;
+border-bottom:4px solid #9f0038;
+margin: 0;
+padding: 5px;
+
+
+}
+
+#une-sinformer
+{
+display:inline; /* bug ie*/
+background-color: #e1fce5;
+height: 245px;
+width: 260px;
+float: left;
+margin: 10px;
+padding:0;
+
+}
+.une-titre-sinformer {
+font-size:14px;
+font-weight:bold;
+color: #149d8e;
+border-bottom:4px solid #149d8e;
+margin: 0;
+padding: 5px;
+
+
+}
+
+#une-revue
+{
+display:inline; /* bug ie*/
+background-color: #e1fce5;
+height: 230px;
+width: 150px;
+float: left;
+margin: 10px;
+}
+
+.une-titre-revue {
+font-size:14px;
+font-weight:bold;
+color: #149d8e;
+border-bottom:4px solid #149d8e;
+margin: 0;
+padding: 5px;
+
+}
+
+
+#une-artistes
+{
+display:inline; /* bug ie*/
+
+background-color: #fff0dd;
+height: 230px;
+width: 150px;
+float: left;
+margin: 10px;
+
+}
+
+.une-titre-artistes {
+font-size:14px;
+font-weight:bold;
+color: #ff9000;
+border-bottom:4px solid #ff9000;
+margin: 0;
+padding: 5px;
+
+
+}
+
+#une-autres
+{
+display:inline; /* bug ie*/
+
+background-color: #eee3ff;
+height: 230px;
+width: 200px;
+float: left;
+margin: 10px;
+}
+
+.une-titre-autres {
+font-size:14px;
+font-weight:bold;
+color: #622181;
+border-bottom:4px solid #622181;
+margin: 0;
+padding: 5px;
+
+
+}
+
+.news {
+font-size:11px;
+border-bottom:dashed 1px #006f9f;
+padding:5px;
+margin:0;
+text-align:left;
+}
+
+
+
+#une-actualites
+{
+background: url(images/une-fond-videos.gif) 0 bottom no-repeat;
+margin:0 5px;
+padding:0;
+
+}
+
+.une-titre-actualites {
+font-size:14px;
+font-weight:bold;
+color: #006f9f;
+margin-left: 20px;
+padding: 0;
+
+}
+
+.une-titre2-actualites {
+font-weight:bold;
+font-size:12px;
+padding:10px;
+margin:5px 0;
+background:#006f9f;
+color:#FFFFFF;
+
+}
+
+
+.description
+{ margin:0 0 10px 0; font-size:11px; }
+
+
+/* CSS Document */
+
+#dmain
+{
+display:inline; /* bug ie*/
+width:500px;
+float:left;
+text-align:left;
+margin:10px 0 10px 10px;
+
+}
+
+
+
+#ddroite
+{
+display:inline; /* bug ie*/
+width:200px;
+float:right;
+margin-left:10px;
+text-align:left;
+margin:10px 0;
+}
+
+.intro
+{
+background-color:#f29400;
+}
+
+.intro .titre
+{
+padding:10px;
+font-weight:bold;
+font-size:16px;
+
+}
+
+.intro .texte
+{
+padding:20px;
+font-weight:bold;
+}
+
+
+
+
+
+.dbloc1 .titre
+{
+padding:10px;
+font-weight:bold;
+background-color:#f29400;
+
+
+}
+
+.dbloc1 .texte
+{
+padding:5px 10px;
+background-color:#EEEEEE;
+font-size:11px;
+}
+
+
+.dliste 
+{
+padding-bottom:15px;
+border-top:5px solid #f29400;
+border-bottom:1px solid #ccc;
+background-color:F2F2F2;
+
+}
+
+.dliste .titre
+{
+padding:10px;
+font-weight:bold;
+font-size:14px;
+
+}
+
+
+.dliste .titre2
+{
+padding:10px 10px 5px 10px;
+font-weight:bold;
+font-size:12px;
+
+}
+
+.dliste ul
+{
+margin:0;
+padding:0 5px;
+padding-left:20px;
+}
+
+
+.intro2
+{
+background-color:#bbca3c;
+}
+
+.intro2 .titre
+{
+padding:10px;
+font-weight:bold;
+font-size:16px;
+}
+
+.intro2 .texte
+{
+padding:20px;
+font-weight:bold;
+}
+
+
+.dbloc2 .titre
+{
+padding:10px;
+font-weight:bold;
+background-color:#bbca3c;
+
+
+}
+
+.dbloc2 .texte
+{
+padding:5px 10px;
+border-bottom:1px solid #ccc;
+background-color:F2F2F2;
+font-size:11px;
+}
+
+.dliste2 
+{
+padding-bottom:15px;
+border-top:5px solid #bbca3c;
+border-bottom:1px solid #ccc;
+background-color:F2F2F2;
+
+}
+
+.dliste2 .titre
+{
+padding:10px;
+font-weight:bold;
+font-size:14px;
+
+}
+
+
+.dliste2 .titre2
+{
+padding:10px 10px 5px 10px;
+font-weight:bold;
+font-size:12px;
+
+}
+
+.dliste2 ul
+{
+margin:0;
+padding:0 5px;
+padding-left:20px;
+}
+
+.dbloc3
+{background-color:#ffec00;}
+
+.dbloc3 .titre
+{
+padding:10px;
+font-weight:bold;
+background-color: #ffec00;
+
+
+}
+
+.dbloc3 .texte
+{
+padding:5px 10px;
+border-bottom:1px solid #ccc;
+
+font-size:11px;
+}
+
+.dbloc3 ul{
+padding:10px;
+margin:0;
+}
+
+.dbloc3 li{
+margin:0;
+list-style:disc;
+list-style-position:outside;
+background-color: #ffec00;
+
+margin-left:10px;
+}
+
+
+.agirenligne
+{
+background-image: url(images/agirenligne-fond.png);
+background-repeat:no-repeat;
+width:157px;
+height:250px;
+margin:0;
+padding:0;
+}
+
+.agirenligne a { color:#000;}
+.agirenligne h1 { color:#000; font-size:15px; font-weight:bold; padding:10px  ; margin:0;}
+.agirenligne ul
+{
+text-align:left;
+margin:0;
+padding:0;
+padding-left:20px;
+list-style-image:none;
+list-style:disc;
+color:#000; 
+}
+.agirenligne li {
+margin:0;
+padding:3px 2px 2px 0;
+}
+
+#badge_don {  }
+#badge_don a {  display: block; position: fixed; bottom: 0px; right: 0px; z-index : 100000; width: 125px; height: 115px; text-indent: -30000em; background: transparent url(http://groupes.sortirdunucleaire.org/plugins/badge_don/images/badge_don.png) left top no-repeat; opacity: 0.8; }
+#badge_don a:hover { opacity: 1; }

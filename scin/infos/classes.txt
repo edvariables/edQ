@@ -1,0 +1,35 @@
+Héritage des classes :
+--------------------
+
+StockageAbstract (stockage en SGBD)               
+      |
+      |
+      |_____________________________________________                           
+      |                                             |
+      |                                             |
+      |                                             |
+ASNabstract (générales ASN)                     EDFevenements *
+      |
+      |
+      |_______________________________________             
+      |                   |                   |                         
+      |                   |                   |                          
+      |                   |                   |
+      |                   |                   |
+BaseAbstract        DaoAbstract         ASNActualites 
+(lecture SGBD)         (Dao)            ASNArretReacteurs **
+      |                   |             ASNAvisASN
+      |                   |             ASNCourrierDePosition
+      |                   |             ASNSuiteDinspection
+      |                   |             ASNAvisDincidents *
+      |                   |             ASNDecisions * 
+BaseDecision        IncidentDao
+BaseIncident        DecisionsASNDao
+
+
+Les classes dont le nom se terminent par Abstract sont abstraites.
+* = classes utilisant les fonctions de stockage en SGBD.
+
+Classes n'héritant de rien :
+- ASNrss
+- InstallationsPrioritaires
