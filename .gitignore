@@ -211,5 +211,9 @@ pip-log.txt
 #Translations
 *.mo
 
-#Mr Developer
-.mr.developer.cfg
+#ED
+logs/
+pages/edQ/
+!pages/edQ/_*
+pages/edQ/_Exemples/test.php
+conf/edQ.conf.php
