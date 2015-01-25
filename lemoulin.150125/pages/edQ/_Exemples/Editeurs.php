@@ -1,1 +1,0 @@
-<?php page::call(':CodeMirror', $node)?>
