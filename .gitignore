@@ -213,13 +213,13 @@ pip-log.txt
 
 #ED
 logs/
-pages/edQ/
-!pages/edQ/_*/
-!pages/edQ/_*.php
-!pages/edQ/_System/
-!pages/edQ/_html/
-!pages/edQ/_docs/
-!pages/edQ/_format/
-!pages/edQ/_Exemples/
+pages/edQ/!_*/
+#!pages/edQ/_*/
+#!pages/edQ/_*.php
+#!pages/edQ/_System/
+#!pages/edQ/_html/
+#!pages/edQ/_docs/
+#!pages/edQ/_format/
+#!pages/edQ/_Exemples/
 pages/edQ/_Exemples/test.php
 conf/edQ.conf.php

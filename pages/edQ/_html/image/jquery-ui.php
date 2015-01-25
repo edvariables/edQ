@@ -1,0 +1,1 @@
+<span title="precedent" class="ui-icon ui-icon-arrowthick-1-w"> </span>
