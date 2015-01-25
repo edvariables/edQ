@@ -217,7 +217,7 @@ logs/
 #exclut tout ce qui ne commence pas par _
 pages/edQ/*
 !pages/edQ/_
-!pages/edQ/_*
+#!pages/edQ/_*
 !pages/edQ/_*/
 
 #trop fréquent et inutile
