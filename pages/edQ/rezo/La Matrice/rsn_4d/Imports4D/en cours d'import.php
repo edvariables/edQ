@@ -1,1 +1,0 @@
-$_GLOBALS['edQ--progress'] = <?=$_GLOBALS['edQ--progress']?>
