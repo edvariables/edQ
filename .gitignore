@@ -217,8 +217,6 @@ logs/
 #exclut tout ce qui ne commence pas par _
 #tous
 pages/edQ/*
-#?
-#!pages/edQ/_
 #fichiers
 !pages/edQ/_*
 #dossier

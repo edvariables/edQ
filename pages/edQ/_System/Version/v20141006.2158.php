@@ -1,5 +1,5 @@
 < ?php
-$db = get_db('/_System/dataSource');
+	  $db = get_db('/_System/dataSource');
 $db->query('UPDATE `tree_data` SET `ulvl` = 256');
 
 
