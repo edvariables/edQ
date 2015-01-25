@@ -215,12 +215,14 @@ pip-log.txt
 logs/
 
 #exclut tout ce qui ne commence pas par _
-    #tous
-    pages/edQ/*
-    #fichiers
-    !pages/edQ/_*
-    #dossier
-    !pages/edQ/_*/
+#tous
+pages/edQ/*
+#?
+#!pages/edQ/_
+#fichiers
+!pages/edQ/_*
+#dossier
+!pages/edQ/_*/
 
 #trop fréquent et inutile
 pages/edQ/_Exemples/test.php
