@@ -1,0 +1,31 @@
+Exemple de hiérarchie des pages html à capturer
+
+site EDF
+
+<div class="contentAcc">
+    <h3 id="Acc0">
+        <span class="inesLevel il1" title="Echelle INES Niveau 1">1</span>
+        <a href="#">Non respect d'une règle d'exploitation sur l'unité de production n°1</a>
+        <span class="date">15/05/2013 </span>
+    </h3>
+
+    <div class="contentText">
+        <br />L&#39;unit&eacute; de production n&deg;1 de la centrale nucl&eacute;aire de Belleville est en arr&ecirc;t programm&eacute; pour maintenance et renouvellement d&#39;une partie de son combustible depuis le 27 avril 2013.  <br />Dans le cadre des op&eacute;rations de maintenance, de nombreux contr&ocirc;les sont r&eacute;alis&eacute;s r&eacute;guli&egrave;rement, destin&eacute;s &agrave; tester la disponibilit&eacute; et le bon fonctionnement de mat&eacute;riels importants pour la s&ucirc;ret&eacute;.<br />Un contr&ocirc;le r&eacute;alis&eacute; le 8 mai 2013 a permis de d&eacute;tecter un dysfonctionnement sur l&#39;alimentation &eacute;lectrique d&#39;une vanne du syst&egrave;me d&#39;injection de s&eacute;curit&eacute;*, qui la rendait indisponible. Cette indisponibilit&eacute; remontait au 7 mai 2013, suite &agrave; l&#39;ouverture d&#39;un disjoncteur permettant de pr&eacute;parer une intervention de maintenance sur un autre mat&eacute;riel. Apr&egrave;s analyse, les &eacute;quipes techniques ont rendu cette vanne &agrave; nouveau disponible, le 9 mai. L&#39;indisponibilit&eacute; du mat&eacute;riel n&#39;a eu aucune cons&eacute;quence sur la s&ucirc;ret&eacute; des installations ni sur l&#39;environnement. <br />Cependant, l&#39;analyse approfondie de cet &eacute;v&eacute;nement a mis en &eacute;vidence une dur&eacute;e d&#39;indisponibilit&eacute; de ce syst&egrave;me de s&eacute;curit&eacute; sup&eacute;rieure &agrave; celle fix&eacute;e par les r&egrave;gles d&#39;exploitation. Cet &eacute;cart aux r&egrave;gles d&#39;exploitation a donc &eacute;t&eacute; d&eacute;clar&eacute; &agrave; l&#39;Autorit&eacute; de S&ucirc;ret&eacute; Nucl&eacute;aire le 13 mai 2013, au niveau 1 de l&#39;&eacute;chelle INES, qui en compte 7.<p><em>*Le syst&egrave;me d&#39;injection de s&eacute;curit&eacute; est con&ccedil;u pour assurer l&#39;injection de bore et de refroidissement du c&oelig;ur, notamment en cas rupture sur le circuit primaire entra&icirc;nant une fuite d&#39;eau importante. </em></p>
+    </div>
+
+    <h3 id="Acc1">
+        <span class="inesLevel il" title="Echelle INES Niveau "></span>
+        <a href="#">Faible rejet de chlorure ferrique</a>
+        <span class="date">17/04/2013 </span>
+    </h3>
+    <div class="contentText">
+        Mardi 16 avril 2013 en fin de journ&eacute;e,
+
+Par niveau :
+
+Niveau 1 : <div class="contentAcc">
+Niveau 2 :   <h3 id=   
+Niveau 3 :      gravité     <span … title="Echelle INES Niveau…
+Niveau 3 :      titre       <a href="#">
+Niveau 3 :      date        <span class="date"
+Niveau 2 :   <div class="contentText">
