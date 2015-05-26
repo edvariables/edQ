@@ -13,7 +13,7 @@ else
 $node = node($node, __FILE__);
 require_once(node('..', $node, 'file')); //include the class and wrappers
 
-$object=parseOds($fileName, $sheets); //load the ods file//Suivi budgetaire - copie //150525-TEST
+$object=new ods($fileName, $sheets); //load the ods file
 //echo('<pre>'.print_r($object->columns, true).'</pre>');
 $object->parseToHtml(false, node('getSheet', $node, 'id'), $fileName);
 	

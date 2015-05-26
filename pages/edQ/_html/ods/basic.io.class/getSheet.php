@@ -15,8 +15,8 @@ else
 $node = node($node, __FILE__);
 require_once(node('..', $node, 'file')); //include the class and wrappers
 
-$object=parseOds($fileName, $sheet); //load the ods file//Suivi budgetaire - copie //150525-TEST
+$object=new ods($fileName, $sheet); //load the ods file//Suivi budgetaire - copie //150525-TEST
 //echo('<pre>'.print_r($object->columns, true).'</pre>');
-$object->parseSheetToAllHtml($sheet);
+$object->parseUniqueSheetToHtml($sheet);
 	
 ?>

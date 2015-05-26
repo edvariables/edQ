@@ -1,6 +1,6 @@
 <?php
 /*
-ED150525 
+ED150525 inspired from
 
 ods-php a library to read and write ods files from php.
 
@@ -32,8 +32,9 @@ class ods {
 	var $sheetsFilter;
 	var $skipRows;
 	var $rowsAttrs;
+	var $file;
 	
-	function ods() {
+	function ods($file = FALSE, $sheetsFilter = FALSE, $open = FALSE) {
 		$this->styles = array();
 		$this->fonts = array();
 		$this->sheets = array();
@@ -48,9 +49,36 @@ class ods {
 		$this->currentColumn = 0;
 		$this->currentCell = 0;
 		$this->repeat = 0;
+		$this->file = $file;
+		$this->setSheetsFilter( $sheetsFilter );
+		if($open)
+			$this->open();
+	}
+	/* Open file */
+	function open($sheetsFilter = FALSE) {
+		if(!$this->file)
+			return false;
+		$tmp = get_tmp_dir();
+		$file = $this->file;
+		copy($file,$tmp. DIRECTORY_SEPARATOR .basename($file));
+		$path = $tmp. DIRECTORY_SEPARATOR .basename($file);
+		$uid = uniqid();
+		mkdir($tmp. DIRECTORY_SEPARATOR .$uid);
+		shell_exec('unzip '.escapeshellarg($path).' -d '.escapeshellarg($tmp. DIRECTORY_SEPARATOR .$uid));
+		if($sheetsFilter !== FALSE)
+			$this->setSheetsFilter( $sheetsFilter );
+		$this->parse(file_get_contents($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'content.xml'));
+		helpers::rrmdir($tmp.DIRECTORY_SEPARATOR.$uid);
+		
+		//echo('sheets<pre>'); print_r($obj->sheets); echo '</pre>';
+		//echo('styles<pre>'); print_r($obj->styles); echo '</pre>';
+		//echo('names<pre>'); print_r($obj->names); echo '</pre>';
+		//echo('skipRows<pre>'); print_r($obj->skipRows); echo '</pre>';
+		//echo('rowsAttrs<pre>'); print_r($obj->rowsAttrs); echo '</pre>';
+		return $this;
 	}
 	
-	function parse($data) {
+	private function parse($data) {
 		$xml_parser = xml_parser_create(); 
 		xml_parser_set_option($xml_parser,XML_OPTION_TARGET_ENCODING, "UTF-8");
 		xml_set_object ( $xml_parser, $this );
@@ -63,13 +91,13 @@ class ods {
 		$this->currentSheet = $this->firstSheet;
 	}
 	
-	function setSheetsFilters($sheetsFilters){
-		if(is_numeric($sheetsFilters))
-			$this->sheetsFilters = array($sheetsFilters);
-		elseif(is_string($sheetsFilters))
-			$this->sheetsFilters = explode(','.$sheetsFilters);
-		elseif(is_array($sheetsFilters))
-			$this->sheetsFilters = $sheetsFilters;
+	function setSheetsFilter($sheetsFilter){
+		if(is_numeric($sheetsFilter))
+			$this->sheetsFilter = array($sheetsFilter);
+		elseif(is_string($sheetsFilter))
+			$this->sheetsFilter = explode(','.$sheetsFilter);
+		elseif(is_array($sheetsFilter))
+			$this->sheetsFilter = $sheetsFilter;
 	}
 	
 	function array2ods() {
@@ -155,7 +183,7 @@ class ods {
 		return $string;
 	}
 	
-	function startElement($parser, $tagName, $attrs) {
+	private function startElement($parser, $tagName, $attrs) {
 		$cTagName = strtolower($tagName);
 		if($cTagName == 'style:font-face') {
 			$this->fonts[$attrs['STYLE:NAME']] = $attrs;
@@ -168,7 +196,7 @@ class ods {
 			$this->styles[$this->lastElement]['styles'][$cTagName] = $attrs;
 			
 		} elseif($cTagName == 'table:table-cell') {
-			if($this->sheetSkipped($this->currentSheet))
+			if($this->IsSheetSkipped($this->currentSheet))
 				return;
 			if($this->firstSheet === FALSE)
 				$this->firstSheet = $this->currentSheet;
@@ -199,11 +227,11 @@ class ods {
 			}
 		} elseif($cTagName == 'table:table') {
 			$this->names['tables'][$this->currentSheet] = $attrs['TABLE:NAME'];
-			if($this->sheetSkipped($this->currentSheet))
+			if($this->IsSheetSkipped($this->currentSheet))
 				return false;
 			
 		} elseif($cTagName == 'table:table-row') {
-			if($this->sheetSkipped($this->currentSheet))
+			if($this->IsSheetSkipped($this->currentSheet))
 				return;
 			if(array_key_exists('TABLE:VISIBILITY', $attrs))
 				$this->skipRows[$this->currentSheet][$this->currentRow] = true;
@@ -212,7 +240,7 @@ class ods {
 			$this->lastRowAtt = $attrs;
 			
 		} elseif($cTagName == 'table:table-column') {
-			if($this->sheetSkipped($this->currentSheet))
+			if($this->IsSheetSkipped($this->currentSheet))
 				return;
 			$this->columns[$this->currentSheet][$this->currentColumn] = $attrs;
 			if(isset($attrs['TABLE:NUMBER-COLUMNS-REPEATED'])) {
@@ -230,11 +258,7 @@ class ods {
 		}
 	}
 	
-	function sheetSkipped($sheetIndex){
-		return $this->sheetsFilters && !in_array($sheetIndex, $this->sheetsFilters);
-	}
-	
-	function endElement($parser, $tagName) {
+	private function endElement($parser, $tagName) {
 		switch( strtolower($tagName) ){
 		case 'table:table' :
 			$this->currentSheet++;
@@ -256,7 +280,7 @@ class ods {
 		}
 	}
 	
-	function characterData($parser, $data) {
+	private function characterData($parser, $data) {
 		if($this->lastElement == 'table:table-cell') {
 			//en cas d'accent, la valeur est passée en plusieurs fois
 			if($this->sheets[$this->currentSheet]['rows'][$this->currentRow][$this->currentCell]['value'])
@@ -338,13 +362,86 @@ class ods {
 		$this->sheets[$sheet]['rows'][$row][$cell]['value'] = $value;
 	}
 	
-	function parseToHtml($uid = FALSE, $getSheetNode = FALSE, $sourceFile = FALSE){
+	
+	function IsSheetSkipped($sheetIndex){
+		return $this->sheetsFilter && !in_array($sheetIndex, $this->sheetsFilter);
+	}
+	
+	/*
+	 * Function returns file cache path
+	 */
+	private function getCacheRoot(){
+		if(!$this->file)
+			return false;
+		$fileDate = filemtime($this->file);
+		return get_tmp_dir() . DIRECTORY_SEPARATOR
+			. basename($this->file)
+			. '-' . $fileDate;
+	}
+	private function getCacheFile($sheetIndex = FALSE){
+		if(!$this->file)
+			return false;
+		if($sheetIndex === FALSE){
+			$viewName = 'tabs';
+			foreach($this->sheetsFilter as $i => $sheet)
+					$viewName .= 'x' . $i;
+		}
+		else if(is_array($sheetIndex))
+			$viewName = 'sheet' . implode('-', $sheetIndex);
+		else 
+			$viewName = 'sheet' . $sheetIndex;
+		return $this->getCacheRoot() . '-' . $viewName . '.html';
+	}
+	/*
+	 * Read file if in cache
+	 * @return true if cached file found and read
+	 */
+	private function echoCached($sheetIndex = FALSE){
+		$file = $this->getCacheFile($sheetIndex);
+		if(!$file || !file_exists($file)){
+			//echo "<br/>UNKNOWN CACHE $sheetIndex $file<br/>";
+			return false;
+		}
+		//echo "<br/>FROM CACHE $sheetIndex $file<br/>";
+		readfile($file);
+		return true;
+	}
+	private function startCache($sheetIndex = FALSE){
+		ob_start();
+	}
+	private function endCache($sheetIndex = FALSE){
+		$file = $this->getCacheFile($sheetIndex);
+		if(!$file)
+			return false;
+		
+		$page = ob_get_clean();
+	
+		if(file_exists($file))
+			unlink($file);
+		$fw = fopen($file, "w");
+		fputs($fw, $page, strlen($page));
+		fclose($fw);
+		
+		//echo "<br/>TO CACHE $file<br/>";
+		
+		$this->echoCached($sheetIndex);
+	}
+	
+	/*
+	 * Function to render ods sheets as html tabs
+	 */
+	public function parseToHtml($uid = FALSE, $getSheetNode = FALSE, $sourceFile = FALSE){
+		if($this->echoCached())
+			return true;
+		if(!$this->sheets && !$this->open())
+			return false;
+		$this->startCache();
 		if(!$uid)
 			$uid = uniqid('ods');
 		echo '<div id="'.$uid.'">';
 		echo '<ul>';
 		foreach($this->sheets as $sheetIndex => $sheet)
-			if($this->sheetSkipped($sheetIndex)){
+			if($this->IsSheetSkipped($sheetIndex)){
 				echo '<li>';
 				echo '<a href="view.php'
 					. '?id=' . $getSheetNode
@@ -362,7 +459,7 @@ class ods {
 		echo '</ul>';
 		$firstSheet = false;
 		foreach($this->sheets as $sheetIndex => $sheet)
-			if(!$this->sheetSkipped($sheetIndex)){
+			if(!$this->IsSheetSkipped($sheetIndex)){
 				if($firstSheet === false)
 					$firstSheet = $sheetIndex;
 				$this->currentSheet = $sheetIndex;
@@ -374,14 +471,25 @@ class ods {
 		if($firstSheet !== false)
 			$this->currentSheet = $firstSheet;
 		$this->echoScript($uid, $firstSheet);
+		
+		$this->endCache();
 	}
-	function parseSheetToAllHtml($sheetIndex){
-		$uid = uniqid('odsheet');
+	/*
+	 * Function to render one ods sheet as tab inner html 
+	 */
+	public function parseUniqueSheetToHtml($sheetIndex){
+		if($this->echoCached($sheetIndex))
+			return;
+		if(!$this->sheets && !$this->open())
+			return false;
+		$this->startCache($sheetIndex);
+		
+		$uid = uniqid('odsht');
 		if($sheetIndex === FALSE){
 			var_dump($this->sheetsFilter);
 			$sheetIndex = $this->sheetsFilter ? $this->sheetsFilter[0] : 0;
 		}
-		if($this->sheetSkipped($sheetIndex)){
+		if($this->IsSheetSkipped($sheetIndex)){
 			echo print_r($sheetIndex, true) . ' is skipped. ' . print_r($this->sheetsFilter , true);
 			return;
 		}
@@ -393,13 +501,15 @@ class ods {
 			echo '</div>';
 			$this->parseStylesToHtml($uid);
 		echo '</div>';
+		
+		$this->endCache($sheetIndex);
 	}
 	function parseSheetToHtml($uid = FALSE, $sheetIndex = FALSE, $sheet = FALSE){
 		if($sheetIndex === FALSE){
 			$sheetIndex = $this->sheetsFilter ? $this->sheetsFilter[0] : 0;
 			$echoStyles = true;
 		}
-		if($this->sheetSkipped($sheetIndex))
+		if($this->IsSheetSkipped($sheetIndex))
 			return;
 		if($sheet === FALSE)
 			$sheet = $this->sheets[$sheetIndex];
@@ -496,10 +606,10 @@ class ods {
 	}
 	
 	function parseStylesToHtml($uid){
-		echo '<style>';
+		echo "<style>\r\n";
 		$this->echoDefaultCSS($uid);
 		$this->parseStylesToCss($uid);
-		echo '</style>';
+		echo "\r\n</style>";
 	}
 	function echoDefaultCSS($uid){
 		echo "\n#".$uid.' {
@@ -550,7 +660,7 @@ class ods {
 	function parseStylesToCss($uid){
 		//styles par défaut par colonne
 		foreach($this->columns as $sheetIndex => $columns){
-			if($this->sheetSkipped($sheetIndex))
+			if($this->IsSheetSkipped($sheetIndex))
 				continue;
 			foreach($columns as $colIndex => $attrs){
 				$visibility = $attrs['TABLE:VISIBILITY'];
@@ -572,7 +682,7 @@ class ods {
 		}
 		
 		//foreach($this->rowsAttrs as $sheetIndex => $rows){
-		//	if($this->sheetSkipped($sheetIndex))
+		//	if($this->IsSheetSkipped($sheetIndex))
 		//		continue;
 		//	foreach($rows as $rowIndex => $attrs){
 		//		foreach(array('TABLE:STYLE-NAME') as $attr){
@@ -788,26 +898,11 @@ class ods {
 		}
 		return $str;
 	}
+	
+	
+	
 }
 
-function parseOds($file, $sheetsFilters = FALSE) {
-	$tmp = get_tmp_dir();
-	copy($file,$tmp. DIRECTORY_SEPARATOR .basename($file));
-	$path = $tmp. DIRECTORY_SEPARATOR .basename($file);
-	$uid = uniqid();
-	mkdir($tmp. DIRECTORY_SEPARATOR .$uid);
-	shell_exec('unzip '.escapeshellarg($path).' -d '.escapeshellarg($tmp. DIRECTORY_SEPARATOR .$uid));
-	$obj = new ods();
-	$obj->setSheetsFilters( $sheetsFilters );
-	$obj->parse(file_get_contents($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'content.xml'));
-	helpers::rrmdir($tmp.DIRECTORY_SEPARATOR.$uid);
-	//echo('sheets<pre>'); print_r($obj->sheets); echo '</pre>';
-	//echo('styles<pre>'); print_r($obj->styles); echo '</pre>';
-	//echo('names<pre>'); print_r($obj->names); echo '</pre>';
-	//echo('skipRows<pre>'); print_r($obj->skipRows); echo '</pre>';
-	//echo('rowsAttrs<pre>'); print_r($obj->rowsAttrs); echo '</pre>';
-	return $obj;
-}
 
 function saveOds($obj,$file) {
 	
@@ -815,25 +910,28 @@ function saveOds($obj,$file) {
 	ini_set('default_charset', 'UTF-8');
 	$tmp = get_tmp_dir();
 	$uid = uniqid();
-	mkdir($tmp. DIRECTORY_SEPARATOR .$uid);
-	file_put_contents($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'content.xml',$obj->array2ods());
-	file_put_contents($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'mimetype','application/vnd.oasis.opendocument.spreadsheet');
-	file_put_contents($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'meta.xml',$obj->getMeta('fr-FR'));
-	file_put_contents($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'styles.xml',$obj->getStyle());
-	file_put_contents($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'settings.xml',$obj->getSettings());
-	mkdir($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'META-INF'.DIRECTORY_SEPARATOR.'');
-	mkdir($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'Configurations2'.DIRECTORY_SEPARATOR.'');
-	mkdir($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'Configurations2'.DIRECTORY_SEPARATOR.'acceleator'.DIRECTORY_SEPARATOR.'');
-	mkdir($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'Configurations2'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'');
-	mkdir($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'Configurations2'.DIRECTORY_SEPARATOR.'popupmenu'.DIRECTORY_SEPARATOR.'');
-	mkdir($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'Configurations2'.DIRECTORY_SEPARATOR.'statusbar'.DIRECTORY_SEPARATOR.'');
-	mkdir($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'Configurations2'.DIRECTORY_SEPARATOR.'floater'.DIRECTORY_SEPARATOR.'');
-	mkdir($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'Configurations2'.DIRECTORY_SEPARATOR.'menubar'.DIRECTORY_SEPARATOR.'');
-	mkdir($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'Configurations2'.DIRECTORY_SEPARATOR.'progressbar'.DIRECTORY_SEPARATOR.'');
-	mkdir($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'Configurations2'.DIRECTORY_SEPARATOR.'toolbar'.DIRECTORY_SEPARATOR.'');
-	file_put_contents($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'META-INF'.DIRECTORY_SEPARATOR.'manifest.xml',$obj->getManifest());
-	//shell_exec('cd '.$tmp.DIRECTORY_SEPARATOR.$uid.';zip -r '.escapeshellarg($file).' .'.DIRECTORY_SEPARATOR.'');
+	$rootPath = $tmp. DIRECTORY_SEPARATOR .$uid;
+	mkdir($rootPath);
+	$rootPath .= DIRECTORY_SEPARATOR;
+	file_put_contents($rootPath.'content.xml',$obj->array2ods());
+	file_put_contents($rootPath.'mimetype','application/vnd.oasis.opendocument.spreadsheet');
+	file_put_contents($rootPath.'meta.xml',$obj->getMeta('fr-FR'));
+	file_put_contents($rootPath.'styles.xml',$obj->getStyle());
+	file_put_contents($rootPath.'settings.xml',$obj->getSettings());
+	mkdir($rootPath.'META-INF'.DIRECTORY_SEPARATOR.'');
+	mkdir($rootPath.'Configurations2'.DIRECTORY_SEPARATOR.'');
+	mkdir($rootPath.'Configurations2'.DIRECTORY_SEPARATOR.'acceleator'.DIRECTORY_SEPARATOR.'');
+	mkdir($rootPath.'Configurations2'.DIRECTORY_SEPARATOR.'images'.DIRECTORY_SEPARATOR.'');
+	mkdir($rootPath.'Configurations2'.DIRECTORY_SEPARATOR.'popupmenu'.DIRECTORY_SEPARATOR.'');
+	mkdir($rootPath.'Configurations2'.DIRECTORY_SEPARATOR.'statusbar'.DIRECTORY_SEPARATOR.'');
+	mkdir($rootPath.'Configurations2'.DIRECTORY_SEPARATOR.'floater'.DIRECTORY_SEPARATOR.'');
+	mkdir($rootPath.'Configurations2'.DIRECTORY_SEPARATOR.'menubar'.DIRECTORY_SEPARATOR.'');
+	mkdir($rootPath.'Configurations2'.DIRECTORY_SEPARATOR.'progressbar'.DIRECTORY_SEPARATOR.'');
+	mkdir($rootPath.'Configurations2'.DIRECTORY_SEPARATOR.'toolbar'.DIRECTORY_SEPARATOR.'');
+	file_put_contents($rootPath.'META-INF'.DIRECTORY_SEPARATOR.'manifest.xml',$obj->getManifest());
+	
 	shell_exec('zip -r '.escapeshellarg($file).' '.$tmp.DIRECTORY_SEPARATOR.$uid.DIRECTORY_SEPARATOR.';');
+	
 	helpers::rrmdir($tmp.DIRECTORY_SEPARATOR.$uid);
 	ini_set('default_charset',$charset);
 }
