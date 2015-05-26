@@ -407,6 +407,9 @@ class ods {
 		return true;
 	}
 	private function startCache($sheetIndex = FALSE){
+		$file = $this->getCacheFile($sheetIndex);
+		if(!$file)
+			return false;
 		ob_start();
 	}
 	private function endCache($sheetIndex = FALSE){
@@ -614,6 +617,7 @@ class ods {
 	function echoDefaultCSS($uid){
 		echo "\n#".$uid.' {
 			list-style: none;
+			font-family: Arial;
 		}';
 		
 		echo "\n#".$uid.' table[sheet] {
