@@ -23,7 +23,7 @@ Attention, la mise à jour de vTiger écrasera cette modification !
 <a href="https://discussions.vtiger.com/index.php?p=/discussion/172845/contribution-menubar-moremenus-vtranslatelbl_parent-modulename-bug"
 >bug posté sur le forum</a></pre></li>
 				<li><pre>Autre surprise, il manque l'enregistrement dans vtiger_entityname
-<code>INSERT INTO `rsdn_vtigercrm`.`vtiger_entityname` (`tabid`, `modulename`, `tablename`, `fieldname`, `entityidfield`, `entityidcolumn`)
+<code>INSERT INTO `vtiger_entityname` (`tabid`, `modulename`, `tablename`, `fieldname`, `entityidfield`, `entityidcolumn`)
 	VALUES ('51', 'RsnDons', 'vtiger_rsndon', 'montant', 'rsndonid', 'rsndonid')</code>
 </pre></li>
 				<li><pre>L'utilisation du "input mandatory" provoque le masquage des champs en édition.

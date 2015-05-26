@@ -1,0 +1,1 @@
+ALTER TABLE `vtiger_entityname` ADD `uicolorfield` INT(11) NULL ;

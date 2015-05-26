@@ -1,4 +1,13 @@
 <pre>
+Attention : ce qui suit détruit toutes limitations de droits.
+Les picklist afficheront tous les éléments à tous les utilisateurs.
+
+! ATTENTION :
+Une version php de la réparation des droits est disponible dans "Repair all"
+
+la suite est un peu plus aléatoire...
+!!
+
 Réparation des droits des éléments de picklist.
 
 Attention : ce qui suit détruit toutes limitations de droits.

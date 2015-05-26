@@ -23,11 +23,21 @@ Attention, la mise à jour de vTiger écrasera cette modification !
 <a href="https://discussions.vtiger.com/index.php?p=/discussion/172845/contribution-menubar-moremenus-vtranslatelbl_parent-modulename-bug"
 >bug posté sur le forum</a></pre></li>
 				<li><pre>Autre surprise, il manque l'enregistrement dans vtiger_entityname
-<code>INSERT INTO `rsdn_vtigercrm`.`vtiger_entityname` (`tabid`, `modulename`, `tablename`, `fieldname`, `entityidfield`, `entityidcolumn`)
+<code>INSERT INTO `vtiger_entityname` (`tabid`, `modulename`, `tablename`, `fieldname`, `entityidfield`, `entityidcolumn`)
 	VALUES ('51', 'RsnDons', 'vtiger_rsndon', 'montant', 'rsndonid', 'rsndonid')</code>
 </pre></li>
 				<li><pre>L'utilisation du "input mandatory" provoque le masquage des champs en édition.
 Il faut modifier le champ displaytype de la table vtiger_field pour passer la valeur de 2 à 1.
+</pre></li>
+				<li><pre>
+				UPDATE `vtiger_field` SET `uitype`=70
+WHERE ( `columnname` = 'modifiedtime'
+OR `columnname` = 'createdtime')
+AND tablename='vtiger_crmentity'
+</pre></li>
+				<li><pre>Si, lors de la validation d'un enregistrement du module, vous obtenez une page blanche,
+vérifier l'existence de l'enregistrement dans vtiger_entityname
+ainsi que la bonne syntaxe (casse) dans le modulename.
 </pre></li>
 				</ul>
 			<li><a href="http://community.vtiger.com/help/vtigercrm/developers/extensions/examples/uninstall-module.html">

@@ -3,7 +3,7 @@
 
 		<li><pre>
 A chaque enregistrement d'un entité, son nom est affecté au champ vtiger_crmentity.label 
-C'est ce nom que l'on voit dasn les champs d'entité liés.
+C'est ce nom que l'on voit dans les champs d'entité liés.
 Si il est mal défini, on peut ne pas voir qu'un enregistrement est lié à un autre.
 		</pre></li>
 	
