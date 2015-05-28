@@ -91,6 +91,8 @@ $uid = uniqid('table');
 ?><table id="<?=$uid?>"><caption style="white-space: nowrap">Fichiers ne correspondant à aucun noeud<br/>dans <?=$dir?></caption>
 <tbody><?php
 foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::SELF_FIRST) as $f){
+	if(strpos(basename($f), '._') === 0)
+		continue;
 	$php = substr($f, strlen($f) - 4) == '.php';
 	$isDir = !$php && is_dir($f);
 	if($php
@@ -108,8 +110,8 @@ foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), Rec
 			 $files[] = $name;
 			?><tr f="<?= ( $f ) ?>" t="<?= $php ? 'file' : 'dir' ?>">
 			<td><td><?= ( $name . ($php ? '.php' : '/')) ?></td>
-			<td><i><a href class="create">créer le noeud</a></i>
-			<td><i><a href class="delete">supprimer</a></i>
+			<td><i><a href class="create">créer le noeud</a></i></td>
+			<td><i><a href class="delete">supprimer</a></i></td>
 		 <?php
 		 }
 	}
