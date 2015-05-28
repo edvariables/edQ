@@ -91,6 +91,8 @@ $uid = uniqid('table');
 ?><table id="<?=$uid?>"><caption style="white-space: nowrap">Fichiers ne correspondant à aucun noeud<br/>dans <?=$dir?></caption>
 <tbody><?php
 foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), RecursiveIteratorIterator::SELF_FIRST) as $f){
+	if(strpos(basename($f), '._') === 0)
+		continue;
 	$php = substr($f, strlen($f) - 4) == '.php';
 	$isDir = !$php && is_dir($f);
 	if($php
