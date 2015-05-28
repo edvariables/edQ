@@ -58,6 +58,9 @@ html, body { background:#ebebeb; font-size:10px; font-family:Verdana; margin:0; 
 .ui-tabs-anchor .jstree-icon {
 	margin-right: 3px;
 }
+.jstree-icon:empty.file-none {
+    display: none;
+}
 /* favpanel */
 .jstree-favpanel a {
 	cursor : pointer;
@@ -164,6 +167,7 @@ table > thead > tr > th.pk {
 }
 
 .ui-tabs-nav .loading .jstree-default .jstree-icon:empty {
+   display: inline-block;
    background: url(../images/loading.gif) no-repeat; 
 }
 
