@@ -427,7 +427,7 @@ class ods {
 	 * Function returns file cache path
 	 */
 	private function getCacheRoot($unique = TRUE){
-		if(!$this->file)
+		if(!$this->file || !file_exists($this->file))
 			return false;
 		$fileDate = filemtime($this->file);
 		return get_tmp_dir() . DIRECTORY_SEPARATOR
@@ -513,7 +513,7 @@ class ods {
 		if(!$uid)
 			$uid = uniqid('ods');
 		echo '<div id="'.$uid.'">';
-		echo '<ul>';
+		echo '<ul class="ui-tabs-nav">';
 		foreach($this->sheets as $sheetIndex => $sheet)
 			if(!$this->IsSheetHidden($sheetIndex))
 				if($this->IsSheetSkipped($sheetIndex)){
@@ -524,7 +524,9 @@ class ods {
 						. '&file=' . $sourceFile
 						. '&sheet=' . $sheetIndex
 						. ($this->cacheId ? '&cacheId=' . $this->cacheId : '')
-						.'#'. $uid.'-'. $sheetIndex.'">'.htmlentities($this->names['tables'][$sheetIndex]) .'</a>';
+						. '#'. $uid.'-'. $sheetIndex.'">'
+						. '<label class="jstree-default" href="#"><i class="jstree-icon jstree-themeicon jstree-themeicon-custom file file-none"></i>'
+						. htmlentities($this->names['tables'][$sheetIndex]) .'</label></a>';
 					echo '</li>';
 				}
 				else {
@@ -966,6 +968,30 @@ class ods {
 	$("#' . $uid . '")
 	  .tabs({
 		active: ' . $defaultViewIndex . ',
+		
+		beforeLoad: function( event, ui ) {
+			
+			if ( ui.tab.filter(":not(.onclick-load)").data( "loaded" ) ) {
+				event.preventDefault();
+				return;
+			}
+		
+			ui.tab.addClass("loading");
+
+			ui.jqXHR.success(function(data) {
+				//var className = ui.tab.attr("class").replace(/^.*(\\bedq-viewer-[^\\s]*)(\\s.*)?$/, "$1");
+				//ui.panel.addClass(className);
+				ui.tab.filter(":not(.onclick-load)").data( "loaded", true );
+				
+				ui.tab.removeClass("loading");
+			});
+			
+			ui.jqXHR.error(function(jqXHR, textStatus, errorThrown) {
+				ui.panel.html("Impossible de charger le contenu.<br>" + errorThrown );
+
+				ui.tab.removeClass("loading");
+			});
+		}
 	  })
 	;
  });</script>';
