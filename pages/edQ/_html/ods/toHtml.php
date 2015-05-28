@@ -21,6 +21,7 @@ class ods {
 	var $columns;
 	var $names;
 	var $lastElement;
+	var $previousElement;
 	var $fods;
 	var $firstSheet;
 	var $currentSheet;
@@ -33,6 +34,8 @@ class ods {
 	var $skipRows;
 	var $rowsAttrs;
 	var $file;
+	var $hiddenSheets;//sheets names
+	var $shownSheets;//sheets names
 	
 	function ods($file = FALSE, $sheetsFilter = FALSE, $open = FALSE) {
 		$this->styles = array();
@@ -41,6 +44,7 @@ class ods {
 		$this->columns = array();
 		$this->names = array();
 		$this->sheetsFilter = array();
+		$this->hiddenSheets = array();
 		$this->skipRows = array();
 		$this->rowsAttrs = array();
 		$this->currentRow = 0;
@@ -69,12 +73,17 @@ class ods {
 			$this->setSheetsFilter( $sheetsFilter );
 		$this->parse(file_get_contents($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'content.xml'));
 		helpers::rrmdir($tmp.DIRECTORY_SEPARATOR.$uid);
+		//echo "<br>".$tmp.DIRECTORY_SEPARATOR.$uid;
 		
-		//echo('sheets<pre>'); print_r($obj->sheets); echo '</pre>';
-		//echo('styles<pre>'); print_r($obj->styles); echo '</pre>';
-		//echo('names<pre>'); print_r($obj->names); echo '</pre>';
-		//echo('skipRows<pre>'); print_r($obj->skipRows); echo '</pre>';
-		//echo('rowsAttrs<pre>'); print_r($obj->rowsAttrs); echo '</pre>';
+		//echo('sheets<pre>'); print_r($this->sheets); echo '</pre>';
+		//echo('nb sheets = '); echo count($this->sheets); echo '<br>';
+		//echo('styles<pre>'); print_r($this->styles); echo '</pre>';
+		//echo('names<pre>'); print_r($this->names); echo '</pre>';
+		//echo('skipRows<pre>'); print_r($this->skipRows); echo '</pre>';
+		//echo('rowsAttrs<pre>'); print_r($this->rowsAttrs); echo '</pre>';
+		//echo('hiddenSheets<pre>'); var_dump($this->hiddenSheets); echo '</pre>';
+		//echo('sheetsFilter<pre>'); var_dump($this->sheetsFilter); echo '</pre>';
+		//echo('shownSheets<pre>'); var_dump($this->shownSheets); echo '</pre>';
 		return $this;
 	}
 	
@@ -98,6 +107,20 @@ class ods {
 			$this->sheetsFilter = explode(','.$sheetsFilter);
 		elseif(is_array($sheetsFilter))
 			$this->sheetsFilter = $sheetsFilter;
+	}
+	function setHiddenSheets($hiddenSheets){
+		if(is_array($hiddenSheets))
+			$this->hiddenSheets = $hiddenSheets;
+		elseif(is_numeric($hiddenSheets)
+		|| is_string($hiddenSheets))
+			$this->hiddenSheets = array($hiddenSheets);
+	}
+	function setShownSheets($shownSheets){
+		if(is_array($shownSheets))
+			$this->shownSheets = $shownSheets;
+		elseif(is_numeric($shownSheets)
+		|| is_string($shownSheets))
+			$this->shownSheets = array($shownSheets);
 	}
 	
 	function array2ods() {
@@ -196,7 +219,8 @@ class ods {
 			$this->styles[$this->lastElement]['styles'][$cTagName] = $attrs;
 			
 		} elseif($cTagName == 'table:table-cell') {
-			if($this->IsSheetSkipped($this->currentSheet))
+			if($this->IsSheetHidden($this->currentSheet)
+			|| $this->IsSheetSkipped($this->currentSheet))
 				return;
 			if($this->firstSheet === FALSE)
 				$this->firstSheet = $this->currentSheet;
@@ -227,11 +251,14 @@ class ods {
 			}
 		} elseif($cTagName == 'table:table') {
 			$this->names['tables'][$this->currentSheet] = $attrs['TABLE:NAME'];
-			if($this->IsSheetSkipped($this->currentSheet))
+			//var_dump($this->names['tables'][$this->currentSheet], $this->IsSheetHidden($this->currentSheet), $this->IsSheetSkipped($this->currentSheet));
+			if($this->IsSheetHidden($this->currentSheet)
+			|| $this->IsSheetSkipped($this->currentSheet))
 				return false;
 			
 		} elseif($cTagName == 'table:table-row') {
-			if($this->IsSheetSkipped($this->currentSheet))
+			if($this->IsSheetHidden($this->currentSheet)
+			|| $this->IsSheetSkipped($this->currentSheet))
 				return;
 			if(array_key_exists('TABLE:VISIBILITY', $attrs))
 				$this->skipRows[$this->currentSheet][$this->currentRow] = true;
@@ -240,7 +267,8 @@ class ods {
 			$this->lastRowAtt = $attrs;
 			
 		} elseif($cTagName == 'table:table-column') {
-			if($this->IsSheetSkipped($this->currentSheet))
+			if($this->IsSheetHidden($this->currentSheet)
+			|| $this->IsSheetSkipped($this->currentSheet))
 				return;
 			$this->columns[$this->currentSheet][$this->currentColumn] = $attrs;
 			if(isset($attrs['TABLE:NUMBER-COLUMNS-REPEATED'])) {
@@ -254,6 +282,10 @@ class ods {
 					$this->currentColumn += $times;
 				}
 			}
+			
+		} elseif($cTagName == 'office:annotation') {
+			$this->previousElement = $this->lastElement;
+			$this->lastElement = $cTagName;
 			
 		}
 	}
@@ -277,11 +309,15 @@ class ods {
 			$this->currentCell++;
 			$this->repeat = 0;
 			break;
+		case 'office:annotation':
+			$this->lastElement = $this->previousElement;
+			break;
 		}
 	}
 	
 	private function characterData($parser, $data) {
-		if($this->lastElement == 'table:table-cell') {
+		switch($this->lastElement){
+		case 'table:table-cell':
 			//en cas d'accent, la valeur est passée en plusieurs fois
 			if($this->sheets[$this->currentSheet]['rows'][$this->currentRow][$this->currentCell]['value'])
 				$this->sheets[$this->currentSheet]['rows'][$this->currentRow][$this->currentCell]['value'] .= $data;
@@ -294,6 +330,10 @@ class ods {
 					$this->sheets[$this->currentSheet]['rows'][$this->currentRow][$cnum]['value'] = $data;
 				}
 			}
+			break;
+		case 'office:annotation':
+			//TODO cell comment
+			break;
 		}
 	}
 	
@@ -366,17 +406,33 @@ class ods {
 	function IsSheetSkipped($sheetIndex){
 		return $this->sheetsFilter && !in_array($sheetIndex, $this->sheetsFilter);
 	}
+	function IsSheetHidden($sheetIndex){
+		$tableName = $this->names['tables'][$sheetIndex];
+		if( $this->shownSheets ){
+			return !in_array($tableName, $this->shownSheets);
+		}
+		
+		if( $this->hiddenSheets && in_array($tableName, $this->hiddenSheets) )
+			return true;
+		return false;
+	}
 	
+	
+	/******** CACHE **********/
+	var $cacheId;
+	public function setCacheId($cacheId){
+		$this->cacheId = is_bool($cacheId) ? '' : "$cacheId-";
+	}
 	/*
 	 * Function returns file cache path
 	 */
-	private function getCacheRoot(){
+	private function getCacheRoot($unique = TRUE){
 		if(!$this->file)
 			return false;
 		$fileDate = filemtime($this->file);
 		return get_tmp_dir() . DIRECTORY_SEPARATOR
 			. basename($this->file)
-			. '-' . $fileDate;
+			. ($unique ? '-' . $fileDate : '');
 	}
 	private function getCacheFile($sheetIndex = FALSE){
 		if(!$this->file)
@@ -390,8 +446,9 @@ class ods {
 			$viewName = 'sheet' . implode('-', $sheetIndex);
 		else 
 			$viewName = 'sheet' . $sheetIndex;
-		return $this->getCacheRoot() . '-' . $viewName . '.html';
+		return $this->getCacheRoot() . '-' . $this->cacheId . $viewName . '.html';
 	}
+	
 	/*
 	 * Read file if in cache
 	 * @return true if cached file found and read
@@ -429,40 +486,57 @@ class ods {
 		
 		$this->echoCached($sheetIndex);
 	}
+	public function clearCache(){
+		$path = $this->getCacheRoot(false);
+		if(!$path)
+			return false;
+		
+		$mask = $path.'-*';
+		array_map('unlink', glob($mask));
+		return true;
+	}
+	
+	
+	/******** end of CACHE **********/
 	
 	/*
 	 * Function to render ods sheets as html tabs
 	 */
 	public function parseToHtml($uid = FALSE, $getSheetNode = FALSE, $sourceFile = FALSE){
-		if($this->echoCached())
+		if($this->echoCached()){
 			return true;
-		if(!$this->sheets && !$this->open())
+		}
+		if(!$this->sheets && !$this->open() || !$this->sheets){
 			return false;
+		}
 		$this->startCache();
 		if(!$uid)
 			$uid = uniqid('ods');
 		echo '<div id="'.$uid.'">';
 		echo '<ul>';
 		foreach($this->sheets as $sheetIndex => $sheet)
-			if($this->IsSheetSkipped($sheetIndex)){
-				echo '<li>';
-				echo '<a href="view.php'
-					. '?id=' . $getSheetNode
-					. '&vw=file.call'
-					. '&file=' . $sourceFile
-					. '&sheet=' . $sheetIndex
-					.'#'. $uid.'-'. $sheetIndex.'">'.htmlentities($this->names['tables'][$sheetIndex]) .'</a>';
-				echo '</li>';
-			}
-			else {
-				echo '<li>';
-				echo '<a href="#'. $uid.'-'. $sheetIndex.'">'.htmlentities($this->names['tables'][$sheetIndex]) .'</a>';
-				echo '</li>';
-			}
+			if(!$this->IsSheetHidden($sheetIndex))
+				if($this->IsSheetSkipped($sheetIndex)){
+					echo '<li>';
+					echo '<a href="view.php'
+						. '?id=' . $getSheetNode
+						. '&vw=file.call'
+						. '&file=' . $sourceFile
+						. '&sheet=' . $sheetIndex
+						. ($this->cacheId ? '&cacheId=' . $this->cacheId : '')
+						.'#'. $uid.'-'. $sheetIndex.'">'.htmlentities($this->names['tables'][$sheetIndex]) .'</a>';
+					echo '</li>';
+				}
+				else {
+					echo '<li>';
+					echo '<a href="#'. $uid.'-'. $sheetIndex.'">'.htmlentities($this->names['tables'][$sheetIndex]) .'</a>';
+					echo '</li>';
+				}
 		echo '</ul>';
 		$firstSheet = false;
 		foreach($this->sheets as $sheetIndex => $sheet)
-			if(!$this->IsSheetSkipped($sheetIndex)){
+			if(!$this->IsSheetHidden($sheetIndex)
+			&& !$this->IsSheetSkipped($sheetIndex)){
 				if($firstSheet === false)
 					$firstSheet = $sheetIndex;
 				$this->currentSheet = $sheetIndex;
@@ -474,7 +548,6 @@ class ods {
 		if($firstSheet !== false)
 			$this->currentSheet = $firstSheet;
 		$this->echoScript($uid, $firstSheet);
-		
 		$this->endCache();
 	}
 	/*
@@ -492,7 +565,8 @@ class ods {
 			var_dump($this->sheetsFilter);
 			$sheetIndex = $this->sheetsFilter ? $this->sheetsFilter[0] : 0;
 		}
-		if($this->IsSheetSkipped($sheetIndex)){
+		if($this->IsSheetHidden($this->currentSheet)
+		|| $this->IsSheetSkipped($this->currentSheet)){
 			echo print_r($sheetIndex, true) . ' is skipped. ' . print_r($this->sheetsFilter , true);
 			return;
 		}
@@ -512,7 +586,8 @@ class ods {
 			$sheetIndex = $this->sheetsFilter ? $this->sheetsFilter[0] : 0;
 			$echoStyles = true;
 		}
-		if($this->IsSheetSkipped($sheetIndex))
+		if($this->IsSheetHidden($sheetIndex)
+		|| $this->IsSheetSkipped($sheetIndex))
 			return;
 		if($sheet === FALSE)
 			$sheet = $this->sheets[$sheetIndex];
@@ -664,7 +739,8 @@ class ods {
 	function parseStylesToCss($uid){
 		//styles par défaut par colonne
 		foreach($this->columns as $sheetIndex => $columns){
-			if($this->IsSheetSkipped($sheetIndex))
+			if($this->IsSheetHidden($sheetIndex)
+			|| $this->IsSheetSkipped($sheetIndex))
 				continue;
 			foreach($columns as $colIndex => $attrs){
 				$visibility = $attrs['TABLE:VISIBILITY'];
@@ -885,6 +961,7 @@ class ods {
 	}
 	
 	function echoScript($uid, $defaultViewIndex = 0){
+		if(!is_numeric($defaultViewIndex)) return;
 		echo '<script> $().ready(function(){
 	$("#' . $uid . '")
 	  .tabs({
