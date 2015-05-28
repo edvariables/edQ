@@ -1,6 +1,6 @@
 <?php
 $node = node($node, __FILE__);
-?><pre><h3>Valeurs des ypes de champs</h3>
+?><pre><h3>Valeurs des types de champs</h3>
 Se définit dans la table vtiger_field, champ uitype
 
 Préférés :

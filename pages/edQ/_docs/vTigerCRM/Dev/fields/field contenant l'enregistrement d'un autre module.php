@@ -2,9 +2,9 @@
 <ul class="edq-doc">
 	<li>1 : avec le gestionnaire d'agencement, créer le champ en indiquant n'importe quel type (par exemple Text) </li>
 	<li>Ensuite, il faut travailler avec PhpMyAdmin pour modifier directement la base de données : </li>
-		<li> 2 : dans la table vtiger_field, changer le "uitype" du champ créé pour avoir uitype = 10  </li>
+		<li> 2 : dans la table <var>vtiger_field</var>, changer le "uitype" du champ créé pour avoir uitype = 10  </li>
 	
-		<li> 3 : dans la table vtiger_fieldmodulerel, insérer une nouvelle ligne qui décrit la relation avec 
+		<li> 3 : dans la table <var>vtiger_fieldmodulerel</var>, insérer une nouvelle ligne qui décrit la relation avec 
 			fieldid=IdDuChampCréé, module = NomDuModuleDuChampCréé, relmodule=NomDuModuleDansLequelOnVeutChoisirLaValeur, status=NULL sequence=NULL. </li>
 	</li>	
 </ul>

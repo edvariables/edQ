@@ -26,5 +26,11 @@ On peut aussi le faire dans le .tpl
 <code>layouts\vlayout\modules\%ModuleName%\DetailViewHeaderTitle.tpl</code>
 mais ça ne permet pas la gestion propre du label par défaut de l'entité.
 		</pre></li>
+	
+		<li><pre>
+cf include\utils\CommonUtils.php
+function getEntityName($module, $ids_list, $compute=false) 
+		</pre></li>
+	
 </ul>
 			

@@ -48,7 +48,6 @@ if(isset($arguments[ 'pivot' ])){
 			//, groupSummaryPos : 'footer'
 			, rowTotals: true
 			, colTotals: true
-			, frozenStaticCols : true
 		}, <?=json_encode( $arguments[ 'pivot' ] )?>);
 	var colNames = [];
 	var colNamesAggreg = [];
@@ -63,12 +62,16 @@ if(isset($arguments[ 'pivot' ])){
 			/* regrouper par cette colonne */
 			if(isset($column['group']) && $column['group']){
 				if(is_string($column['group']) && $column['group'] == 'y'){ ?> 
-					pivotOptions.yDimension.push( {dataName: '<?=$columnName?>'} );
+					pivotOptions.yDimension.push( 
+							$.extend(<?=json_encode($column)?>, {dataName: '<?=$columnName?>'} )
+					);
 					colNamesCancel = true; /* TODO autant de colonnes que de valeurs distinctes */
 				<?php
 				}
 				else { ?>
-					pivotOptions.xDimension.push( {dataName: '<?=$columnName?>'} );
+					pivotOptions.xDimension.push( 
+							$.extend(<?=json_encode($column)?>, {dataName: '<?=$columnName?>'} )
+					);
 				<?php
 				}?>
 				colNames.push(<?=json_encode($columnLabel)?>);

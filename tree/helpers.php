@@ -218,7 +218,7 @@ class helpers {
 		$files = scandir($dir);
 		foreach ($files as $file)
 		if ($file != "." && $file != "..")
-			self::rrmdir("$dir/$file");
+			self::rrmdir($dir.DIRECTORY_SEPARATOR.$file);
 		rmdir($dir);
 	  }
 	  else if (file_exists($dir)) unlink($dir);
@@ -232,7 +232,7 @@ class helpers {
 		$files = scandir($src);
 		foreach ($files as $file)
 			if ($file != "." && $file != "..")
-				self::rcopy("$src/$file", "$dst/$file");
+				self::rcopy($src.DIRECTORY_SEPARATOR.$file, $dst.DIRECTORY_SEPARATOR.$file);
 	  }
 	  else if (file_exists($src))
 		copy($src, $dst);

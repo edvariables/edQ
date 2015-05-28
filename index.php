@@ -69,7 +69,7 @@
 
 		<?php if($edq_plugins['jqGrid']){?>
 		<script src="res/jquery/jqGrid/js/grid.locale-fr.js" type="text/javascript"></script>
-		<script src="res/jquery/jqGrid/js/jquery.jqGrid.min.js" type="text/javascript"></script>
+		<script src="res/jquery/jqGrid/js/jquery.jqGrid.src.js" type="text/javascript"></script>
 		<?php }?>
 	
 		<?php if($edq_plugins['colorpicker']){?>
@@ -125,7 +125,7 @@
 				west__onresize:  $.layout.callbacks.resizePaneAccordions
 				, west__enableCursorHotkey: false
 				
-				<?php /* mémorisation des tailles et disposition du layout 
+				<?php /* mÃ©morisation des tailles et disposition du layout 
 					substitution de l'utilisation de cookies par le gestionnaire window.localStorage
 					cf jquery.layout.loadState
 				*/?>
@@ -133,7 +133,7 @@
 				,	stateManagement__autoLoad:	false // disable automatic cookie-load
 				,	stateManagement__autoSave:	false // disable automatic cookie-save
 				<?php /*
-					charge les paramètres de la page
+					charge les paramÃ¨tres de la page
 				*/?>,	onload:	 function(layout, panes){ // run custom state-code when Layout loads
 					var data;
 					if((data = window.localStorage.getItem('edq-layout')) != null && data != ''){
@@ -174,7 +174,7 @@
 					}
 
 				}<?php /*
-					enregistre les paramètres de la page
+					enregistre les paramÃ¨tres de la page
 				*/?>,	onunload: function(layout, panes){ // ditto when page unloads OR Layout is 'destroyed'
 					var data = {}, pane;
 					for(pane in layout.panes)
@@ -214,7 +214,7 @@
 		
 			<div id="inner-wrapper" class="ui-layout-center">
 			<div id="data">
-				<div class="content default"><center>Choisissez un élément à gauche.</center></div>
+				<div class="content default"><center>Choisissez un Ã©lÃ©ment Ã  gauche.</center></div>
 			</div>
 			</div>
 			
