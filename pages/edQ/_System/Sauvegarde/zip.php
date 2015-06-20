@@ -5,7 +5,7 @@
  *
 */
 ini_set( "display_errors", 1);
-error_reporting (E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED);
+error_reporting (E_ALL & ~E_NOTICE & ~E_STRICT & ~E_DEPRECATED & ~E_WARNING);
 
 if(!isset($node)){
 	$node = node('.', __FILE__);
@@ -59,22 +59,36 @@ function folderToZip($folder, &$zipFile, $subfolder = null, $preg_exclude = fals
 		$subfolder .= end(str_split($subfolder)) == "/" ? "" : "/";
 	// we start by going through all files in $folder
 	$handle = opendir($folder);
+	if(!$handle){
+		?><code>Erreur d'ajout de <?=$folder?> dans le Zip.</code>
+		<pre>V&eacute;rifiez les droits d'acc&egrave;s au r&eacute;pertoire.</pre><?php
+		die();
+	}
 	while ($f = readdir($handle)) {
 		if ($f != "." && $f != ".."
 		&& (is_bool($preg_exclude) || (preg_match($preg_exclude, $folder . $f) !== 1))
 		) {
 			//echo $f . " = " . (is_bool($preg_exclude) ? '' : preg_match($preg_exclude, $f)) . '<br>';
+			//echo $subfolder . $f . '<br>';
 			if (is_file($folder . $f)) {
 				// if we find a file, store it
 				// if we have a subfolder, store it there
 				if ($subfolder != null)
-					$zipFile->addFile($folder . $f, $subfolder . $f);
+					$success = $zipFile->addFile($folder . $f, $subfolder . $f);
 				else
-					$zipFile->addFile($folder . $f, $f);
+					$success = $zipFile->addFile($folder . $f, $f);
+				if(!$success){
+					?><code>Erreur d'ajout de <?=$folder . $f?> dans le Zip.</code><?php
+					die();
+				}
 				
 			} else if (is_dir($folder . $f)) {
 				// if we find a folder, create a folder in the zip
-				$zipFile->addEmptyDir($subfolder . $f);
+				$success = $zipFile->addEmptyDir($subfolder . $f);
+				if(!$success){
+					?><code>Erreur d'ajout de <?=$subfolder . $f?>/ dans le Zip.</code><?php
+					die();
+				}
 				// and call the function again
 				folderToZip($folder . $f, $zipFile, $subfolder . $f, $preg_exclude);
 				
@@ -87,7 +101,7 @@ function folderToZip($folder, &$zipFile, $subfolder = null, $preg_exclude = fals
 $uid = DBNAME . "." . date("Y-m-d-His");
 
 // zip
-$zip_filename = helpers::combine(get_temp_dir(), $uid . ".zip");
+$zip_filename = helpers::combine(get_temp_dir(), $_SERVER["HTTP_HOST"] . '.' . $uid . ".zip");
 if(file_exists($zip_filename))
 	unlink($zip_filename);
 $zip->open($zip_filename, ZIPARCHIVE::CREATE);
@@ -101,12 +115,14 @@ if(isset($backup['sql'])){
 	passthru( $cmd );
 	
     $zip->addEmptyDir('mySQL');
-    $zip->addFile($filename, 'MySql/' . basename($filename));
+    $zip->addFile($filename, 'mySQL/' . basename($filename));
 }
 
 // sources
 if(isset($backup['sources'])){
 	$root = helpers::combine($_SERVER[ 'DOCUMENT_ROOT' ], dirname(substr($_SERVER[ 'REQUEST_URI' ], 1)));
+	if(preg_match('/\/\.$/', $root))
+		$root = substr($root, 0, strlen($root) - 2);
 	folderToZip($root, $zip, NULL, '/[\\\\\/](((pages|sessions|backup|tmp)(\.[^\\\\\/]+)?)$|\.)/');
 	global $tree;
 	// pages sous /edQ/
