@@ -36,6 +36,7 @@ class ods {
 	var $file;
 	var $hiddenSheets;//sheets names
 	var $shownSheets;//sheets names
+	var $currentStyle;
 	
 	function ods($file = FALSE, $sheetsFilter = FALSE, $open = FALSE) {
 		$this->styles = array();
@@ -57,6 +58,7 @@ class ods {
 		$this->setSheetsFilter( $sheetsFilter );
 		if($open)
 			$this->open();
+		$this->stylesBuffer = array();
 	}
 	/* Open file */
 	function open($sheetsFilter = FALSE) {
@@ -71,6 +73,9 @@ class ods {
 		shell_exec('unzip '.escapeshellarg($path).' -d '.escapeshellarg($tmp. DIRECTORY_SEPARATOR .$uid));
 		if($sheetsFilter !== FALSE)
 			$this->setSheetsFilter( $sheetsFilter );
+		
+		//$this->parse(file_get_contents($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'styles.xml'));
+		
 		$this->parse(file_get_contents($tmp. DIRECTORY_SEPARATOR .$uid.DIRECTORY_SEPARATOR.'content.xml'));
 		helpers::rrmdir($tmp.DIRECTORY_SEPARATOR.$uid);
 		//echo "<br>".$tmp.DIRECTORY_SEPARATOR.$uid;
@@ -88,6 +93,9 @@ class ods {
 	}
 	
 	private function parse($data) {
+		
+		$this->currentSheet = 0;
+		
 		$xml_parser = xml_parser_create(); 
 		xml_parser_set_option($xml_parser,XML_OPTION_TARGET_ENCODING, "UTF-8");
 		xml_set_object ( $xml_parser, $this );
@@ -210,13 +218,31 @@ class ods {
 		$cTagName = strtolower($tagName);
 		if($cTagName == 'style:font-face') {
 			$this->fonts[$attrs['STYLE:NAME']] = $attrs;
+			
+		} elseif($cTagName == 'office:styles'
+		|| $cTagName == 'office:automatic-styles') {
+			$this->lastElement = 'styles';
+			
 		} elseif($cTagName == 'style:style') {
+			//$this->previousElement = $this->lastElement;
+
 			$this->lastElement = $attrs['STYLE:NAME'];
 			$this->styles[$this->lastElement]['attrs'] = $attrs;
+
+			//$this->currentStyle = 'style:'.$attrs['STYLE:NAME'];
+			//$this->styles[$this->currentStyle] = $attrs;
 			
 		} elseif(strpos($cTagName, 'style:') === 0 && $attrs) {
-			//var_dump($cTagName, $attrs);
-			$this->styles[$this->lastElement]['styles'][$cTagName] = $attrs;
+			/*if($this->lastElement == 'style:style'
+			|| $this->lastElement == 'office:styles'
+			|| $this->lastElement == 'office:automatic-styles')
+				$this->styles[$this->currentStyle][$cTagName] = $attrs;
+			else*/
+			if($this->lastElement == 'styles')
+				$this->styles[$this->lastElement][$cTagName] = $attrs;
+			else
+				$this->styles[$this->lastElement]['styles'][$cTagName] = $attrs;
+				
 			
 		} elseif($cTagName == 'table:table-cell') {
 			if($this->IsSheetHidden($this->currentSheet)
@@ -311,6 +337,9 @@ class ods {
 			break;
 		case 'office:annotation':
 			$this->lastElement = $this->previousElement;
+			break;
+		case 'style:style':
+			$this->currentStyle = false;
 			break;
 		}
 	}
@@ -627,8 +656,9 @@ class ods {
 			return;
 		}
 		echo '<th>' . ($rowIndex+1) . '</th>';
+		$colspan = 0;
 		foreach($row as $colIndex => $col){
-			echo '<td col="'.$colIndex.'"';
+			echo '<td col="'.($colIndex + $colspan).'"';
 			$classNames = array();
 			foreach($col['attrs'] as $attr => $value){
 				switch($attr){
@@ -666,6 +696,20 @@ class ods {
 						//$classNames[] = 'odsvt-'.$value;
 						break;
 					}
+					break;
+				case 'TABLE:NUMBER-COLUMNS-SPANNED':
+					if($value=='1')
+						$attr = '';
+					else if(is_numeric($value)){
+						$attr = 'colspan';
+						$colspan += $value - 1;
+					}
+					break;
+				case 'TABLE:NUMBER-ROWS-SPANNED':
+					if($value=='1')
+						$attr = '';
+					else
+						$attr = 'rowspan';
 					break;
 				default:
 					break;
@@ -720,12 +764,12 @@ class ods {
 			font-style: inherit;
 			font-family: inherit;
 			text-decoration: inherit;*/
+			white-space: nowrap;
 		}';
 		echo "\n#".$uid.' table[sheet] td.odsvt-currency
 		    , #'.$uid.' table[sheet] td.odsvt-float
 		    , #'.$uid.' table[sheet] td.odsvt-percentage {
 			text-align: right;
-			white-space: nowrap;
 		}';
 		echo "\n#".$uid.' table[sheet] td.ods-negative {
 			color: red;
@@ -747,7 +791,8 @@ class ods {
 			foreach($columns as $colIndex => $attrs){
 				$visibility = $attrs['TABLE:VISIBILITY'];
 				if($visibility == 'collapse'){
-					echo "\n#".$uid . ' table[sheet="'.$sheetIndex.'"] > * > tr > *:nth-child('. ($colIndex+2). ') {'
+					//TODO incompatible avec colspan
+					echo "\n#".$uid . ' table[sheet="'.$sheetIndex.'"] > * > tr > td[col="'. ($colIndex). '"] {'
 						.'display: none;'
 					.'}';
 					continue;
@@ -756,7 +801,7 @@ class ods {
 					if(array_key_exists($attr, $attrs)){
 						$styleName = $attrs[$attr];
 						$style = $this->styles[$styleName];
-						$this->parseStyleToCss($uid, $styleName, $style, 'table[sheet="'.$sheetIndex.'"] > tbody > tr > td:nth-of-type('. ($colIndex+1) . ')');
+						$this->parseStyleToCss($uid, $styleName, $style, 'table[sheet="'.$sheetIndex.'"] > tbody > tr > td[col="'. ($colIndex) . '"]');
 						//echo "\n#".$uid . '[sheet="'.$sheetIndex."] td:nth-of-type('. $nColIndex . ') {';
 					}
 				}
@@ -787,13 +832,23 @@ class ods {
 			return;
 		if(!$styleName)
 			$styleName = 'table[sheet] > tbody > tr > td.ods-'.$style['attrs']['STYLE:NAME'];
+			
+		if($style['attrs']['STYLE:PARENT-STYLE-NAME'])
+			$parentStyle = $this->styles[$style['attrs']['STYLE:PARENT-STYLE-NAME']];
+		else
+			$parentStyle = false;
+		
+		
 		echo "\n#".$uid . ' ' . $styleName . '{';
 			//echo '/*' . print_r(array_keys($style['styles']), true) . '*/';
 		//$keys = array('style:table-cell-properties', 'style:table-column-properties', 'style:text-properties', 'style:paragraph-properties');
 		$properties = array();
 		foreach($style['styles'] as $key=>$data)
-			if(strpos($key, 'style:') == 0)
+			if(strpos($key, 'style:') == 0){
+				//if($parentStyle && isset($parentStyle['styles'][$key]))
+				//	$properties = array_merge($properties, $parentStyle['styles'][$key]);
 				$properties = array_merge($properties, $style['styles'][$key]);
+			}
 		if($properties){
 			//if($style['attrs']['STYLE:NAME'] == 'ce2')
 			//	echo '/*' . print_r(array_keys($properties), true) . '*/';

@@ -317,6 +317,7 @@ class page {
 		$beforeSubmit = is_array($options) && isset($options['beforeSubmit']) ? $options['beforeSubmit'] : '';
 		$success = is_array($options) && isset($options['success']) ? $options['success'] : false;
 		$error = is_array($options) && isset($options['error']) ? $options['error'] : false;
+		//TODO make a jquery plugin
 		return
 			'<script>  
 $(document).ready(function() { 
@@ -326,16 +327,28 @@ $(document).ready(function() {
 		$(this).ajaxSubmit({
 			beforeSubmit: function(){ 
 				document.body.style.cursor = "wait";
+				$(\'<div id="' . $form_uid . '-loading" class="edq-submit-loading"></div>\')
+					.html(\'<span class="ui-icon loading"/>\')
+					.append("<span>Enregistrement en cours</span>")
+					.appendTo("#' . $form_uid . '")
+				;
 			}
 			, success: function(data){
+				$("#' . $form_uid . '-loading").remove();
 				' . ( $success
 				     ? '(' . $success . ')();'
-				     : '//reload with answer
-					$("#' . $form_uid . '").parents(".ui-widget-content:first").html(data);
+				     : '//if json like, show message or error
+					if(typeof data === "string" && /^{[\\s\\S]*}$/.test(data)){
+						data = JSON.parse(data);
+						alert(data.message || data.error);
+					}
+					else //reload with answer
+						$("#' . $form_uid . '").parents(".ui-widget-content:first").html(data);
 				').'
 				$("body").css("cursor", "default");
 			}
 			, error: function(jq, textStatus, errorThrown, more ) { 
+				$("#' . $form_uid . '-loading").remove();
 				' . ( $error
 				     ? '(' . $error . ')();'
 				     : '
