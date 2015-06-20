@@ -364,7 +364,8 @@ class helpers {
 		/* local settings $PLUGINS */
 		global $PLUGINS;
 		if(!isset($PLUGINS))
-			include_once('conf/edQ.conf.php');
+			include_once('../conf/edQ.conf.php');
+		
 		if(isset($PLUGINS))
 			foreach($PLUGINS as $plugin)
 				$plugins[trim($plugin)] = true;
