@@ -1,3 +1,4 @@
+<pre>
 /**
 * Returns true if $string is valid UTF-8 and false otherwise.
 *
@@ -33,3 +34,4 @@ function is_utf8($str)
 	}
 	return true;
 }
+</pre>

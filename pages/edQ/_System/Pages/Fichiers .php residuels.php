@@ -112,6 +112,7 @@ foreach (new RecursiveIteratorIterator(new RecursiveDirectoryIterator($dir), Rec
 			<td><td><?= ( $name . ($php ? '.php' : '/')) ?></td>
 			<td><i><a href class="create">créer le noeud</a></i>
 			<td><i><a href class="delete">supprimer</a></i>
+			</tr>
 		 <?php
 		 }
 	}
