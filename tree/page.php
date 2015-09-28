@@ -7,7 +7,7 @@ class page {
 	
 	/* root_path
 		return D:/Wamp/www/edQ/pages
-		sous-entendu que la page appelée est à la racine (index.php, view.php)
+		sous-entendu que la page appelÃ©e est Ã  la racine (index.php, view.php)
 	*/
 	public static function get_root_path(){
 		
@@ -20,9 +20,9 @@ class page {
 		nom de fichier relatif
 		Recherche
 			..dataSource : chez les parents
-			.dataSource : au niveau de la référence ou chez les parents
+			.dataSource : au niveau de la rÃ©fÃ©rence ou chez les parents
 			:dataSource : dans la descendance
-			/_System/dataSource : à partir de la racine
+			/_System/dataSource : Ã  partir de la racine
 	*/
 	public static function file($search, $refers_to = null, $extension = ".php"){
 		if(!$search || $search == null){
@@ -50,7 +50,7 @@ class page {
 			$file = page::get_root_path() . $search . $extension;
 		}
 		else {
-			//Pas de fichier de référence fourni, on l'extrait depuis la trace
+			//Pas de fichier de rÃ©fÃ©rence fourni, on l'extrait depuis la trace
 			if($refers_to == null){
 				//$refers_to = helpers::get_pages_path();
 				$dt = debug_backtrace();
@@ -59,7 +59,7 @@ class page {
 						break;
 				$refers_to = $dt[$i]['file'];
 			}
-			//Fichiers de référence multiples
+			//Fichiers de rÃ©fÃ©rence multiples
 			else if(is_array($refers_to)){ //$node
 				$node = $refers_to;
 				if($node['path'] == null){
@@ -117,9 +117,9 @@ class page {
 		nom de dossier relatif
 		Recherche
 			..dataSource : chez les parents
-			.dataSource : au niveau de la référence ou chez les parents
+			.dataSource : au niveau de la rÃ©fÃ©rence ou chez les parents
 			:dataSource : dans la descendance
-			/_System/dataSource : à partir de la racine
+			/_System/dataSource : Ã  partir de la racine
 	*/
 	public static function folder($search, $refers_to = null){
 		return preg_replace('/\.php$/', '', self::file($search, $refers_to));
@@ -127,13 +127,13 @@ class page {
 	
 	/* execute
 		include rel($refers_to, $search, '.php')
-		exécute une page relative en définissant la variables $arguments
+		exÃ©cute une page relative en dÃ©finissant la variables $arguments
 		Recherche
 			..dataSource : chez les parents
-			.dataSource : au niveau de la référence ou chez les parents
-			dataSource : au niveau de la référence
+			.dataSource : au niveau de la rÃ©fÃ©rence ou chez les parents
+			dataSource : au niveau de la rÃ©fÃ©rence
 			:dataSource : dans la descendance
-			/_System/dataSource : à partir de la racine
+			/_System/dataSource : Ã  partir de la racine
 	*/
 	public static function execute($search, $refers_to = null, $extension = ".php", $arguments = null){
 		$file = page::file($search, $refers_to, $extension);
@@ -168,7 +168,7 @@ class page {
 	}
 	/* call with $arguments defined
 		include rel($refers_to, $search, '.php')
-		exécute une page relative en définissant la variables $arguments
+		exÃ©cute une page relative en dÃ©finissant la variables $arguments
 	*/
 	public static function call($search, $arguments = null, $refers_to = null, $extension = ".php"){
 		return page::execute($search, $refers_to, $extension, $arguments);
@@ -177,9 +177,9 @@ class page {
 		retourne l'url du fichier de la page relative
 		Recherche
 			..dataSource : chez les parents
-			.dataSource : au niveau de la référence ou chez les parents
+			.dataSource : au niveau de la rÃ©fÃ©rence ou chez les parents
 			:dataSource : dans la descendance
-			/_System/dataSource : à partir de la racine
+			/_System/dataSource : Ã  partir de la racine
 	*/
 	public static function file_url($search, $refers_to = null, $extension = ".php"){
 		$file = page::file($search, $refers_to, $extension);
@@ -213,9 +213,9 @@ class page {
 		retourne l'url du dossier de la page relative
 		Recherche
 			..dataSource : chez les parents
-			.dataSource : au niveau de la référence ou chez les parents
+			.dataSource : au niveau de la rÃ©fÃ©rence ou chez les parents
 			:dataSource : dans la descendance
-			/_System/dataSource : à partir de la racine
+			/_System/dataSource : Ã  partir de la racine
 	*/
 	public static function folder_url($search, $refers_to = null){
 		return preg_replace('/\.php$/', '', self::file_url($search, $refers_to));
@@ -283,7 +283,7 @@ class page {
 		}
 		$path = self::path($node, $node, false);
 		
-		return 'page.php?id=' . $node['id'] . '#' . $path . '/' . $node['nm']
+		return 'page.php?id=' . $node['id'] . '#' . $path
 			. ( $arguments == null ? '' : '&' . (is_array($arguments) ? implode('&', $arguments) : $arguments) )
 		;
 	}

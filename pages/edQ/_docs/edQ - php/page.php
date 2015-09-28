@@ -16,6 +16,13 @@ Classe statique <var>page</var>
 	<li><h3>page::folder_url()</h3>
 		<ul><li><?=page::folder_url($node)?></li>
 		</ul></li>
+	<li><h3>page::page_url()</h3>
+		<ul><li><?=page::page_url($node)?></li>
+		</ul></li>
+	<li><h3>page::path($search, $efers_to, $root = true)</h3>
+		<ul><li><?=page::path($node)?></li>
+		<li><?=page::path($node, $node, false)?></li>
+		</ul></li>
 	<li><h3>page::execute()</h3>
 		<ul><li><code>page::execute($search, [$refers_to = null], [$extension = ".php"], [&$arguments = null])</code></li>
 		<li><a href="#">voir page::call()</a></li>

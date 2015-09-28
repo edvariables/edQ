@@ -69,8 +69,8 @@ array (
     'q13_p3' => '',
     'q16_p3' => '',
   ),
-  'description' => 'commenté',
-  'title' => 'testé',
+  'description' => 'commentÃ©',
+  'title' => 'testÃ©',
   'scores' => 
   array (
     9 => 150,
