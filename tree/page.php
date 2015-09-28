@@ -268,6 +268,49 @@ class page {
 			. '&vw=' . $view_name
 		;
 	}
+	
+	/* page::page_url
+	
+	*/
+	public static function page_url($search, $refers_to = null, $arguments = null){
+		if($search == null && $refers_to == null)
+			return null;
+		$node = page::node($search, $refers_to);
+		
+		if(!isset($node['path'])){
+			global $tree;
+			$node = $tree->get_node($node, array('with_path' => true));
+		}
+		$path = self::path($node, $node, false);
+		
+		return 'page.php?id=' . $node['id'] . '#' . $path . '/' . $node['nm']
+			. ( $arguments == null ? '' : '&' . (is_array($arguments) ? implode('&', $arguments) : $arguments) )
+		;
+	}
+	
+	/* page::path
+	
+	*/
+	public static function path($search, $refers_to = null, $root = true){
+		if($search == null && $refers_to == null)
+			return null;
+		$node = page::node($search, $refers_to);
+		
+		if(!isset($node['path'])){
+			global $tree;
+			$node = $tree->get_node($node, array('with_path' => true));
+		}
+		if(isset($node['path'])){
+			if($root)
+				$path = $node['path'];
+			else
+				$path = array_slice($node['path'],1);
+				
+			return ($root ? '/' : '')
+				. implode('/', array_map(function ($v) { return $v['nm']; }, $path)) . '/' . $node['nm'];
+		}
+		return '/';
+	}
 
 	/* view_node
 		call viewer for node

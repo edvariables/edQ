@@ -75,6 +75,8 @@ function node($search = null, $refers_to = null, $options = null, $method = null
                 return page::file($node, $refers_to);
             case "file_url":
                 return page::file_url($node, $refers_to);
+            case "page_url":
+                return page::page_url($node, $refers_to);
             case "folder":
                 return page::folder($node, $refers_to);
             case "path_ids":
