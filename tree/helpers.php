@@ -84,6 +84,12 @@ function get_db($search = '.dataSource', $__FILE__ = null){
 
 /* static helpers */
 class helpers {
+	
+	public static function include_edQ_conf(){
+        $file = dirname(dirname(__FILE__)) . '/conf/edQ.conf.php';
+        include_once($file);
+    }
+	
 	/* combine
 		return $root . '/' . $file . $extension
 	*/
@@ -228,7 +234,9 @@ class helpers {
 	public static function rcopy($src, $dst) {
 	  if (file_exists($dst)) self::rrmdir($dst);
 	  if (is_dir($src)) {
-		mkdir($dst);
+		if (!file_exists($dst))
+			try { mkdir($dst); }
+			catch(Exception $ex){ echo "Erreur de copie de $src vers $dest : $ex"; } //problème de délai qui déclenche parfois un " Permission denied " (en warning, du coup le try ne fonctionne pas )
 		$files = scandir($src);
 		foreach ($files as $file)
 			if ($file != "." && $file != "..")
@@ -364,7 +372,8 @@ class helpers {
 		/* local settings $PLUGINS */
 		global $PLUGINS;
 		if(!isset($PLUGINS))
-			include_once('conf/edQ.conf.php');
+			self::include_edQ_conf();
+		
 		if(isset($PLUGINS))
 			foreach($PLUGINS as $plugin)
 				$plugins[trim($plugin)] = true;
@@ -426,6 +435,32 @@ class helpers {
 		}
 		self::$plugins[$plugin] = true;
 	}
+	
+	// Function that replaces htmlenties(utf8_decode()) that differs between servers
+	public static function utf8_to_htmlentities ($string) {
+		/* Only do the slow convert if there are 8-bit characters */
+		/* avoid using 0xA0 (\240) in ereg ranges. RH73 does not like that */
+		if (!preg_match("/[\200-\237]/", $string)
+		 && !preg_match("/[\241-\377]/", $string)
+		) {
+			return $string;
+		}
+
+		// decode three byte unicode characters
+		$string = preg_replace("/([\340-\357])([\200-\277])([\200-\277])/e",
+			"'&#'.((ord('\\1')-224)*4096 + (ord('\\2')-128)*64 + (ord('\\3')-128)).';'",
+			$string
+		);
+
+		// decode two byte unicode characters
+		$string = preg_replace("/([\300-\337])([\200-\277])/e",
+			"'&#'.((ord('\\1')-192)*64+(ord('\\2')-128)).';'",
+			$string
+		);
+
+		return $string;
+	}
+
 }
 
 

@@ -53,7 +53,11 @@ catch(Exception $e){
 	die('Format HTML incorrect. Html : ' . strlen($table) . ' car.');
 
 }
-
+if(!$dom){
+	var_dump("Aucune table", $dom);
+	echo $table;
+	die('Trop gros ou format HTML incorrect. Html : ' . strlen($table) . ' car.');
+}
 $nRow = 0;
 
 

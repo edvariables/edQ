@@ -20,12 +20,19 @@ else if(isset($_REQUEST['columns']))
 else {
 	$columns = array();
 	if(isset($rows[0])){
-		foreach($rows[0] as $id => $value){
-			$columns[] = array(
-				'id' => $id
-				, 'type' => gettype($value)
-			);
+		if(is_array($rows[0])){
+			foreach($rows[0] as $id => $value){
+				$columns[] = array(
+					'id' => $id
+					, 'type' => gettype($value)
+				);
+			}
 		}
+		else
+			$columns[] = array(
+				'id' => 0
+				, 'type' => gettype($rows[0])
+			);
 	}
 }
 if(isset($columns['*'])){
@@ -125,7 +132,7 @@ if(!isset($arguments['table--columns--header'])
 		foreach($columns as $column)
 			if(!isset($column['visible']) || $column['visible']){
 				echo('<td>');
-				$cell = $row[$is_associative ? $column['id'] : $column['index']];
+				$cell = is_array($row) ? $row[$is_associative ? $column['id'] : $column['index']] : $row;
 			
 				switch(@$column['type']){
 				case 'double':

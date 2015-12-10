@@ -443,6 +443,10 @@ class ods {
 	}
 	function IsSheetHidden($sheetIndex){
 		$tableName = $this->names['tables'][$sheetIndex];
+		
+		if( strcmp("'file:", substr($tableName, 0, strlen("'file:"))) === 0 )
+			return true;
+		
 		if( $this->shownSheets ){
 			return !in_array($tableName, $this->shownSheets);
 		}

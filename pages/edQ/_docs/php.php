@@ -25,4 +25,3 @@ foreach($pages as $child)
 		return false;
 	}
 </script>
-?>

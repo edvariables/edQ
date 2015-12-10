@@ -1,7 +1,7 @@
 <?php
 /***
  *  node([$search], [$refers_to], [[$options], ][$method], [$method_options])
- *    function globale d'accès à un noeud
+ *    function globale d'accÃ¨s Ã  un noeud
  *
  *    node(':details', $node, 'call')
  *    node('/_System/debug/phpinfo', $node, 'call')
@@ -10,7 +10,7 @@
 
 function node($search = null, $refers_to = null, $options = null, $method = null, $method_options = null){
     
-    // hack : décalage des arguments si $options est une fonction ou de type string
+    // hack : dÃ©calage des arguments si $options est une fonction ou de type string
     if(is_callable($options)
     || is_string($options)){
         $method_options = $method;
@@ -75,10 +75,20 @@ function node($search = null, $refers_to = null, $options = null, $method = null
                 return page::file($node, $refers_to);
             case "file_url":
                 return page::file_url($node, $refers_to);
+            case "page_url":
+                return page::page_url($node, $refers_to);
             case "folder":
                 return page::folder($node, $refers_to);
             case "path_ids":
-                return array_map(function ($v) { return $v['id']; }, $node['path']);
+                if(!isset($node['path'])){
+                    global $tree;
+                    $node = $tree->get_node($node, array('with_path' => true));
+                }
+                if(isset($node['path']))
+					return array_map(function ($v) { return $v['id']; }, $node['path']);
+                return false;
+            case "path":
+                return page::path($node, $refers_to, $method_options);
             case "page":
                 if(!isset($node['path'])){
                     global $tree;

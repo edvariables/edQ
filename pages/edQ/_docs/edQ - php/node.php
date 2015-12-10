@@ -63,6 +63,11 @@ node($node, __FILE__) //Idéal, mais ethétiquement lourd.
 	retourne
 	<code><?=node('/_html/bloc', $node, 'url');?></code>
 	</pre>
+		<li><pre><var>page_url</var>
+	<code>node('..my_func', $node, 'page_url')</code>
+	retourne
+	<code><?=node('/_System/debug/callstack', $node, 'page_url');?></code>
+	</pre>
 		<li><pre><var>html</var>
 	<code>node('/_html/image/edQ', $node, 'html')</code>
 	retourne
@@ -93,6 +98,25 @@ node($node, __FILE__) //Idéal, mais ethétiquement lourd.
 	<code>node('..my_func', $node, 'folder')</code>
 	retourne
 	<code><?=node('/_System/debug/callstack', $node, 'folder');?></code>
+	</pre>
+		<li><pre><var>page</var>
+	<code>node('..my_func', $node, 'page')</code>
+	retourne
+	<code><?=node('/_System/debug/callstack', $node, 'page');?></code>
+	</pre>
+		<li><pre><var>path</var>
+	<code>node('..my_func', $node, 'path')</code>
+	retourne
+	<code><?=node('/_System/debug/callstack', $node, 'path');?></code>
+	
+	<code>node('..my_func', $node, 'page_url', true)</code>
+	retourne
+	<code><?=node('/_System/debug/callstack', $node, 'path', true);?></code>
+	</pre>
+		<li><pre><var>path_ids</var>
+	<code>node('..my_func', $node, 'path_ids')</code>
+	retourne
+	<code><?=var_dump(node('/_System/debug/callstack', $node, 'path_ids'));?></code>
 	</pre>
 		<li><pre><var>name</var>
 	<code>node('..my_func', $node, 'name')</code>

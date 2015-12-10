@@ -1,4 +1,5 @@
 <?php
+helpers::need_plugin('dataTables');
 $arguments = array_merge($_REQUEST, isset($arguments) ? $arguments : array());
 $root = isset($arguments['f--root']) ? $arguments['f--root'] : '/edQ';
 

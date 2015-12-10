@@ -119,6 +119,7 @@ if(count($rows) > 0){
 				title: 'Suppression d\'un utilisateur',
 				width: 'auto',
 				height: 'auto',
+				closeOnEscape: true,
 				buttons: [
 					{
 						text: "Supprimer",

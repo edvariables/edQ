@@ -13,14 +13,37 @@ if(!$isCurrentUser && $_POST['d--user-UserType'] < $currentUserType)
 
 $db = get_db();
 
+$name = $_POST['d--Name'];
+if(!$name){
+	echo json_encode(array("error" => "Le nom ne peut ne peut être vide."));
+	return;
+}
+
 $insertInto = $_POST['d--IdContact'] == '0' || $_POST['d--IdContact'] == 'new';
 if($insertInto){
 
+
+	if(isset($_POST['d--user-Enabled']))
+		$enabled = $_POST['d--user-Enabled'];
+	else
+		$enabled = '1';
+	
+	if($_POST['d--user-Password']
+	&& ($_POST['d--user-Password'] == $_POST['d--user-Password-confirm']))
+		$pwd = $_POST['d--user-Password'];
+	else
+		$pwd = '';
+
+	if($enabled && !$pwd){
+		echo json_encode(array("error" => "Le mot de passe ne peut être vide."));
+		return;
+	}
+	
 	$sql = "INSERT INTO contact (Name, ShortName, Email, Phone1)
 		VALUES(?, ?, ?, ?)";
 
 	$params = array();
-	$params[] = $_POST['d--Name'];
+	$params[] = $name;
 	$params[] = $_POST['d--ShortName'];
 	$params[] = $_POST['d--Email'];
 	$params[] = $_POST['d--Phone1'];
@@ -40,7 +63,7 @@ else {
 		WHERE IdContact = ?";
 
 	$params = array();
-	$params[] = $_POST['d--Name'];
+	$params[] = $name;
 	$params[] = $_POST['d--ShortName'];
 	$params[] = $_POST['d--Email'];
 	$params[] = $_POST['d--Phone1'];
@@ -51,17 +74,14 @@ else {
 //var_dump( $result, $params );
 
 if($insertInto){
-
+	
 	$sql = "INSERT INTO user (IdUser, UserType, Enabled, Password)
 		VALUES(?, ?, ?, PASSWORD(?))";
 
 	$params = array();
 	$params[] = $_POST['d--IdContact'];
 	$params[] = $_POST['d--user-UserType'];
-	if(isset($_POST['d--user-Enabled']))
-		$params[] = $_POST['d--user-Enabled'];
-	else
-		$params[] = '1';
+	$params[] = $enabled;
 	if($_POST['d--user-Password']
 	&& ($_POST['d--user-Password'] == $_POST['d--user-Password-confirm']))
 		$params[] = $_POST['d--user-Password'];
