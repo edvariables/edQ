@@ -118,8 +118,9 @@ foreach($rows as $row){
 		// data
 		$td = array();
 
-		foreach($row as $value)
-		{
+		if(!is_array($row))
+			$row = array($row);
+		foreach($row as $value){
 			switch(gettype($value)){
 				case "double":
 				case "float":
@@ -133,6 +134,7 @@ foreach($rows as $row){
 					break;
 			}
 		}
+				
 		fputcsv($fp, $td, $csvSeparCols, $csvSeparFields);
 	}
 }

@@ -1,5 +1,5 @@
 <?php
-helpers::need_plugin('dataTables');
+	helpers::need_plugin('dataTables');
 	$node = node($node, __FILE__);
 	$db = get_db();
 	$rows = $db->all("

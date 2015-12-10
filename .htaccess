@@ -1,3 +1,13 @@
+order deny,allow 
+# Acces autorise depuis les domaines exterieurs
+allow from all
+
 <files dataSource.php>
 deny from all
 </files>
+
+
+<files conf/edQ.conf.php>
+deny from all
+</files>
+

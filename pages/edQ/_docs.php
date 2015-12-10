@@ -1,1 +1,1 @@
-<?=node(':index', $node, 'call')?>
+<?php node(':index', $node, 'call')?>

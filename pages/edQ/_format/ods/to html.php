@@ -71,6 +71,8 @@ class ods {
 		$uid = uniqid();
 		mkdir($tmp. DIRECTORY_SEPARATOR .$uid);
 		shell_exec('unzip '.escapeshellarg($path).' -d '.escapeshellarg($tmp. DIRECTORY_SEPARATOR .$uid));
+		//shell_exec('cp -R '.escapeshellarg($tmp. DIRECTORY_SEPARATOR .$uid).' -d '.escapeshellarg($tmp. DIRECTORY_SEPARATOR .basename($file).$uid . ' - copie'));
+		//var_dump('cp -R '.escapeshellarg($tmp. DIRECTORY_SEPARATOR .$uid).' -d '.escapeshellarg($tmp. DIRECTORY_SEPARATOR .basename($file).$uid . ' - copie'));
 		if($sheetsFilter !== FALSE)
 			$this->setSheetsFilter( $sheetsFilter );
 		
@@ -361,7 +363,11 @@ class ods {
 			}
 			break;
 		case 'office:annotation':
-			//TODO cell comment
+			
+			if($this->sheets[$this->currentSheet]['rows'][$this->currentRow][$this->currentCell]['comment'])
+				$this->sheets[$this->currentSheet]['rows'][$this->currentRow][$this->currentCell]['comment'] .= $data;
+			else
+				$this->sheets[$this->currentSheet]['rows'][$this->currentRow][$this->currentCell]['comment'] = $data;
 			break;
 		}
 	}
@@ -723,14 +729,31 @@ class ods {
 			}
 			if($classNames)
 				echo ' class="'.implode(' ', $classNames).'"';
-			echo '>';
+				
+			if(array_key_exists('comment', $col)){
+				echo ' title="' . self::cleanComment($col['comment']) . '"';
+			} 
+			echo '>';  
+				
+			if(array_key_exists('comment', $col)){
+				echo '<a style="float:right; margin-left: 1em; opacity: 0.8;"><span class="ui-icon ui-icon-help"></span></a>';
+			} 
 			//echo '<pre>'.print_r($col['attrs'], true).'</pre>';
 			if(array_key_exists('value', $col)){
 				echo htmlentities($col['value']);
 			}
+			
 			echo '</td>';
 		}
 		echo '</tr>';
+	}
+	
+	static function cleanComment($comment){
+		return htmlentities(
+			trim(
+			str_replace('"', "''",
+			preg_replace('/(\w+)(\d{4})-(\d{2})-(\d{2})T\d{2}\:\d{2}\:\d{2}/', ''/*'- $4/$3/$2 ($1) : '*/, $comment
+		))));
 	}
 	
 	function parseStylesToHtml($uid){
