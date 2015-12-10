@@ -33,7 +33,7 @@ class nodeViewer_legend extends nodeViewer {
 				//TODO intégrer le header du contenu dans le header du dialog
 				. '<button class="ui-button ui-state-default ui-border-none" onclick="$(this).children(\':first\').toggleClass(\'ui-icon-triangle-1-n\').toggleClass(\'ui-icon-triangle-1-s\')'
 					. '.parents(\'.header-footer:first\').next().toggle(function() { $(this).animate({ }, 200);}, function(){$(this).animate({}, 200);}); return false;">'
-					. '<span class="ui-icon ui-icon-triangle-1-n" title="masque/affiche"> </span></button>'
+					. '<span class="ui-icon ui-icon-triangle-1-n" title="r&eacute;duit/affiche"> </span></button>'
 				//. '<input type="checkbox" onchange="$(this).parents(\'.header-footer:first\').next().toggle();" checked="checked"/>'
 				// lien qui déplace les noeuds du viewer dans un autre div + dialog
 				//TODO intégrer le header du contenu dans le header du dialog
@@ -42,10 +42,10 @@ class nodeViewer_legend extends nodeViewer {
 						.'.dialog({ title: $tb.children(\'label\').text(), width: \'auto\', height: \'auto\' })'
 						.'.css(\'min-height\', \'20px\');
 						$(this).remove(); return false;">'
-					. '<span class="ui-icon ui-icon-newwin" title="affiche dans fen&ecirc;tre"> </span></button>'
+					. '<span class="ui-icon ui-icon-document" title="affiche dans une fen&ecirc;tre"> </span></button>'
 				// affichage en tant que page
 				. '<a class="ui-button ui-state-default ui-border-none" href="'.$page_url.'" target="_blank">'
-					. '<span class="ui-icon ui-icon-document" title="page seule"> </span></a>'
+					. '<span class="ui-icon ui-icon-newwin" title="affiche la page seule dans un nouvel onglet"> </span></a>'
 			. '</div></div>';
 		$html .= $toolbar ;
 		
